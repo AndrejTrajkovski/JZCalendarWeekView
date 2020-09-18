@@ -232,7 +232,7 @@ open class JZLongPressWeekView: JZBaseWeekView {
             switch scrollType! {
             case .sectionScroll:
                 let scrollSections: CGFloat = direction == .left ? -1 : 1
-                contentOffsetX = currentOffset.x - flowLayout.sectionWidth! * scrollSections
+                contentOffsetX = currentOffset.x - contentViewWidth * scrollSections
             case .pageScroll:
                 contentOffsetX = direction == .left ? contentViewWidth * 2 : 0
             }
@@ -278,7 +278,7 @@ open class JZLongPressWeekView: JZBaseWeekView {
         // add 5 to ensure the max width
         let labelHeight: CGFloat = 15
         let textWidth = UILabel.getLabelWidth(labelHeight, font: longPressTimeLabel.font, text: "23:59") + 5
-        let timeLabelWidth = max(selectedCell?.bounds.width ?? flowLayout.sectionWidth, textWidth)
+        let timeLabelWidth = max(selectedCell?.bounds.width ?? currentPageSectionWidth(), textWidth)
         longPressTimeLabel.frame = CGRect(x: 0, y: -labelHeight, width: timeLabelWidth, height: labelHeight)
         longPressView.addSubview(longPressTimeLabel)
         longPressView.setDefaultShadow()
@@ -422,11 +422,11 @@ extension JZLongPressWeekView: UIGestureRecognizerDelegate {
         }
 
         if state == .began {
-
-            currentEditingInfo.cellSize = currentLongPressType == .move ? currentMovingCell.frame.size : CGSize(width: flowLayout.sectionWidth, height: flowLayout.hourHeight * CGFloat(addNewDurationMins)/60)
+						let date = getLongPressViewStartDate(pointInCollectionView: pointInCollectionView, pointInSelfView: pointInSelfView)
+						currentEditingInfo.cellSize = currentLongPressType == .move ? currentMovingCell.frame.size : CGSize(width: currentPageSectionWidth(), height: flowLayout.hourHeight * CGFloat(addNewDurationMins)/60)
             pressPosition = currentLongPressType == .move ? (pointInCollectionView.x - currentMovingCell.frame.origin.x, pointInCollectionView.y - currentMovingCell.frame.origin.y) :
                                                             (currentEditingInfo.cellSize.width/2, currentEditingInfo.cellSize.height/2)
-            longPressViewStartDate = getLongPressViewStartDate(pointInCollectionView: pointInCollectionView, pointInSelfView: pointInSelfView)
+            longPressViewStartDate = date
             longPressView = initLongPressView(selectedCell: currentMovingCell, type: currentLongPressType, startDate: longPressViewStartDate)
             longPressView.frame.size = currentEditingInfo.cellSize
             longPressView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)

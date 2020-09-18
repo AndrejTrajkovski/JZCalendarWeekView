@@ -12,7 +12,7 @@ import JZCalendarWeekView
 class LongPressViewController: UIViewController {
 
     @IBOutlet weak var calendarWeekView: JZLongPressWeekView!
-    let viewModel = AllDayViewModel()
+    let viewModel = DefaultViewModel()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,9 +34,9 @@ class LongPressViewController: UIViewController {
             // For example only
             setupCalendarViewWithSelectedData()
         } else {
-            calendarWeekView.setupCalendar(numOfDays: 3,
+            calendarWeekView.setupCalendar(
                                            setDate: Date(),
-                                           allEvents: viewModel.eventsByDate,
+																					 allEvents: viewModel.eventsByDate,
                                            scrollType: .pageScroll,
                                            scrollableRange: (nil, nil))
         }
@@ -54,7 +54,7 @@ class LongPressViewController: UIViewController {
     /// For example only
     private func setupCalendarViewWithSelectedData() {
         guard let selectedData = viewModel.currentSelectedData else { return }
-        calendarWeekView.setupCalendar(numOfDays: selectedData.numOfDays,
+        calendarWeekView.setupCalendar(
                                        setDate: selectedData.date,
                                        allEvents: viewModel.eventsByDate,
                                        scrollType: selectedData.scrollType,
@@ -73,26 +73,26 @@ extension LongPressViewController: JZBaseViewDelegate {
 extension LongPressViewController: JZLongPressViewDelegate, JZLongPressViewDataSource {
 
     func weekView(_ weekView: JZLongPressWeekView, didEndAddNewLongPressAt startDate: Date) {
-        let newEvent = AllDayEvent(id: UUID().uuidString, title: "New Event", startDate: startDate, endDate: startDate.add(component: .hour, value: weekView.addNewDurationMins/60),
-                             location: "Melbourne", isAllDay: false)
-
-        if viewModel.eventsByDate[startDate.startOfDay] == nil {
-            viewModel.eventsByDate[startDate.startOfDay] = [AllDayEvent]()
-        }
-        viewModel.events.append(newEvent)
-        viewModel.eventsByDate = JZWeekViewHelper.getIntraEventsByDate(originalEvents: viewModel.events)
-        weekView.forceReload(reloadEvents: viewModel.eventsByDate)
+//        let newEvent = AllDayEvent(id: UUID().uuidString, title: "New Event", startDate: startDate, endDate: startDate.add(component: .hour, value: weekView.addNewDurationMins/60),
+//                             location: "Melbourne", isAllDay: false)
+//
+//        if viewModel.eventsByDate[startDate.startOfDay] == nil {
+//            viewModel.eventsByDate[startDate.startOfDay] = [AllDayEvent]()
+//        }
+//        viewModel.events.append(newEvent)
+//        viewModel.eventsByDate = JZWeekViewHelper.getIntraEventsByDate(originalEvents: viewModel.events)
+//        weekView.forceReload(reloadEvents: viewModel.eventsByDate)
     }
 
     func weekView(_ weekView: JZLongPressWeekView, editingEvent: JZBaseEvent, didEndMoveLongPressAt startDate: Date) {
-        guard let event = editingEvent as? AllDayEvent else { return }
-        let duration = Calendar.current.dateComponents([.minute], from: event.startDate, to: event.endDate).minute!
-        let selectedIndex = viewModel.events.firstIndex(where: { $0.id == event.id })!
-        viewModel.events[selectedIndex].startDate = startDate
-        viewModel.events[selectedIndex].endDate = startDate.add(component: .minute, value: duration)
-
-        viewModel.eventsByDate = JZWeekViewHelper.getIntraEventsByDate(originalEvents: viewModel.events)
-        weekView.forceReload(reloadEvents: viewModel.eventsByDate)
+//        guard let event = editingEvent as? AllDayEvent else { return }
+//        let duration = Calendar.current.dateComponents([.minute], from: event.startDate, to: event.endDate).minute!
+//        let selectedIndex = viewModel.events.firstIndex(where: { $0.id == event.id })!
+//        viewModel.events[selectedIndex].startDate = startDate
+//        viewModel.events[selectedIndex].endDate = startDate.add(component: .minute, value: duration)
+//
+//        viewModel.eventsByDate = JZWeekViewHelper.getIntraEventsByDate(originalEvents: viewModel.events)
+//        weekView.forceReload(reloadEvents: viewModel.eventsByDate)
     }
 
     func weekView(_ weekView: JZLongPressWeekView, viewForAddNewLongPressAt startDate: Date) -> UIView {
@@ -121,39 +121,39 @@ extension LongPressViewController: OptionsViewDelegate {
             optionsButton.widthAnchor.constraint(equalToConstant: 25).isActive = true
             optionsButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
         }
-        optionsButton.addTarget(self, action: #selector(presentOptionsVC), for: .touchUpInside)
+//        optionsButton.addTarget(self, action: #selector(presentOptionsVC), for: .touchUpInside)
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: optionsButton)
     }
 
-    @objc func presentOptionsVC() {
-        guard let optionsVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "OptionsViewController") as? ExampleOptionsViewController else {
-            return
-        }
-        let optionsViewModel = OptionsViewModel(selectedData: getSelectedData())
-        optionsVC.viewModel = optionsViewModel
-        optionsVC.delegate = self
-        let navigationVC = UINavigationController(rootViewController: optionsVC)
-        self.present(navigationVC, animated: true, completion: nil)
-    }
+//    @objc func presentOptionsVC() {
+//        guard let optionsVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "OptionsViewController") as? ExampleOptionsViewController else {
+//            return
+//        }
+//        let optionsViewModel = OptionsViewModel(selectedData: getSelectedData())
+//        optionsVC.viewModel = optionsViewModel
+//        optionsVC.delegate = self
+//        let navigationVC = UINavigationController(rootViewController: optionsVC)
+//        self.present(navigationVC, animated: true, completion: nil)
+//    }
 
-    private func getSelectedData() -> OptionsSelectedData {
-        let numOfDays = calendarWeekView.numOfDays!
-        let firstDayOfWeek = numOfDays == 7 ? calendarWeekView.firstDayOfWeek : nil
-        viewModel.currentSelectedData = OptionsSelectedData(viewType: .longPressView,
-                                                            date: calendarWeekView.initDate.add(component: .day, value: numOfDays),
-                                                            numOfDays: numOfDays,
-                                                            scrollType: calendarWeekView.scrollType,
-                                                            firstDayOfWeek: firstDayOfWeek,
-                                                            hourGridDivision: calendarWeekView.flowLayout.hourGridDivision,
-                                                            scrollableRange: calendarWeekView.scrollableRange)
-        return viewModel.currentSelectedData
-    }
+//    private func getSelectedData() -> OptionsSelectedData {
+//        let numOfDays = calendarWeekView.numOfDays!
+//        let firstDayOfWeek = numOfDays == 7 ? calendarWeekView.firstDayOfWeek : nil
+//        viewModel.currentSelectedData = OptionsSelectedData(viewType: .longPressView,
+//                                                            date: calendarWeekView.initDate.add(component: .day, value: numOfDays),
+//                                                            numOfDays: numOfDays,
+//                                                            scrollType: calendarWeekView.scrollType,
+//                                                            firstDayOfWeek: firstDayOfWeek,
+//                                                            hourGridDivision: calendarWeekView.flowLayout.hourGridDivision,
+//                                                            scrollableRange: calendarWeekView.scrollableRange)
+//        return viewModel.currentSelectedData
+//    }
 
     func finishUpdate(selectedData: OptionsSelectedData) {
 
         // Update numOfDays
         if selectedData.numOfDays != viewModel.currentSelectedData.numOfDays {
-            calendarWeekView.numOfDays = selectedData.numOfDays
+//            calendarWeekView.numOfDays = selectedData.numOfDays
             calendarWeekView.refreshWeekView()
         }
         // Update Date
@@ -183,6 +183,6 @@ extension LongPressViewController: OptionsViewDelegate {
     private func updateNaviBarTitle() {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MMMM YYYY"
-        self.navigationItem.title = dateFormatter.string(from: calendarWeekView.initDate.add(component: .day, value: calendarWeekView.numOfDays))
+//        self.navigationItem.title = dateFormatter.string(from: calendarWeekView.initDate.add(component: .day, value: calendarWeekView.numOfDays))
     }
 }

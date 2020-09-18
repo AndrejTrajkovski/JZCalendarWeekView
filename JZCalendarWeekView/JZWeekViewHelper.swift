@@ -70,6 +70,16 @@ public enum JZCurrentTimelineType {
 
 open class JZWeekViewHelper {
 
+	open class func getIntraEventsByEmployee<T: AppointmentEvent>(originalEvents: [T]) -> MyDataSource {
+		let byDate: [Date: [AppointmentEvent]] = Self.getIntraEventsByDate(originalEvents: originalEvents)
+		let res: [Date: [[AppointmentEvent]]] = byDate.mapValues { value in
+			let asd = Dictionary.init(grouping: value, by: { $0.employeeId })
+			let asdf =  asd.sorted(by: { $0.key > $1.key }).map(\.value)
+			return asdf
+		}
+		return res
+	}
+	
     /**
      Get calculated events dictionary with intraStartTime and intraEndTime
      - Parameters:

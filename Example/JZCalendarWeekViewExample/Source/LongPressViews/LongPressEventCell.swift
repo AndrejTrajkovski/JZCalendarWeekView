@@ -36,10 +36,10 @@ class LongPressEventCell: JZLongPressEventCell {
         borderView.backgroundColor = UIColor(hex: 0x0899FF)
     }
 
-    func configureCell(event: AllDayEvent, isAllDay: Bool = false) {
+    func configureCell(event: AppointmentEvent, isAllDay: Bool = false) {
         self.event = event
-        locationLabel.text = event.location
-        titleLabel.text = event.title
+        locationLabel.text = event.id
+//        titleLabel.text = String(event.employeeId)
 
         locationLabel.isHidden = isAllDay
     }

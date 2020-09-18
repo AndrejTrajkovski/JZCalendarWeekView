@@ -80,12 +80,12 @@ class ExampleOptionsViewController: UIViewController {
             let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
             let vc: UIViewController
             switch viewType {
-            case .defaultView:
-                vc = mainStoryboard.instantiateViewController(withIdentifier: DefaultViewController.className)
-                (vc as? DefaultViewController)?.viewModel.currentSelectedData = selectedData
-            case .customView:
-                vc = mainStoryboard.instantiateViewController(withIdentifier: CustomViewController.className)
-                (vc as? CustomViewController)?.viewModel.currentSelectedData = selectedData
+            case .defaultView:fatalError()
+//                vc = mainStoryboard.instantiateViewController(withIdentifier: DefaultViewController.className)
+//                (vc as? DefaultViewController)?.viewModel.currentSelectedData = selectedData
+            case .customView:fatalError()
+//                vc = mainStoryboard.instantiateViewController(withIdentifier: CustomViewController.className)
+//                (vc as? CustomViewController)?.viewModel.currentSelectedData = selectedData
             case .longPressView:
                 vc = mainStoryboard.instantiateViewController(withIdentifier: LongPressViewController.className)
                 (vc as? LongPressViewController)?.viewModel.currentSelectedData = selectedData
