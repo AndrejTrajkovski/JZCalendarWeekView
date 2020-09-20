@@ -38,6 +38,7 @@ open class JZBaseWeekView: UIView {
 	*/
 	public var initDate: Date! {
 		didSet {
+			print(initDate)
 			baseDelegate?.initDateDidChange(self, initDate: initDate)
 		}
 	}
@@ -573,7 +574,24 @@ extension JZBaseWeekView: UICollectionViewDelegate, UICollectionViewDelegateFlow
 	private func loadNextOrPrevPage(isNext: Bool) {
 		let addValue = isNext ? 1 : -1
 		self.initDate = self.initDate.add(component: .day, value: addValue)
-		self.forceReload()
+		self.flowLayout.invalidateLayout()
+		self.pageToSectionsMap = pageToSectionsMap(events: self.allEventsBySection, pages: pageDates)
+		let total = getSectionWidth()
+		//FIXME: optimize with vice versa map
+		var pageWidths: [Int: [Int: CGFloat]] = [:]
+		for (idx, element) in pageToSectionsMap.sorted(by: { $0.key.rawValue < $1.key.rawValue}).flatMap({ $0.value }).enumerated() {
+			let pageDict = pageToSectionsMap.first(where: { $0.value.contains(element)})!
+			if pageWidths[pageDict.key.rawValue] == nil {
+				pageWidths[pageDict.key.rawValue] = [:]
+			}
+			pageWidths[pageDict.key.rawValue]![idx] = (total / CGFloat(pageDict.value.count))
+		}
+		flowLayout.pageWidths = pageWidths
+		collectionView.setContentOffsetWithoutDelegate(CGPoint(x: contentViewWidth, y: getYOffset()), animated: false)
+		flowLayout.invalidateLayoutCache()
+		collectionView.reloadData()
+		setHorizontalEdgesOffsetX()
+//		self.forceReload()
 	}
 	
 }
@@ -702,12 +720,9 @@ extension JZBaseWeekView: WeekViewFlowLayoutDelegate {
 //		getDateForSection(getPageIndex(section))
 //	}
 	private func getPageAndEmployeeIndex(_ section: Int) -> (Int, Int)? {
-		for (idx, element) in pageToSectionsMap.sorted(by: { $0.key.rawValue < $1.key.rawValue}).flatMap({ $0.value }).enumerated() {
-			let sectionsForElement = pageToSectionsMap.first(where: { $0.value.contains(section)})!.value
-			let flatIdx = sectionsForElement.firstIndex(of: section)!
-			return (idx, flatIdx)
-		}
-		return nil
+			let pageDict = pageToSectionsMap.first(where: { $0.value.contains(section)})!
+			let flatIdx = pageDict.value.firstIndex(of: section)!
+			return (pageDict.key.rawValue, flatIdx)
 		
 //		var previousUpper = 0
 //		for (idx, byDate) in allEventsBySection.sorted(by: { $0.key > $1.key }).enumerated() {

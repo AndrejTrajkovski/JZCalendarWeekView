@@ -683,7 +683,6 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
 
     func invalidateLayoutCache() {
         needsToPopulateAttributesForAllSections = true
-
         cachedDayDateComponents.removeAll()
         cachedStartTimeDateComponents.removeAll()
         cachedEndTimeDateComponents.removeAll()

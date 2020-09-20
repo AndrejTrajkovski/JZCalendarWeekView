@@ -19,10 +19,10 @@ class DefaultViewModel: NSObject {
 	
 	lazy var events = [
 		AppointmentEvent(id: "1", startDate: firstDate, endDate: firstDate.add(component: .hour, value: 1), employeeId: 1),
-		AppointmentEvent(id: "2", startDate: firstDate, endDate: firstDate.add(component: .hour, value: 1), employeeId: 2),
-		AppointmentEvent(id: "3", startDate: firstDate, endDate: firstDate.add(component: .hour, value: 1), employeeId: 3),
+		AppointmentEvent(id: "2", startDate: firstDate, endDate: firstDate.add(component: .hour, value: 1), employeeId: 1),
+		AppointmentEvent(id: "3", startDate: firstDate, endDate: firstDate.add(component: .hour, value: 1), employeeId: 1),
 		AppointmentEvent(id: "4", startDate: secondDate, endDate: secondDate.add(component: .hour, value: 1), employeeId: 4),
-		AppointmentEvent(id: "5", startDate: secondDate, endDate: secondDate.add(component: .hour, value: 1), employeeId: 5),
+		AppointmentEvent(id: "5", startDate: secondDate, endDate: secondDate.add(component: .hour, value: 1), employeeId: 4),
 		AppointmentEvent(id: "6", startDate: secondDate, endDate: secondDate.add(component: .hour, value: 1), employeeId: 6),
 		AppointmentEvent(id: "7", startDate: thirdDate, endDate: thirdDate.add(component: .hour, value: 1), employeeId: 7),
 		AppointmentEvent(id: "8", startDate: thirdDate, endDate: thirdDate.add(component: .hour, value: 1), employeeId: 8),
