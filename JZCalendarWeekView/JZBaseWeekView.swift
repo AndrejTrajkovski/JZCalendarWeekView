@@ -53,7 +53,7 @@ open class JZBaseWeekView: UIView {
 	
 	func currentPageSectionWidth() -> CGFloat {
 		let currentPageFirstSectionIdx = pageToSectionsMap[.current]!.first!
-		return flowLayout.sectionsWidths[currentPageFirstSectionIdx]!
+		return flowLayout.pageWidths[currentPageFirstSectionIdx]!.values.first!
 	}
 	
 	var pageDates: [Page: Date] {
@@ -703,8 +703,8 @@ extension JZBaseWeekView: WeekViewFlowLayoutDelegate {
 //	}
 	private func getPageAndEmployeeIndex(_ section: Int) -> (Int, Int)? {
 		for (idx, element) in pageToSectionsMap.sorted(by: { $0.key.rawValue < $1.key.rawValue}).flatMap({ $0.value }).enumerated() {
-			let sectionsForElement = pageToSectionsMap.first(where: { $0.value.contains(element)})!.value
-			let flatIdx = sectionsForElement.firstIndex(of: element)!
+			let sectionsForElement = pageToSectionsMap.first(where: { $0.value.contains(section)})!.value
+			let flatIdx = sectionsForElement.firstIndex(of: section)!
 			return (idx, flatIdx)
 		}
 		return nil

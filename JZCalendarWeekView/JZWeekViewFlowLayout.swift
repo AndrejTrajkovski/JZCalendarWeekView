@@ -84,7 +84,6 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
     var allDayCornerAttributes = AttDic()
 	
 		var pageWidths: [Int: [Int: CGFloat]] = [:]
-		var sectionsWidths: [Int: CGFloat] = [:]
 	
     weak var delegate: WeekViewFlowLayoutDelegate?
     private var minuteTimer: Timer?
@@ -206,7 +205,6 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
 
         // Current time line
 			// TODO: Should improve this method, otherwise every column will display a timeline view
-			
 			var previousMaxX: CGFloat = 0
 			for (idx, pageWidth) in pageWidths.sorted(by: { $0.key < $1.key }).enumerated() {
 				//				print(idx, pageWidth)
@@ -298,7 +296,7 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
     func layoutItemsAttributes(section: Int, sectionX: CGFloat, calendarStartY: CGFloat) {
         var attributes =  UICollectionViewLayoutAttributes()
         var sectionItemAttributes = [UICollectionViewLayoutAttributes]()
-				let sectionWidth = sectionsWidths[section] ?? 0
+				let sectionWidth = pageWidths.first(where: { $0.value.keys.contains(section)})!.value.values.first!
 			
         for item in 0..<collectionView!.numberOfItems(inSection: section) {
             let itemIndexPath = IndexPath(item: item, section: section)
@@ -517,7 +515,7 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
 
         // First draw the largest overlap items layout (only this case itemWidth is fixed and always at the right position)
         let largestOverlapCountGroup = sortedOverlapGroups[0]
-				let sectionWidth = sectionsWidths[inSection] ?? 0
+				let sectionWidth = widthFor(inSection)
         setItemsAdjustedAttributes(fullWidth: sectionWidth, items: largestOverlapCountGroup, currentMinX: sectionMinX, sectionZ: &sectionZ, adjustedItems: &adjustedItems)
 
         for index in 1..<sortedOverlapGroups.count {
@@ -726,7 +724,7 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
 
     // MARK: - Section sizing
     open func rectForSection(_ section: Int) -> CGRect {
-				let sectionWidth = sectionsWidths[section] ?? 0
+				let sectionWidth = widthFor(section)
         return CGRect(x: rowHeaderWidth + sectionWidth * CGFloat(section), y: 0,
                       width: sectionWidth, height: collectionViewContentSize.height)
     }
@@ -811,4 +809,8 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
             return minCellZ
         }
     }
+	
+	func widthFor(_ section: Int) -> CGFloat {
+		pageWidths.first(where: { $0.value.keys.contains(section)})!.value.values.first!
+	}
 }
