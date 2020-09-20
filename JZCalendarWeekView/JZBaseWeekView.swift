@@ -136,12 +136,15 @@ open class JZBaseWeekView: UIView {
 		
 		let total = getSectionWidth()
 		//FIXME: optimize with vice versa map
-		var sectionsWidths: [Int: CGFloat] = [:]
+		var pageWidths: [Int: [Int: CGFloat]] = [:]
 		for (idx, element) in pageToSectionsMap.sorted(by: { $0.key.rawValue < $1.key.rawValue}).flatMap({ $0.value }).enumerated() {
-			let sectionsForElement = pageToSectionsMap.first(where: { $0.value.contains(element)})!.value
-			sectionsWidths[idx] = (total / CGFloat(sectionsForElement.count))
+			let pageDict = pageToSectionsMap.first(where: { $0.value.contains(element)})!
+			if pageWidths[pageDict.key.rawValue] == nil {
+				pageWidths[pageDict.key.rawValue] = [:]
+			}
+			pageWidths[pageDict.key.rawValue]![idx] = (total / CGFloat(pageDict.value.count))
 		}
-		flowLayout.sectionsWidths = sectionsWidths
+		flowLayout.pageWidths = pageWidths
 	}
 
 	/// Was going to use toDecimal1Value as well, but the CGFloat is always got the wrong precision

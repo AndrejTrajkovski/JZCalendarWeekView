@@ -82,7 +82,8 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
     var allDayHeaderAttributes = AttDic()
     var allDayHeaderBackgroundAttributes = AttDic()
     var allDayCornerAttributes = AttDic()
-
+	
+		var pageWidths: [Int: [Int: CGFloat]] = [:]
 		var sectionsWidths: [Int: CGFloat] = [:]
 	
     weak var delegate: WeekViewFlowLayoutDelegate?
@@ -203,72 +204,38 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
         let calendarContentMinX = rowHeaderWidth + contentsMargin.left
         let calendarContentMinY = columnHeaderHeight + contentsMargin.top + allDayHeaderHeight
 
-        // Current time line
-        // TODO: Should improve this method, otherwise every column will display a timeline view
-        sectionIndexes.enumerate(_:) { (section, _) in
-						let sectionWidth = (sectionsWidths[section] ?? 0)
-						let sectionMinX = calendarContentMinX + sectionWidth * CGFloat(section)
-            let timeY = calendarContentMinY + (CGFloat(currentTimeComponents.hour!).toDecimal1Value() * hourHeight
-                + CGFloat(currentTimeComponents.minute!) * minuteHeight)
-            let currentTimeHorizontalGridlineMinY = timeY - (defaultGridThickness / 2.0).toDecimal1Value() - defaultCurrentTimeLineHeight/2
-            (attributes, currentTimeLineAttributes) = layoutAttributesForSupplemantaryView(at: IndexPath(item: 0, section: section),
-                                                                                           ofKind: JZSupplementaryViewKinds.currentTimeline,
-                                                                                           withItemCache: currentTimeLineAttributes)
-            attributes.frame = CGRect(x: sectionMinX, y: currentTimeHorizontalGridlineMinY, width: sectionWidth, height: defaultCurrentTimeLineHeight)
-            attributes.zIndex = zIndexForElementKind(JZSupplementaryViewKinds.currentTimeline)
-        }
-
-        // Corner Header
-        (attributes, cornerHeaderAttributes) = layoutAttributesForSupplemantaryView(at: IndexPath(item: 0, section: 0),
-                                                                                    ofKind: JZSupplementaryViewKinds.cornerHeader,
-                                                                                    withItemCache: cornerHeaderAttributes)
-        attributes.frame = CGRect(origin: collectionView.contentOffset, size: CGSize(width: rowHeaderWidth, height: columnHeaderHeight))
-        attributes.zIndex = zIndexForElementKind(JZSupplementaryViewKinds.cornerHeader)
-
-        // Row header
-        let rowHeaderMinX = fmax(collectionView.contentOffset.x, 0)
-
-        for rowHeaderIndex in 0...24 {
-            (attributes, rowHeaderAttributes) = layoutAttributesForSupplemantaryView(at: IndexPath(item: rowHeaderIndex, section: 0),
-                                                                                     ofKind: JZSupplementaryViewKinds.rowHeader,
-                                                                                     withItemCache: rowHeaderAttributes)
-            let rowHeaderMinY = calendarContentMinY + hourHeight * CGFloat(rowHeaderIndex) - (hourHeight / 2.0).toDecimal1Value()
-            attributes.frame = CGRect(x: rowHeaderMinX, y: rowHeaderMinY, width: rowHeaderWidth, height: hourHeight)
-            attributes.zIndex = zIndexForElementKind(JZSupplementaryViewKinds.rowHeader)
-        }
-
-        // Row Header Background
-        (attributes, rowHeaderBackgroundAttributes) = layoutAttributesForDecorationView(at: IndexPath(item: 0, section: 0),
-                                                                                        ofKind: JZDecorationViewKinds.rowHeaderBackground,
-                                                                                        withItemCache: rowHeaderBackgroundAttributes)
-        attributes.frame = CGRect(x: rowHeaderMinX, y: collectionView.contentOffset.y, width: rowHeaderWidth, height: collectionView.frame.height)
-        attributes.zIndex = zIndexForElementKind(JZDecorationViewKinds.rowHeaderBackground)
-
-        // column header background
-        (attributes, columnHeaderBackgroundAttributes) = layoutAttributesForDecorationView(at: IndexPath(item: 0, section: 0),
-                                                                                           ofKind: JZDecorationViewKinds.columnHeaderBackground,
-                                                                                           withItemCache: columnHeaderBackgroundAttributes)
-        let attributesHeight = columnHeaderHeight + (collectionView.contentOffset.y < 0 ? abs(collectionView.contentOffset.y) : 0 )
-        attributes.frame = CGRect(origin: collectionView.contentOffset, size: CGSize(width: collectionView.frame.width, height: attributesHeight))
-        attributes.zIndex = zIndexForElementKind(JZDecorationViewKinds.columnHeaderBackground)
-
         // Column Header
         let columnHeaderMinY = fmax(collectionView.contentOffset.y, 0.0)
-
-        sectionIndexes.enumerate(_:) { (section, _) in
-						let sectionWidth = sectionsWidths[section] ?? 0
-            let sectionMinX = calendarContentMinX + sectionWidth * CGFloat(section)
-            (attributes, columnHeaderAttributes) = layoutAttributesForSupplemantaryView(at: IndexPath(item: 0, section: section),
-                                                                                        ofKind: JZSupplementaryViewKinds.columnHeader,
-                                                                                        withItemCache: columnHeaderAttributes)
-            attributes.frame = CGRect(x: sectionMinX, y: columnHeaderMinY, width: sectionWidth, height: columnHeaderHeight)
-            attributes.zIndex = zIndexForElementKind(JZSupplementaryViewKinds.columnHeader)
-
-            layoutVerticalGridLinesAttributes(section: section, sectionX: sectionMinX, calendarGridMinY: calendarGridMinY, sectionHeight: sectionHeight)
-            layoutItemsAttributes(section: section, sectionX: sectionMinX, calendarStartY: calendarGridMinY)
-        }
-
+				
+			var previousMaxX: CGFloat = 0
+			for (idx, pageWidth) in pageWidths.sorted(by: { $0.key < $1.key }).enumerated() {
+//				print(idx, pageWidth)
+				for sectionWidth in pageWidth.value.sorted(by: { $0.key < $1.key }).enumerated() {
+					let section = sectionWidth.element.key
+					let sectionWidth = sectionWidth.element.value
+					var sectionMinX: CGFloat = 0
+					if section == 0 {
+						sectionMinX = calendarContentMinX
+					} else {
+						sectionMinX = previousMaxX
+					}
+					(attributes, columnHeaderAttributes) = layoutAttributesForSupplemantaryView(at: IndexPath(item: 0, section: section),
+																																											ofKind: JZSupplementaryViewKinds.columnHeader,
+																																											withItemCache: columnHeaderAttributes)
+					attributes.frame = CGRect(x: sectionMinX, y: columnHeaderMinY, width: sectionWidth, height: columnHeaderHeight)
+					attributes.zIndex = zIndexForElementKind(JZSupplementaryViewKinds.columnHeader)
+					layoutVerticalGridLinesAttributes(section: section, sectionX: sectionMinX, calendarGridMinY: calendarGridMinY, sectionHeight: sectionHeight)
+					layoutItemsAttributes(section: section, sectionX: sectionMinX, calendarStartY: calendarGridMinY)
+					previousMaxX = sectionMinX + sectionWidth
+					verticalGridlineAttributes.sorted(by: { $0.key < $1.key }).forEach {
+						print($0.key, $0.value.frame)
+					}
+				}
+			}
         layoutHorizontalGridLinesAttributes(calendarStartX: calendarContentMinX, calendarStartY: calendarContentMinY)
+			horizontalGridlineAttributes.sorted(by: { $0.key < $1.key }).forEach {
+				print($0.key, $0.value.frame)
+			}
     }
 
     // MARK: - Layout Attributes
@@ -378,7 +345,7 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
 //				days.append(day)
 //			}
 //			let width = days.reduce(CGFloat(0)) { $0 + CGFloat((sectionsWidths[$1] ?? 0)) }
-			let width = sectionsWidths.reduce(into: CGFloat(0), { $0 += $1.value })
+			let width = pageWidths.flatMap{ $0.value }.reduce(into: CGFloat(0), { $0 += $1.value })
 			return CGSize(width: rowHeaderWidth + width,
 									height: maxSectionHeight)
     }
