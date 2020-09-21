@@ -134,18 +134,7 @@ open class JZBaseWeekView: UIView {
 	
 	open override func layoutSubviews() {
 		super.layoutSubviews()
-		
-		let total = getSectionWidth()
-		//FIXME: optimize with vice versa map
-		var pageWidths: [Int: [Int: CGFloat]] = [:]
-		for (idx, element) in pageToSectionsMap.sorted(by: { $0.key.rawValue < $1.key.rawValue}).flatMap({ $0.value }).enumerated() {
-			let pageDict = pageToSectionsMap.first(where: { $0.value.contains(element)})!
-			if pageWidths[pageDict.key.rawValue] == nil {
-				pageWidths[pageDict.key.rawValue] = [:]
-			}
-			pageWidths[pageDict.key.rawValue]![idx] = (total / CGFloat(pageDict.value.count))
-		}
-		flowLayout.pageWidths = pageWidths
+		flowLayout.pageWidths = calcPageWidths(pageToSectionsMap)
 	}
 
 	/// Was going to use toDecimal1Value as well, but the CGFloat is always got the wrong precision
@@ -226,7 +215,7 @@ open class JZBaseWeekView: UIView {
 	///   - reloadEvents: If provided new events, current events will be reloaded. Default value is nil.
 	open func forceReload(reloadEvents: MyDataSource? = nil) {
 		if let events = reloadEvents { self.allEventsBySection = events }
-		
+	
 		DispatchQueue.main.async { [weak self] in
 			guard let strongSelf = self else { return }
 			// initial day is one page before the settle day
@@ -571,11 +560,7 @@ extension JZBaseWeekView: UICollectionViewDelegate, UICollectionViewDelegateFlow
 		}
 	}
 	
-	private func loadNextOrPrevPage(isNext: Bool) {
-		let addValue = isNext ? 1 : -1
-		self.initDate = self.initDate.add(component: .day, value: addValue)
-		self.flowLayout.invalidateLayout()
-		self.pageToSectionsMap = pageToSectionsMap(events: self.allEventsBySection, pages: pageDates)
+	func calcPageWidths(_ pageToSectionsMap: [Page: [Int]]) -> [Int: [Int: CGFloat]] {
 		let total = getSectionWidth()
 		//FIXME: optimize with vice versa map
 		var pageWidths: [Int: [Int: CGFloat]] = [:]
@@ -586,14 +571,21 @@ extension JZBaseWeekView: UICollectionViewDelegate, UICollectionViewDelegateFlow
 			}
 			pageWidths[pageDict.key.rawValue]![idx] = (total / CGFloat(pageDict.value.count))
 		}
-		flowLayout.pageWidths = pageWidths
+		return pageWidths
+	}
+
+	private func loadNextOrPrevPage(isNext: Bool) {
+		let addValue = isNext ? 1 : -1
+		self.initDate = self.initDate.add(component: .day, value: addValue)
+		self.flowLayout.invalidateLayout()
+		self.pageToSectionsMap = pageToSectionsMap(events: self.allEventsBySection, pages: pageDates)
+		flowLayout.pageWidths = calcPageWidths(pageToSectionsMap)
 		collectionView.setContentOffsetWithoutDelegate(CGPoint(x: contentViewWidth, y: getYOffset()), animated: false)
 		flowLayout.invalidateLayoutCache()
 		collectionView.reloadData()
 		setHorizontalEdgesOffsetX()
 //		self.forceReload()
 	}
-	
 }
 
 // MARK: - Current time line
