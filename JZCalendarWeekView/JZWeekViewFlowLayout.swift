@@ -810,6 +810,6 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
     }
 	
 	func widthFor(_ section: Int) -> CGFloat {
-		pageWidths.first(where: { $0.value.keys.contains(section)})!.value.values.first!
+		pageWidths.first(where: { $0.value.keys.contains(section)})?.value.values.first ?? collectionViewContentSize.width
 	}
 }

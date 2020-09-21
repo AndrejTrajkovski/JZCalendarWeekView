@@ -177,7 +177,9 @@ open class JZLongPressWeekView: JZBaseWeekView {
     /// - The logic of vertical scroll is top scroll depending on **longPressView top** to longPressTopMarginY, bottom scroll denpending on **finger point** to LongPressBottomMarginY.
     /// - The logic of horizontal scroll is left scroll depending on **finger point** to longPressLeftMarginY, bottom scroll denpending on **finger point** to LongPressRightMarginY.
     private func updateScroll(pointInSelfView: CGPoint) {
-        if isScrolling { return }
+        if isScrolling { return
+					print("return")
+			}
 
         // vertical
         if pointInSelfView.y - pressPosition!.yToViewTop < longPressTopMarginY + 10 {
@@ -191,10 +193,12 @@ open class JZLongPressWeekView: JZBaseWeekView {
         }
         // horizontal
         if pointInSelfView.x < longPressLeftMarginX + 10 {
+					print("isScrolling set to true")
             isScrolling = true
             scrollingTo(direction: .right)
             return
         } else if pointInSelfView.x > longPressRightMarginX - 20 {
+					print("isScrolling set to true")
             isScrolling = true
             scrollingTo(direction: .left)
             return
@@ -243,6 +247,7 @@ open class JZLongPressWeekView: JZBaseWeekView {
                 isScrolling = false
             } else {
                 collectionView.setContentOffset(CGPoint(x: contentOffsetXWithScrollableEdges, y: currentOffset.y), animated: true)
+//								loadPage()
             }
         }
     }
@@ -422,11 +427,11 @@ extension JZLongPressWeekView: UIGestureRecognizerDelegate {
         }
 
         if state == .began {
-						let date = getLongPressViewStartDate(pointInCollectionView: pointInCollectionView, pointInSelfView: pointInSelfView)
 						currentEditingInfo.cellSize = currentLongPressType == .move ? currentMovingCell.frame.size : CGSize(width: currentPageSectionWidth(), height: flowLayout.hourHeight * CGFloat(addNewDurationMins)/60)
             pressPosition = currentLongPressType == .move ? (pointInCollectionView.x - currentMovingCell.frame.origin.x, pointInCollectionView.y - currentMovingCell.frame.origin.y) :
                                                             (currentEditingInfo.cellSize.width/2, currentEditingInfo.cellSize.height/2)
-            longPressViewStartDate = date
+					let date = getLongPressViewStartDate(pointInCollectionView: pointInCollectionView, pointInSelfView: pointInSelfView)
+					longPressViewStartDate = date
             longPressView = initLongPressView(selectedCell: currentMovingCell, type: currentLongPressType, startDate: longPressViewStartDate)
             longPressView.frame.size = currentEditingInfo.cellSize
             longPressView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)

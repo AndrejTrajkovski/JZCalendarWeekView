@@ -16,8 +16,11 @@ class DefaultViewModel: NSObject {
     private let secondDate = Date().add(component: .hour, value: 2)
     private let thirdDate = Date().add(component: .day, value: 1)
 															.add(component: .hour, value: 2)
+	private let fourthDate = Date().add(component: .day, value: -2)
+		.add(component: .hour, value: 2)
 	
 	lazy var events = [
+		AppointmentEvent(id: "10", startDate: fourthDate, endDate: fourthDate.add(component: .hour, value: 1), employeeId: 10),
 		AppointmentEvent(id: "1", startDate: firstDate, endDate: firstDate.add(component: .hour, value: 1), employeeId: 1),
 		AppointmentEvent(id: "2", startDate: firstDate, endDate: firstDate.add(component: .hour, value: 1), employeeId: 1),
 		AppointmentEvent(id: "3", startDate: firstDate, endDate: firstDate.add(component: .hour, value: 1), employeeId: 1),
@@ -29,7 +32,7 @@ class DefaultViewModel: NSObject {
 		AppointmentEvent(id: "9", startDate: thirdDate, endDate: thirdDate.add(component: .hour, value: 1), employeeId: 9)
 	]
 	//    lazy var eventsByDate = JZWeekViewHelper.getIntraEventsByDate(originalEvents: events)
-	lazy var eventsByDate = JZWeekViewHelper.getIntraEventsByEmployee(originalEvents: events)
+	var eventsByDate: MyDataSource { JZWeekViewHelper.getIntraEventsByEmployee(originalEvents: events) }
 	
 	var currentSelectedData: OptionsSelectedData!
 }

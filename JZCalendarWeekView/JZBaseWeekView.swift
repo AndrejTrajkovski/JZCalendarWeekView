@@ -178,7 +178,7 @@ open class JZBaseWeekView: UIView {
 													visibleTime: Date = Date(),
 													scrollableRange: (startDate: Date?, endDate: Date?)? = (nil, nil)) {
 		self.initDate = setDate.startOfDay.add(component: .day, value: -1)
-		self.pageToSectionsMap = pageToSectionsMap(events: allEvents,
+		self.pageToSectionsMap = calcPageToSectionsMap(events: allEvents,
 																							 pages: pageDates)
 		self.allEventsBySection = allEvents
 		self.scrollType = scrollType
@@ -305,9 +305,9 @@ open class JZBaseWeekView: UIView {
 	/// Get Date for specific section.
 	/// The 0 section start from previous page, which means the first date section in current page should be **numOfDays**.
 	open func getDateForSection(_ section: Int) -> Date {
-		if let (pageIdx, _) = getPageAndEmployeeIndex(section) {
-			return Calendar.current.date(byAdding: .day, value: pageIdx, to: initDate)!
-		}
+//		if let (pageIdx, _) = getPageAndEmployeeIndex(section) {
+//			return Calendar.current.date(byAdding: .day, value: pageIdx, to: initDate)!
+//		}
 		//FIXME: optimize by adding vice versa map
 		let page = pageToSectionsMap.first(where: { $0.value.contains(section)})!.key
 		return pageDates[page]!
@@ -577,14 +577,9 @@ extension JZBaseWeekView: UICollectionViewDelegate, UICollectionViewDelegateFlow
 	private func loadNextOrPrevPage(isNext: Bool) {
 		let addValue = isNext ? 1 : -1
 		self.initDate = self.initDate.add(component: .day, value: addValue)
-		self.flowLayout.invalidateLayout()
-		self.pageToSectionsMap = pageToSectionsMap(events: self.allEventsBySection, pages: pageDates)
-		flowLayout.pageWidths = calcPageWidths(pageToSectionsMap)
-		collectionView.setContentOffsetWithoutDelegate(CGPoint(x: contentViewWidth, y: getYOffset()), animated: false)
-		flowLayout.invalidateLayoutCache()
-		collectionView.reloadData()
-		setHorizontalEdgesOffsetX()
-//		self.forceReload()
+		self.pageToSectionsMap = self.calcPageToSectionsMap(events: self.allEventsBySection, pages: self.pageDates)
+		self.layoutSubviews()
+		self.forceReload()
 	}
 }
 
@@ -729,7 +724,7 @@ extension JZBaseWeekView: WeekViewFlowLayoutDelegate {
 //		return nil
 	}
 	
-	func pageToSectionsMap(events: MyDataSource, pages: [Page: Date]) -> [Page: [Int]] {
+	func calcPageToSectionsMap(events: MyDataSource, pages: [Page: Date]) -> [Page: [Int]] {
 		let sorted = pages.sorted(by: { $0.key.rawValue < $1.key.rawValue})
 		var runningTotal = 0
 		var result: [Page: [Int]] = [:]
