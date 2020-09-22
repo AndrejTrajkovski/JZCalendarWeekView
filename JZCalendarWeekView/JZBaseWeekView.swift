@@ -354,7 +354,7 @@ open class JZBaseWeekView: UIView {
 		// RowHeader(horizontal UICollectionReusableView) should be considered in gesture point
 		// Margin area for point X can also get actual date, because it is always the middle view unlike point Y
 		let adjustedX = xCollectionView - flowLayout.rowHeaderWidth - flowLayout.contentsMargin.left
-		let section = Int(adjustedX / flowLayout.sectionWidth)
+		let section = Int(adjustedX / getSectionWidth())
 		return getDateForSection(section)
 	}
 	
