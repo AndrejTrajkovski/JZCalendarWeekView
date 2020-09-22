@@ -84,6 +84,7 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
     var allDayCornerAttributes = AttDic()
 	
 		var pageWidths: [Int: [Int: CGFloat]] = [:]
+		var pageSectionXs: [Int: (CGFloat, CGFloat)] = [:]
 	
     weak var delegate: WeekViewFlowLayoutDelegate?
     private var minuteTimer: Timer?
@@ -205,18 +206,12 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
 
         // Current time line
 			// TODO: Should improve this method, otherwise every column will display a timeline view
-			var previousMaxX: CGFloat = 0
+			var sectionMinX: CGFloat = calendarContentMinX
 			for (idx, pageWidth) in pageWidths.sorted(by: { $0.key < $1.key }).enumerated() {
 				//				print(idx, pageWidth)
 				for sectionWidth in pageWidth.value.sorted(by: { $0.key < $1.key }).enumerated() {
 					let section = sectionWidth.element.key
 					let sectionWidth = sectionWidth.element.value
-					var sectionMinX: CGFloat = 0
-					if section == 0 {
-						sectionMinX = calendarContentMinX
-					} else {
-						sectionMinX = previousMaxX
-					}
 					let timeY = calendarContentMinY + (CGFloat(currentTimeComponents.hour!).toDecimal1Value() * hourHeight
 						+ CGFloat(currentTimeComponents.minute!) * minuteHeight)
 					let currentTimeHorizontalGridlineMinY = timeY - (defaultGridThickness / 2.0).toDecimal1Value() - defaultCurrentTimeLineHeight/2
@@ -225,7 +220,7 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
 																																												 withItemCache: currentTimeLineAttributes)
 					attributes.frame = CGRect(x: sectionMinX, y: currentTimeHorizontalGridlineMinY, width: sectionWidth, height: defaultCurrentTimeLineHeight)
 					attributes.zIndex = zIndexForElementKind(JZSupplementaryViewKinds.currentTimeline)
-					previousMaxX = sectionMinX + sectionWidth
+					sectionMinX += sectionWidth
 				}
 			}
 
@@ -267,18 +262,12 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
         // Column Header
         let columnHeaderMinY = fmax(collectionView.contentOffset.y, 0.0)
 				
-			previousMaxX = 0
+			sectionMinX =  calendarContentMinX
 			for (idx, pageWidth) in pageWidths.sorted(by: { $0.key < $1.key }).enumerated() {
 //				print(idx, pageWidth)
 				for sectionWidth in pageWidth.value.sorted(by: { $0.key < $1.key }).enumerated() {
 					let section = sectionWidth.element.key
 					let sectionWidth = sectionWidth.element.value
-					var sectionMinX: CGFloat = 0
-					if section == 0 {
-						sectionMinX = calendarContentMinX
-					} else {
-						sectionMinX = previousMaxX
-					}
 					(attributes, columnHeaderAttributes) = layoutAttributesForSupplemantaryView(at: IndexPath(item: 0, section: section),
 																																											ofKind: JZSupplementaryViewKinds.columnHeader,
 																																											withItemCache: columnHeaderAttributes)
@@ -286,7 +275,7 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
 					attributes.zIndex = zIndexForElementKind(JZSupplementaryViewKinds.columnHeader)
 					layoutVerticalGridLinesAttributes(section: section, sectionX: sectionMinX, calendarGridMinY: calendarGridMinY, sectionHeight: sectionHeight)
 					layoutItemsAttributes(section: section, sectionX: sectionMinX, calendarStartY: calendarGridMinY)
-					previousMaxX = sectionMinX + sectionWidth
+					sectionMinX += sectionWidth
 				}
 			}
         layoutHorizontalGridLinesAttributes(calendarStartX: calendarContentMinX, calendarStartY: calendarContentMinY)

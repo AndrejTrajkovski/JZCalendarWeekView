@@ -135,6 +135,7 @@ open class JZBaseWeekView: UIView {
 	open override func layoutSubviews() {
 		super.layoutSubviews()
 		flowLayout.pageWidths = calcPageWidths(pageToSectionsMap)
+		flowLayout.pageSectionXs = calcPageSectionXs(pageToSectionsMap)
 	}
 
 	/// Was going to use toDecimal1Value as well, but the CGFloat is always got the wrong precision
@@ -353,7 +354,7 @@ open class JZBaseWeekView: UIView {
 		// RowHeader(horizontal UICollectionReusableView) should be considered in gesture point
 		// Margin area for point X can also get actual date, because it is always the middle view unlike point Y
 		let adjustedX = xCollectionView - flowLayout.rowHeaderWidth - flowLayout.contentsMargin.left
-		let section = Int(adjustedX / getSectionWidth())
+		let section = Int(adjustedX / flowLayout.sectionWidth)
 		return getDateForSection(section)
 	}
 	
@@ -560,6 +561,24 @@ extension JZBaseWeekView: UICollectionViewDelegate, UICollectionViewDelegateFlow
 		}
 	}
 	
+	func calcPageSectionXs(_ pageToSectionsMap: [Page: [Int]]) -> [Int: (CGFloat, CGFloat)] {
+		let total = getSectionWidth()
+		//FIXME: optimize with vice versa map
+		var pageSectionXx: [Int: (CGFloat, CGFloat)] = [:]
+		var minX: CGFloat = 42
+		for (idx, element) in pageToSectionsMap.sorted(by: { $0.key.rawValue < $1.key.rawValue}).flatMap({ $0.value }).enumerated() {
+			let pageDict = pageToSectionsMap.first(where: { $0.value.contains(element)})!
+//			if pageSectionXx[pageDict.key.rawValue] == nil {
+//				pageSectionXx[pageDict.key.rawValue] = [:]
+//			}
+			let width = (total / CGFloat(pageDict.value.count))
+			let maxX = minX + width
+			pageSectionXx[idx] = (minX, maxX)
+			minX = maxX
+		}
+		return pageSectionXx
+	}
+	
 	func calcPageWidths(_ pageToSectionsMap: [Page: [Int]]) -> [Int: [Int: CGFloat]] {
 		let total = getSectionWidth()
 		//FIXME: optimize with vice versa map
@@ -602,7 +621,6 @@ extension JZBaseWeekView {
 		timeline.updateView(needShowBallView: daysToToday == 0)
 		return timeline
 	}
-	
 }
 
 // MARK: - Horizontal scrollable range methods
@@ -739,4 +757,9 @@ extension JZBaseWeekView: WeekViewFlowLayoutDelegate {
 //		}
 		return result
 	}
+	
+//	func getSection(xPoint: CGPoint,
+//									pageWidths: [Page: [Int: CGFloat]]) -> Int {
+//		
+//	}
 }
