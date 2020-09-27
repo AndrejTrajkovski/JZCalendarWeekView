@@ -203,23 +203,23 @@ open class JZBaseWeekView: UIView {
     /// This function is used to update the AllDayBar height
     ///
     /// - Parameter isScrolling: Whether the collectionView is scrolling now
-    open func updateAllDayBar(isScrolling: Bool) {
-        guard isAllDaySupported else { return }
-        var maxEventsCount: Int = 0
-        getDatesInCurrentPage(isScrolling: isScrolling).forEach {
-            let count = allDayEventsBySection[$0]?.count ?? 0
-            if count > maxEventsCount {
-                maxEventsCount = count
-            }
-        }
-        let newAllDayHeader = getAllDayHeaderHeight(maxEventsCount: maxEventsCount)
-        if newAllDayHeader != flowLayout.allDayHeaderHeight {
-            // Check whether we need update the allDayHeaderHeight
-            if !isScrolling || !willEffectContentSize(difference: flowLayout.allDayHeaderHeight - newAllDayHeader) {
-                flowLayout.allDayHeaderHeight = newAllDayHeader
-            }
-        }
-    }
+//    open func updateAllDayBar(isScrolling: Bool) {
+//        guard isAllDaySupported else { return }
+//        var maxEventsCount: Int = 0
+//        getDatesInCurrentPage(isScrolling: isScrolling).forEach {
+//            let count = allDayEventsBySection[$0]?.count ?? 0
+//            if count > maxEventsCount {
+//                maxEventsCount = count
+//            }
+//        }
+//        let newAllDayHeader = getAllDayHeaderHeight(maxEventsCount: maxEventsCount)
+//        if newAllDayHeader != flowLayout.allDayHeaderHeight {
+//            // Check whether we need update the allDayHeaderHeight
+//            if !isScrolling || !willEffectContentSize(difference: flowLayout.allDayHeaderHeight - newAllDayHeader) {
+//                flowLayout.allDayHeaderHeight = newAllDayHeader
+//            }
+//        }
+//    }
 
     /// You can simply override this method to customise your preferred AllDayHeader height rule.
     ///
@@ -248,7 +248,7 @@ open class JZBaseWeekView: UIView {
 
         DispatchQueue.main.async { [weak self] in
             guard let strongSelf = self else { return }
-            strongSelf.updateAllDayBar(isScrolling: false)
+//            strongSelf.updateAllDayBar(isScrolling: false)
             // initial day is one page before the settle day
             strongSelf.collectionView.setContentOffsetWithoutDelegate(CGPoint(x: strongSelf.contentViewWidth, y: strongSelf.getYOffset()), animated: false)
             strongSelf.flowLayout.invalidateLayoutCache()
@@ -549,7 +549,7 @@ extension JZBaseWeekView: UICollectionViewDelegate, UICollectionViewDelegateFlow
         // all day bar update and check scrollable range when scrolling horizontally
         guard flowLayout.sectionWidth != nil, scrollDirection.direction == .horizontal else { return }
         checkScrollableRange(contentOffsetX: scrollView.contentOffset.x)
-        updateAllDayBar(isScrolling: true)
+//        updateAllDayBar(isScrolling: true)
     }
 
     private func paginationEffect(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {

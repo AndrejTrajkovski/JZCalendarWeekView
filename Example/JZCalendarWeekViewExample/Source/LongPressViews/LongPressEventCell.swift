@@ -44,4 +44,9 @@ class LongPressEventCell: JZLongPressEventCell {
         locationLabel.isHidden = isAllDay
     }
 
+	func configureCell(event: AppointmentEvent) {
+        self.event = event
+		locationLabel.text = "\(event.id), \(String(event.employeeId))"
+        titleLabel.text = String(event.roomId)
+    }
 }

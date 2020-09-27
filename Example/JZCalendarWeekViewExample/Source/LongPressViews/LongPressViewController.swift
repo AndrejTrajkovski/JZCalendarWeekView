@@ -11,8 +11,8 @@ import JZCalendarWeekView
 
 class LongPressViewController: UIViewController {
 
-    @IBOutlet weak var calendarWeekView: JZLongPressWeekView!
-    let viewModel = AllDayViewModel()
+    @IBOutlet weak var calendarWeekView: EmployeesSectionWeekView!
+    let viewModel = DefaultViewModel()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,11 +34,16 @@ class LongPressViewController: UIViewController {
             // For example only
             setupCalendarViewWithSelectedData()
         } else {
-            calendarWeekView.setupCalendar(numOfDays: 3,
-                                           setDate: Date(),
-                                           allEvents: viewModel.eventsByDate,
-                                           scrollType: .pageScroll,
-                                           scrollableRange: (nil, nil))
+//			calendarWeekView.setupCalend
+			calendarWeekView.dataSource = EmployeesSectionWeekViewDataSource()
+			calendarWeekView.setupCalendar(setDate: Date(),
+										   events: viewModel.eventsByDateAndSections)
+										   
+//            calendarWeekView.setupCalendar(numOfDays: 3,
+//                                           setDate: Date(),
+//                                           allEvents: viewModel.eventsByDate,
+//                                           scrollType: .pageScroll,
+//                                           scrollableRange: (nil, nil))
         }
 
         // LongPress delegate, datasorce and type setup
@@ -53,13 +58,7 @@ class LongPressViewController: UIViewController {
 
     /// For example only
     private func setupCalendarViewWithSelectedData() {
-        guard let selectedData = viewModel.currentSelectedData else { return }
-        calendarWeekView.setupCalendar(numOfDays: selectedData.numOfDays,
-                                       setDate: selectedData.date,
-                                       allEvents: viewModel.eventsByDate,
-                                       scrollType: selectedData.scrollType,
-                                       firstDayOfWeek: selectedData.firstDayOfWeek)
-        calendarWeekView.updateFlowLayout(JZWeekViewFlowLayout(hourGridDivision: selectedData.hourGridDivision))
+        
     }
 }
 
@@ -76,23 +75,11 @@ extension LongPressViewController: JZLongPressViewDelegate, JZLongPressViewDataS
         let newEvent = AllDayEvent(id: UUID().uuidString, title: "New Event", startDate: startDate, endDate: startDate.add(component: .hour, value: weekView.addNewDurationMins/60),
                              location: "Melbourne", isAllDay: false)
 
-        if viewModel.eventsByDate[startDate.startOfDay] == nil {
-            viewModel.eventsByDate[startDate.startOfDay] = [AllDayEvent]()
-        }
-        viewModel.events.append(newEvent)
-        viewModel.eventsByDate = JZWeekViewHelper.getIntraEventsByDate(originalEvents: viewModel.events)
-        weekView.forceReload(reloadEvents: viewModel.eventsByDate)
+        
     }
 
     func weekView(_ weekView: JZLongPressWeekView, editingEvent: JZBaseEvent, didEndMoveLongPressAt startDate: Date) {
-        guard let event = editingEvent as? AllDayEvent else { return }
-        let duration = Calendar.current.dateComponents([.minute], from: event.startDate, to: event.endDate).minute!
-        let selectedIndex = viewModel.events.firstIndex(where: { $0.id == event.id })!
-        viewModel.events[selectedIndex].startDate = startDate
-        viewModel.events[selectedIndex].endDate = startDate.add(component: .minute, value: duration)
-
-        viewModel.eventsByDate = JZWeekViewHelper.getIntraEventsByDate(originalEvents: viewModel.events)
-        weekView.forceReload(reloadEvents: viewModel.eventsByDate)
+        
     }
 
     func weekView(_ weekView: JZLongPressWeekView, viewForAddNewLongPressAt startDate: Date) -> UIView {

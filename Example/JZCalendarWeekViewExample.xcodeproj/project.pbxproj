@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		82A7805E251C2EBD006D6DAA /* AppointmentEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A7805D251C2EBD006D6DAA /* AppointmentEvent.swift */; };
+		82A78064251E2384006D6DAA /* LongPressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EBD62E92096F8AD00520E58 /* LongPressViewController.swift */; };
+		82A78066251E26E2006D6DAA /* ExampleDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A78065251E26E2006D6DAA /* ExampleDataSource.swift */; };
+		82A780682520BDE7006D6DAA /* EmployeesSectionWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A780672520BDE7006D6DAA /* EmployeesSectionWeekView.swift */; };
 		8E048ED4207EF65000A532BA /* OptionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E048ED3207EF65000A532BA /* OptionsViewModel.swift */; };
 		8E048ED6207EF83300A532BA /* ExpandableHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E048ED5207EF83300A532BA /* ExpandableHeaderView.swift */; };
 		8E048ED9207F26F500A532BA /* OptionsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E048ED7207F26F500A532BA /* OptionsTableViewCell.swift */; };
@@ -18,7 +22,6 @@
 		8E54D53B208D6997007DD5FE /* CustomWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E54D53A208D6997007DD5FE /* CustomWeekView.swift */; };
 		8E54D53E208D6A2B007DD5FE /* HourRowHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E54D53C208D6A2B007DD5FE /* HourRowHeader.swift */; };
 		8E5BB3D22072F4A000FA853F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E5BB3D12072F4A000FA853F /* AppDelegate.swift */; };
-		8E5BB3D42072F4A000FA853F /* DefaultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E5BB3D32072F4A000FA853F /* DefaultViewController.swift */; };
 		8E5BB3D72072F4A000FA853F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E5BB3D52072F4A000FA853F /* Main.storyboard */; };
 		8E5BB3D92072F4A000FA853F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E5BB3D82072F4A000FA853F /* Assets.xcassets */; };
 		8E5BB3DC2072F4A000FA853F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E5BB3DA2072F4A000FA853F /* LaunchScreen.storyboard */; };
@@ -26,14 +29,12 @@
 		8E5BB404207322BA00FA853F /* AllDayEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E5BB403207322BA00FA853F /* AllDayEvent.swift */; };
 		8E5BB407207325AB00FA853F /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E5BB406207325AB00FA853F /* Extensions.swift */; };
 		8E5EE63D20857A6500150FD3 /* ExpandableHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8E5EE63C20857A6500150FD3 /* ExpandableHeaderView.xib */; };
-		8E666F142097EC4B00FDB1B6 /* CustomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E666F132097EC4B00FDB1B6 /* CustomViewController.swift */; };
 		8E7263DF2074B55300ECF7CD /* EventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E7263DC2074B55300ECF7CD /* EventCell.swift */; };
 		8E7263E02074B55300ECF7CD /* EventCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8E7263DD2074B55300ECF7CD /* EventCell.xib */; };
 		8E7263E32074B73300ECF7CD /* DefaultWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E7263E22074B73300ECF7CD /* DefaultWeekView.swift */; };
 		8E99A0A4213523C400415071 /* CurrentTimelineAll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E99A0A3213523C400415071 /* CurrentTimelineAll.swift */; };
 		8E9A7DF520969919009AEB6E /* LongPressWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9A7DF420969919009AEB6E /* LongPressWeekView.swift */; };
 		8E9AE75B20773F3500B7004E /* ExampleOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9AE75A20773F3500B7004E /* ExampleOptionsViewController.swift */; };
-		8EBD62EA2096F8AD00520E58 /* LongPressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EBD62E92096F8AD00520E58 /* LongPressViewController.swift */; };
 		8EC8A46B209999A2002C7634 /* LongPressEventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EC8A469209999A2002C7634 /* LongPressEventCell.swift */; };
 		8EC8A46C209999A2002C7634 /* LongPressEventCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8EC8A46A209999A2002C7634 /* LongPressEventCell.xib */; };
 		8EE28FBF20882DE900C69A77 /* JZCalendarWeekView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8EE28FBB20882D7A00C69A77 /* JZCalendarWeekView.framework */; };
@@ -79,6 +80,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		82A7805D251C2EBD006D6DAA /* AppointmentEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppointmentEvent.swift; sourceTree = "<group>"; };
+		82A78065251E26E2006D6DAA /* ExampleDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleDataSource.swift; sourceTree = "<group>"; };
+		82A780672520BDE7006D6DAA /* EmployeesSectionWeekView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeesSectionWeekView.swift; sourceTree = "<group>"; };
 		8E048ED3207EF65000A532BA /* OptionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsViewModel.swift; sourceTree = "<group>"; };
 		8E048ED5207EF83300A532BA /* ExpandableHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableHeaderView.swift; sourceTree = "<group>"; };
 		8E048ED7207F26F500A532BA /* OptionsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsTableViewCell.swift; sourceTree = "<group>"; };
@@ -134,6 +138,7 @@
 				8E5EE63C20857A6500150FD3 /* ExpandableHeaderView.xib */,
 				8E048ED7207F26F500A532BA /* OptionsTableViewCell.swift */,
 				8E048ED8207F26F500A532BA /* OptionsTableViewCell.xib */,
+				82A780672520BDE7006D6DAA /* EmployeesSectionWeekView.swift */,
 			);
 			path = ExampleOptionsViewController;
 			sourceTree = "<group>";
@@ -231,6 +236,8 @@
 				8E9A7DF420969919009AEB6E /* LongPressWeekView.swift */,
 				8EC8A469209999A2002C7634 /* LongPressEventCell.swift */,
 				8EC8A46A209999A2002C7634 /* LongPressEventCell.xib */,
+				82A7805D251C2EBD006D6DAA /* AppointmentEvent.swift */,
+				82A78065251E26E2006D6DAA /* ExampleDataSource.swift */,
 			);
 			path = LongPressViews;
 			sourceTree = "<group>";
@@ -348,22 +355,23 @@
 			files = (
 				8E4DC18A20BE2D58007ED7A2 /* DefaultEvent.swift in Sources */,
 				8E5BB407207325AB00FA853F /* Extensions.swift in Sources */,
-				8E5BB3D42072F4A000FA853F /* DefaultViewController.swift in Sources */,
 				8E5BB4022073226100FA853F /* DefaultViewModel.swift in Sources */,
 				8E99A0A4213523C400415071 /* CurrentTimelineAll.swift in Sources */,
 				8E2E6567208D5F3600FB2CE4 /* BlackGridLine.swift in Sources */,
 				8E5BB404207322BA00FA853F /* AllDayEvent.swift in Sources */,
-				8EBD62EA2096F8AD00520E58 /* LongPressViewController.swift in Sources */,
 				8EC8A46B209999A2002C7634 /* LongPressEventCell.swift in Sources */,
+				82A78066251E26E2006D6DAA /* ExampleDataSource.swift in Sources */,
 				8E048ED9207F26F500A532BA /* OptionsTableViewCell.swift in Sources */,
 				8E9A7DF520969919009AEB6E /* LongPressWeekView.swift in Sources */,
 				8E7263DF2074B55300ECF7CD /* EventCell.swift in Sources */,
-				8E666F142097EC4B00FDB1B6 /* CustomViewController.swift in Sources */,
 				8E4DC18820BE2C31007ED7A2 /* AllDayViewModel.swift in Sources */,
 				8E54D53E208D6A2B007DD5FE /* HourRowHeader.swift in Sources */,
 				8E54D53B208D6997007DD5FE /* CustomWeekView.swift in Sources */,
+				82A780682520BDE7006D6DAA /* EmployeesSectionWeekView.swift in Sources */,
 				8E7263E32074B73300ECF7CD /* DefaultWeekView.swift in Sources */,
+				82A7805E251C2EBD006D6DAA /* AppointmentEvent.swift in Sources */,
 				8E5BB3D22072F4A000FA853F /* AppDelegate.swift in Sources */,
+				82A78064251E2384006D6DAA /* LongPressViewController.swift in Sources */,
 				8E048ED6207EF83300A532BA /* ExpandableHeaderView.swift in Sources */,
 				8E0D30B1208EBB0F00B7FC59 /* ToastUtil.swift in Sources */,
 				8E048ED4207EF65000A532BA /* OptionsViewModel.swift in Sources */,

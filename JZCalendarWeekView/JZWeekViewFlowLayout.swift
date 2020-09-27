@@ -8,6 +8,12 @@
 
 import UIKit
 
+public struct SectionMinMaxX {
+	let minX: CGFloat
+	let maxX: CGFloat
+	var width: CGFloat { maxX - minX}
+}
+
 public protocol WeekViewFlowLayoutDelegate: class {
     /// Get the date for given section
     func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, dayForSection section: Int) -> Date
@@ -17,6 +23,9 @@ public protocol WeekViewFlowLayoutDelegate: class {
     func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, endTimeForItemAtIndexPath indexPath: IndexPath) -> Date
     /// TODO: Get the cell type for given item indexPath (Used for different cell types in the future)
     func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, cellTypeForItemAtIndexPath indexPath: IndexPath) -> String
+	
+	func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout,
+						minMaxXsFor section: Int) -> (SectionMinMaxX)
 }
 
 open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
@@ -231,6 +240,7 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
                                                                                      withItemCache: rowHeaderAttributes)
             let rowHeaderMinY = calendarContentMinY + hourHeight * CGFloat(rowHeaderIndex) - (hourHeight / 2.0).toDecimal1Value()
             attributes.frame = CGRect(x: rowHeaderMinX, y: rowHeaderMinY, width: rowHeaderWidth, height: hourHeight)
+			print(attributes.frame)
             attributes.zIndex = zIndexForElementKind(JZSupplementaryViewKinds.rowHeader)
         }
 
@@ -481,7 +491,7 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
         return (customAttributes, _itemCache)
     }
 
-    private func layoutAttributesForSupplemantaryView(at indexPath: IndexPath,
+    func layoutAttributesForSupplemantaryView(at indexPath: IndexPath,
                                                       ofKind kind: String,
                                                       withItemCache itemCache: AttDic) -> (UICollectionViewLayoutAttributes, AttDic) {
         var layoutAttributes = itemCache[indexPath]
@@ -743,7 +753,7 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
         return dayDateComponents
     }
 
-    private func startTimeForIndexPath(_ indexPath: IndexPath) -> DateComponents {
+    func startTimeForIndexPath(_ indexPath: IndexPath) -> DateComponents {
         if cachedStartTimeDateComponents[indexPath] != nil {
             return cachedStartTimeDateComponents[indexPath]!
         } else {
@@ -756,7 +766,7 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
         }
     }
 
-    private func endTimeForIndexPath(_ indexPath: IndexPath) -> DateComponents {
+    func endTimeForIndexPath(_ indexPath: IndexPath) -> DateComponents {
         if cachedEndTimeDateComponents[indexPath] != nil {
             return cachedEndTimeDateComponents[indexPath]!
         } else {

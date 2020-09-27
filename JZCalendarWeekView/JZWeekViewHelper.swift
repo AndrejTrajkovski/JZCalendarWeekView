@@ -68,8 +68,44 @@ public enum JZCurrentTimelineType {
     case page // Display the current time line in the whole page including today
 }
 
-open class JZWeekViewHelper {
+public struct SectionGrouping<A: JZBaseEvent, K: Hashable> {
+	let group: ([A]) -> [K: [A]]
+	public init(group: @escaping ([A]) -> [K: [A]]) {
+		self.group = group
+	}
+}
 
+public struct SectionSorting<A: JZBaseEvent, K: Hashable> {
+	let ascendingBy: ((key: K, value: [A]), (key: K, value: [A])) -> Bool
+	public init(ascendingBy: @escaping ((key: K, value: [A]), (key: K, value: [A])) -> Bool) {
+		self.ascendingBy = ascendingBy
+	}
+}
+
+open class JZWeekViewHelper {
+	
+	open class func groupEventsByPageAndSections<T: JZBaseEvent, SectionKey>(
+		eventsBySection: [Date: [T]],
+		grouping: SectionGrouping<T, SectionKey>,
+		sorting: SectionSorting<T, SectionKey>) -> [Date: [[T]]] {
+		let res: [Date: [[T]]] = eventsBySection.mapValues { value in
+			let asd = grouping.group(value)
+			let asdf = asd.sorted(by: sorting.ascendingBy).map(\.value)
+			return asdf
+		}
+		return res
+	}
+	
+	open class func groupEventsByPageAndSections<T: JZBaseEvent, SectionKey>(
+		originalEvents: [T],
+		grouping: SectionGrouping<T, SectionKey>,
+		sorting: SectionSorting<T, SectionKey>) -> [Date: [[T]]] {
+		let byDate: [Date: [T]] = Self.getIntraEventsByDate(originalEvents: originalEvents)
+		return groupEventsByPageAndSections(eventsBySection: byDate,
+											grouping: grouping,
+											sorting: sorting)
+	}
+	
     /**
      Get calculated events dictionary with intraStartTime and intraEndTime
      - Parameters:
