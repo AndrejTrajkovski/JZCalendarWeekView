@@ -29,7 +29,7 @@ class DefaultViewModel: NSObject {
 		AppointmentEvent(id: "6", startDate: secondDate, endDate: secondDate.add(component: .hour, value: 1), employeeId: 6),
 		AppointmentEvent(id: "7", startDate: thirdDate, endDate: thirdDate.add(component: .hour, value: 1), employeeId: 1),
 		AppointmentEvent(id: "8", startDate: thirdDate, endDate: thirdDate.add(component: .hour, value: 1), employeeId: 1),
-		AppointmentEvent(id: "9", startDate: thirdDate, endDate: thirdDate.add(component: .hour, value: 1), employeeId: 1)
+		AppointmentEvent(id: "9", startDate: thirdDate, endDate: thirdDate.add(component: .hour, value: 1), employeeId: 14)
 	]
 	//    lazy var eventsByDate = JZWeekViewHelper.getIntraEventsByDate(originalEvents: events)
 //	var eventsByDate: MyDataSource { JZWeekViewHelper.getIntraEventsByEmployee(originalEvents: events) }

@@ -240,7 +240,7 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
                                                                                      withItemCache: rowHeaderAttributes)
             let rowHeaderMinY = calendarContentMinY + hourHeight * CGFloat(rowHeaderIndex) - (hourHeight / 2.0).toDecimal1Value()
             attributes.frame = CGRect(x: rowHeaderMinX, y: rowHeaderMinY, width: rowHeaderWidth, height: hourHeight)
-			print(attributes.frame)
+			
             attributes.zIndex = zIndexForElementKind(JZSupplementaryViewKinds.rowHeader)
         }
 
@@ -343,7 +343,7 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
         }
 
         adjustItemsForOverlap(sectionItemAttributes, inSection: section, sectionMinX: sectionX,
-                              currentSectionZ: zIndexForElementKind(JZSupplementaryViewKinds.eventCell))
+							  currentSectionZ: zIndexForElementKind(JZSupplementaryViewKinds.eventCell), sectionWidth: sectionWidth)
     }
 
     func layoutVerticalGridLinesAttributes(section: Int, sectionX: CGFloat, calendarGridMinY: CGFloat, sectionHeight: CGFloat) {
@@ -515,7 +515,7 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
         means the order is wrong.
      2. Efficiency issue for getAvailableRanges and the rest of the code in this method
     */
-    open func adjustItemsForOverlap(_ sectionItemAttributes: [UICollectionViewLayoutAttributes], inSection: Int, sectionMinX: CGFloat, currentSectionZ: Int) {
+	open func adjustItemsForOverlap(_ sectionItemAttributes: [UICollectionViewLayoutAttributes], inSection: Int, sectionMinX: CGFloat, currentSectionZ: Int, sectionWidth: CGFloat) {
         let (maxOverlapIntervalCount, overlapGroups) = groupOverlapItems(items: sectionItemAttributes)
         guard maxOverlapIntervalCount > 1 else { return }
 

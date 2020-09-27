@@ -52,7 +52,6 @@ class SectionsFlowLayout: JZWeekViewFlowLayout {
 																					 withItemCache: rowHeaderAttributes)
 			let rowHeaderMinY = calendarContentMinY + hourHeight * CGFloat(rowHeaderIndex) - (hourHeight / 2.0).toDecimal1Value()
 			attributes.frame = CGRect(x: rowHeaderMinX, y: rowHeaderMinY, width: rowHeaderWidth, height: hourHeight)
-			print(attributes.frame)
 			attributes.zIndex = zIndexForElementKind(JZSupplementaryViewKinds.rowHeader)
 		}
 		
@@ -127,7 +126,7 @@ class SectionsFlowLayout: JZWeekViewFlowLayout {
 		}
 		
 		adjustItemsForOverlap(sectionItemAttributes, inSection: section, sectionMinX: sectionX,
-							  currentSectionZ: zIndexForElementKind(JZSupplementaryViewKinds.eventCell))
+							  currentSectionZ: zIndexForElementKind(JZSupplementaryViewKinds.eventCell), sectionWidth: sectionWidth)
 	}
 	
 }
