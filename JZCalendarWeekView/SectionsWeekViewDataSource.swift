@@ -4,9 +4,10 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 
 	weak var flowLayout: JZWeekViewFlowLayout!
 	private var initDate: Date!
-	private var pageDates: [Page: Date] = [:]
+	private var pageDates: [Date] = []
 	private var allEventsBySubSection: [Date: [[JZBaseEvent]]] = [:]
-	private var pageToSectionsMap: [Page: [Int]] = [:]
+	private var dateToSectionsMap: [Date: [Int]] = [:]
+//	private var sectionToDateMap: [Int: Date] = [:]
 	private var sectionsXs: [Int: SectionMinMaxX] = [:]
 	var pageWidth: CGFloat = 0
 	
@@ -14,7 +15,7 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 		if pageWidth != nil {
 			self.pageWidth = pageWidth!
 		}
-		self.sectionsXs = Self.calcPageSectionXs(self.pageToSectionsMap,
+		self.sectionsXs = Self.calcPageSectionXs(self.dateToSectionsMap,
 												 pageWidth: self.pageWidth)
 	}
 
@@ -25,11 +26,11 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 			self.allEventsBySubSection = events!
 		}
 		self.pageDates = [
-			.previous: date,
-			.current: date.add(component: .day, value: 1),
-			.next: date.add(component: .day, value: 2)
+			date,
+			date.add(component: .day, value: 1),
+			date.add(component: .day, value: 2)
 		]
-		self.pageToSectionsMap = Self.calcPageToSectionsMap(events: self.allEventsBySubSection, pages: self.pageDates)
+		self.dateToSectionsMap = Self.calcDateToSectionsMap(events: self.allEventsBySubSection, pageDates: self.pageDates)
 	}
 
 	public func collectionView(_ collectionView: UICollectionView,
@@ -41,8 +42,8 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 	open func getDateForSection(_ section: Int) -> Date {
 		//FIXME: optimize by adding vice versa map
 		print("getDateForSection")
-		let page = pageToSectionsMap.first(where: { $0.value.contains(section)})!.key
-		return pageDates[page]!
+		let pageDate = dateToSectionsMap.first(where: { $0.value.contains(section)})!.key
+		return pageDate
 	}
 
 	public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, dayForSection section: Int) -> Date {
@@ -78,22 +79,23 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 
 	func getPageAndEmployeeIndex(_ section: Int) -> (Int, Int)? {
 		print("getPageAndEmployeeIndex")
-		let pageDict = pageToSectionsMap.first(where: { $0.value.contains(section)})!
-		let flatIdx = pageDict.value.firstIndex(of: section)!
-		return (pageDict.key.rawValue, flatIdx)
+		let pageDate = dateToSectionsMap.first(where: { $0.value.contains(section)})!
+		let flatIdx = pageDate.value.firstIndex(of: section)!
+		return (pageDates.firstIndex(of: pageDate.key)!, flatIdx)
 	}
 
 	func currentPageSectionWidth() -> CGFloat {
-		let currentPageFirstSectionIdx = pageToSectionsMap[.current]!.first!
-		return sectionsXs[currentPageFirstSectionIdx]!.width
+		let middlePageDate = pageDates[1]
+		let middleSectionsIdxs = dateToSectionsMap[middlePageDate]!
+		return sectionsXs[middleSectionsIdxs.first!]!.width
 	}
 
-	static func calcPageSectionXs(_ pageToSectionsMap: [Page: [Int]],
+	static func calcPageSectionXs(_ pageToSectionsMap: [Date: [Int]],
 								  pageWidth: CGFloat) -> [Int: SectionMinMaxX] {
 		print("calcPageSectionXs")
 		var pageSectionXx: [Int: SectionMinMaxX] = [:]
 		var minX: CGFloat = 42 //TODO: pass in rowWidth from flowlayout
-		for (idx, element) in pageToSectionsMap.sorted(by: { $0.key.rawValue < $1.key.rawValue}).flatMap({ $0.value }).enumerated() {
+		for (idx, element) in pageToSectionsMap.sorted(by: { $0.key < $1.key}).flatMap({ $0.value }).enumerated() {
 			let pageDict = pageToSectionsMap.first(where: { $0.value.contains(element)})!
 			let width = (pageWidth / CGFloat(pageDict.value.count))
 			let maxX = minX + width
@@ -103,14 +105,13 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 		return pageSectionXx
 	}
 
-	static func calcPageToSectionsMap(events: [Date: [[JZBaseEvent]]], pages: [Page: Date]) -> [Page: [Int]] {
-		let sorted = pages.sorted(by: { $0.key.rawValue < $1.key.rawValue})
+	static func calcDateToSectionsMap(events: [Date: [[JZBaseEvent]]], pageDates: [Date]) -> [Date: [Int]] {
 		var runningTotal = 0
-		var result: [Page: [Int]] = [:]
-		for pageDate in sorted {
-			let dateEvents = events[pageDate.value]
+		var result: [Date: [Int]] = [:]
+		for pageDate in pageDates {
+			let dateEvents = events[pageDate]
 			let upper = (dateEvents?.count ?? 1) + runningTotal
-			result[pageDate.key] = Array(runningTotal..<upper)
+			result[pageDate] = Array(runningTotal..<upper)
 			runningTotal = upper
 		}
 		return result
@@ -130,7 +131,7 @@ extension SectionWeekViewDataSource {
 
 	open func numberOfSections(in collectionView: UICollectionView) -> Int {
 		//filter neighbor dates only
-		return pageToSectionsMap.reduce(into: 0, { $0 += $1.value.count })
+		return dateToSectionsMap.reduce(into: 0, { $0 += $1.value.count })
 	}
 
 	open func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
