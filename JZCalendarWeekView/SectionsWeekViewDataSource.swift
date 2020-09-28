@@ -7,16 +7,11 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 	private var pageDates: [Date] = []
 	private var allEventsBySubSection: [Date: [[JZBaseEvent]]] = [:]
 	private var dateToSectionsMap: [Date: [Int]] = [:]
-//	private var sectionToDateMap: [Int: Date] = [:]
 	private var sectionsXs: [Int: SectionMinMaxX] = [:]
-	var pageWidth: CGFloat = 0
 	
-	public func updateXs(pageWidth: CGFloat? = nil) {
-		if pageWidth != nil {
-			self.pageWidth = pageWidth!
-		}
+	public func updateXs(pageWidth: CGFloat) {
 		self.sectionsXs = Self.calcPageSectionXs(self.dateToSectionsMap,
-												 pageWidth: self.pageWidth)
+												 pageWidth: pageWidth)
 	}
 
 	public func update(date: Date,
