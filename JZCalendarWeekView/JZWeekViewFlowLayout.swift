@@ -8,9 +8,10 @@
 
 import UIKit
 
-public struct SectionMinMaxX {
+public struct SectionInfo {
 	let minX: CGFloat
 	let maxX: CGFloat
+	let date: Date
 	var width: CGFloat { maxX - minX}
 }
 
@@ -25,7 +26,7 @@ public protocol WeekViewFlowLayoutDelegate: class {
     func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, cellTypeForItemAtIndexPath indexPath: IndexPath) -> String
 	
 	func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout,
-						minMaxXsFor section: Int) -> (SectionMinMaxX)
+						minMaxXsFor section: Int) -> (SectionInfo)
 }
 
 open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {

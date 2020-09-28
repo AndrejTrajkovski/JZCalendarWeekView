@@ -64,7 +64,7 @@ open class SectionWeekView: JZLongPressWeekView {
 }
 
 extension JZBaseWeekView {
-	public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, minMaxXsFor section: Int) -> (SectionMinMaxX) {
+	public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, minMaxXsFor section: Int) -> (SectionInfo) {
 		fatalError("only for SectionWeekView subclass")
 	}
 }
