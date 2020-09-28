@@ -126,7 +126,7 @@ open class JZBaseWeekView: UIView {
 
     /// Was going to use toDecimal1Value as well, but the CGFloat is always got the wrong precision
     /// In order to make sure the width of all sections is the same, add few points to CGFloat
-    private func getSectionWidth() -> CGFloat {
+    func getSectionWidth() -> CGFloat {
         var sectionWidth = contentViewWidth / CGFloat(numOfDays)
         let remainder = sectionWidth.truncatingRemainder(dividingBy: 1)
         switch remainder {
@@ -608,7 +608,7 @@ extension JZBaseWeekView: UICollectionViewDelegate, UICollectionViewDelegateFlow
         }
     }
 
-    private func loadNextOrPrevPage(isNext: Bool) {
+    @objc open func loadNextOrPrevPage(isNext: Bool) {
         let addValue = isNext ? numOfDays : -numOfDays
         self.initDate = self.initDate.add(component: .day, value: addValue!)
         self.forceReload()

@@ -8,18 +8,19 @@ public enum Page: Int {
 }
 
 open class SectionWeekView: JZLongPressWeekView {
+
 	open var dataSource: SectionWeekViewDataSource! {
 		didSet {
 			dataSource.flowLayout = flowLayout
 			flowLayout.delegate = dataSource
-			collectionView.delegate = dataSource
 			collectionView.dataSource = dataSource
 		}
 	}
-	
+
 	override open func setup() {
         flowLayout = SectionsFlowLayout()
         collectionView = JZCollectionView(frame: bounds, collectionViewLayout: flowLayout)
+		collectionView.delegate = self
         collectionView.isDirectionalLockEnabled = true
         collectionView.bounces = false
         collectionView.showsVerticalScrollIndicator = false
@@ -33,26 +34,7 @@ open class SectionWeekView: JZLongPressWeekView {
 
 	open override func layoutSubviews() {
 		super.layoutSubviews()
-		dataSource.update(pageWidth: getSectionWidth())
-	}
-
-	/// Was going to use toDecimal1Value as well, but the CGFloat is always got the wrong precision
-	/// In order to make sure the width of all sections is the same, add few points to CGFloat
-	private func getSectionWidth() -> CGFloat {
-		var sectionWidth = contentViewWidth
-		let remainder = sectionWidth.truncatingRemainder(dividingBy: 1)
-		switch remainder {
-		case 0...0.25:
-			sectionWidth = sectionWidth.rounded(.down)
-		case 0.25...0.75:
-			sectionWidth = sectionWidth.rounded(.down) + 0.5
-		default:
-			sectionWidth = sectionWidth.rounded(.up)
-		}
-		// Maximum added width for row header should be 0.25 * numberOfRows
-		let rowHeaderWidth = frame.width - flowLayout.contentsMargin.left - flowLayout.contentsMargin.right - sectionWidth
-		flowLayout.rowHeaderWidth = rowHeaderWidth
-		return sectionWidth
+		dataSource.updateXs(pageWidth: getSectionWidth())
 	}
 
 	public func setupCalendar(
@@ -69,6 +51,16 @@ open class SectionWeekView: JZLongPressWeekView {
 		dataSource.update(date: initDate,
 						  events: events)
 	}
+
+	override open func loadNextOrPrevPage(isNext: Bool) {
+		let addValue = isNext ? numOfDays : -numOfDays
+		self.initDate = self.initDate.add(component: .day, value: addValue!)
+		dataSource.update(date: initDate)
+		DispatchQueue.main.async { [unowned self] in
+            self.layoutSubviews()
+            self.forceReload()
+        }
+    }
 }
 
 extension JZBaseWeekView {

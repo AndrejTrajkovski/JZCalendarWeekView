@@ -6,23 +6,30 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 	private var initDate: Date!
 	private var pageDates: [Page: Date] = [:]
 	private var allEventsBySubSection: [Date: [[JZBaseEvent]]] = [:]
-	private  var pageToSectionsMap: [Page: [Int]] = [:]
+	private var pageToSectionsMap: [Page: [Int]] = [:]
 	private var sectionsXs: [Int: SectionMinMaxX] = [:]
-
-	public func update(pageWidth: CGFloat) {
-		self.sectionsXs = Self.calcPageSectionXs(self.pageToSectionsMap, pageWidth: pageWidth)
+	var pageWidth: CGFloat = 0
+	
+	public func updateXs(pageWidth: CGFloat? = nil) {
+		if pageWidth != nil {
+			self.pageWidth = pageWidth!
+		}
+		self.sectionsXs = Self.calcPageSectionXs(self.pageToSectionsMap,
+												 pageWidth: self.pageWidth)
 	}
 
 	public func update(date: Date,
-					   events: [Date: [[JZBaseEvent]]]) {
+					   events: [Date: [[JZBaseEvent]]]? = nil) {
 		self.initDate = date
-		self.allEventsBySubSection = events
+		if events != nil {
+			self.allEventsBySubSection = events!
+		}
 		self.pageDates = [
 			.previous: date,
 			.current: date.add(component: .day, value: 1),
 			.next: date.add(component: .day, value: 2)
 		]
-		self.pageToSectionsMap = Self.calcPageToSectionsMap(events: events, pages: self.pageDates)
+		self.pageToSectionsMap = Self.calcPageToSectionsMap(events: self.allEventsBySubSection, pages: self.pageDates)
 	}
 
 	public func collectionView(_ collectionView: UICollectionView,
@@ -33,6 +40,7 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 
 	open func getDateForSection(_ section: Int) -> Date {
 		//FIXME: optimize by adding vice versa map
+		print("getDateForSection")
 		let page = pageToSectionsMap.first(where: { $0.value.contains(section)})!.key
 		return pageDates[page]!
 	}
@@ -69,6 +77,7 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
     }
 
 	func getPageAndEmployeeIndex(_ section: Int) -> (Int, Int)? {
+		print("getPageAndEmployeeIndex")
 		let pageDict = pageToSectionsMap.first(where: { $0.value.contains(section)})!
 		let flatIdx = pageDict.value.firstIndex(of: section)!
 		return (pageDict.key.rawValue, flatIdx)
@@ -81,6 +90,7 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 
 	static func calcPageSectionXs(_ pageToSectionsMap: [Page: [Int]],
 								  pageWidth: CGFloat) -> [Int: SectionMinMaxX] {
+		print("calcPageSectionXs")
 		var pageSectionXx: [Int: SectionMinMaxX] = [:]
 		var minX: CGFloat = 42 //TODO: pass in rowWidth from flowlayout
 		for (idx, element) in pageToSectionsMap.sorted(by: { $0.key.rawValue < $1.key.rawValue}).flatMap({ $0.value }).enumerated() {
