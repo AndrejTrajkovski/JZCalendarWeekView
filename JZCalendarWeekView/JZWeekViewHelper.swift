@@ -68,8 +68,49 @@ public enum JZCurrentTimelineType {
     case page // Display the current time line in the whole page including today
 }
 
+public struct SectionGrouping<A: JZBaseEvent, K: Hashable> {
+	let group: ([A]) -> [K: [A]]
+}
+
+public struct SectionSorting<A: JZBaseEvent, K: Hashable> {
+	let ascendingBy: ((key: K, value: [A]), (key: K, value: [A])) -> Bool
+}
+
+public extension SectionGrouping where A == AppointmentEvent, K == Int {
+	static let byEmployee = SectionGrouping(
+		group: { array in return Dictionary.init(grouping: array, by: { $0.employeeId }) }
+	)
+
+	static let byRoom = SectionGrouping(
+		group: { array in return Dictionary.init(grouping: array, by: { $0.roomId }) }
+	)
+}
+
+public extension SectionSorting where A == AppointmentEvent, K == EmployeeId {
+	static let byAppointmentCount = SectionSorting<AppointmentEvent, Int> {
+		$0.value.count > $1.value.count
+	}
+
+	static let byEmployeeId = SectionSorting<AppointmentEvent, Int> {
+		$0.key < $1.key
+	}
+}
+
 open class JZWeekViewHelper {
 
+	open class func groupEventsByPageAndSections<T: JZBaseEvent, SectionKey>(
+		originalEvents: [T],
+		grouping: SectionGrouping<T, SectionKey>,
+		sorting: SectionSorting<T, SectionKey>) -> [Date: [[T]]] {
+		let byDate: [Date: [T]] = Self.getIntraEventsByDate(originalEvents: originalEvents)
+		let res: [Date: [[T]]] = byDate.mapValues { value in
+			let asd = grouping.group(value)
+			let asdf = asd.sorted(by: sorting.ascendingBy).map(\.value)
+			return asdf
+		}
+		return res
+	}
+	
 	open class func getIntraEventsByEmployee<T: AppointmentEvent>(originalEvents: [T]) -> MyDataSource {
 		let byDate: [Date: [AppointmentEvent]] = Self.getIntraEventsByDate(originalEvents: originalEvents)
 		let res: [Date: [[AppointmentEvent]]] = byDate.mapValues { value in
@@ -88,7 +129,7 @@ open class JZWeekViewHelper {
         A dictionary used by JZBaseWeekView. Key is a day Date, value is all the events in that day
      */
     open class func getIntraEventsByDate<T: JZBaseEvent>(originalEvents: [T]) -> [Date: [T]] {
-        var resultEvents = [Date: [T]]()
+		var resultEvents = [Date: [T]]()
         for event in originalEvents {
             let startDateStartDay = event.startDate.startOfDay
             // get days from both startOfDay, otherwise 22:00 - 01:00 case will get 0 daysBetween result

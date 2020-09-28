@@ -3,7 +3,8 @@
 import Foundation
 
 public class AppointmentEvent: JZBaseEvent {
-	
+		
+	public var roomId: Int
 	public var employeeId: EmployeeId
 	public var patient: String?
 	public var service: String
@@ -15,8 +16,10 @@ public class AppointmentEvent: JZBaseEvent {
 			 color: String? = "#800080",
 			 startDate: Date,
 			 endDate: Date,
-			 employeeId: Int
+			 employeeId: Int,
+			 roomId: Int = 1
 	) {
+		self.roomId = roomId
 		self.patient = patient
 		self.service = service
 		self.color = color
@@ -26,6 +29,6 @@ public class AppointmentEvent: JZBaseEvent {
 	}
 	
 	public override func copy(with zone: NSZone?) -> Any {
-		return AppointmentEvent(id: id, patient: patient, service: service, color: color, startDate: startDate, endDate: endDate, employeeId: employeeId)
+		return AppointmentEvent(id: id, patient: patient, service: service, color: color, startDate: startDate, endDate: endDate, employeeId: employeeId, roomId: roomId)
 	}
 }

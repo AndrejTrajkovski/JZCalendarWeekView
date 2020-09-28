@@ -32,7 +32,10 @@ class DefaultViewModel: NSObject {
 		AppointmentEvent(id: "9", startDate: thirdDate, endDate: thirdDate.add(component: .hour, value: 1), employeeId: 9)
 	]
 	//    lazy var eventsByDate = JZWeekViewHelper.getIntraEventsByDate(originalEvents: events)
-	var eventsByDate: MyDataSource { JZWeekViewHelper.getIntraEventsByEmployee(originalEvents: events) }
+//	var eventsByDate: MyDataSource { JZWeekViewHelper.getIntraEventsByEmployee(originalEvents: events) }
+	var eventsByDate: MyDataSource { JZWeekViewHelper.groupEventsByPageAndSections(originalEvents: events,
+	grouping: SectionGrouping.byEmployee,
+	sorting: SectionSorting.byEmployeeId) }
 	
 	var currentSelectedData: OptionsSelectedData!
 }

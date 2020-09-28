@@ -389,6 +389,7 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
 //			}
 //			let width = days.reduce(CGFloat(0)) { $0 + CGFloat((sectionsWidths[$1] ?? 0)) }
 			let width = pageWidths.flatMap{ $0.value }.reduce(into: CGFloat(0), { $0 += $1.value })
+			print(width)
 			return CGSize(width: rowHeaderWidth + width,
 									height: maxSectionHeight)
     }

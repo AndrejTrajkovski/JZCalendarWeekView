@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		82A7804D251A7788006D6DAA /* ATLongPressWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A7804C251A7788006D6DAA /* ATLongPressWeekView.swift */; };
 		8E048ED4207EF65000A532BA /* OptionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E048ED3207EF65000A532BA /* OptionsViewModel.swift */; };
 		8E048ED6207EF83300A532BA /* ExpandableHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E048ED5207EF83300A532BA /* ExpandableHeaderView.swift */; };
 		8E048ED9207F26F500A532BA /* OptionsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E048ED7207F26F500A532BA /* OptionsTableViewCell.swift */; };
@@ -355,7 +354,6 @@
 				8EBD62EA2096F8AD00520E58 /* LongPressViewController.swift in Sources */,
 				8EC8A46B209999A2002C7634 /* LongPressEventCell.swift in Sources */,
 				8E048ED9207F26F500A532BA /* OptionsTableViewCell.swift in Sources */,
-				82A7804D251A7788006D6DAA /* ATLongPressWeekView.swift in Sources */,
 				8E9A7DF520969919009AEB6E /* LongPressWeekView.swift in Sources */,
 				8E7263DF2074B55300ECF7CD /* EventCell.swift in Sources */,
 				8E4DC18820BE2C31007ED7A2 /* AllDayViewModel.swift in Sources */,
