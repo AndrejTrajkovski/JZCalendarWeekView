@@ -70,7 +70,7 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
     }
 
 	func getPageAndEmployeeIndex(_ section: Int) -> (Int, Int)? {
-		print("getPageAndEmployeeIndex")
+//		print("getPageAndEmployeeIndex")
 		let sectionDate = sectionsInfo[section]!.date
 		let dateSections = dateToSectionsMap[sectionDate]!
 		let flatIdx = dateSections.firstIndex(of: section)!
@@ -85,7 +85,6 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 
 	static func calcPageSectionXs(_ dateToSectionsMap: [Date: [Int]],
 								  pageWidth: CGFloat) -> [Int: SectionInfo] {
-		print("calcPageSectionXs")
 		var pageSectionXx: [Int: SectionInfo] = [:]
 		var minX: CGFloat = 42 //TODO: pass in rowWidth from flowlayout
 		let sections = dateToSectionsMap.sorted(by: { $0.key < $1.key}).flatMap({ $0.value })
