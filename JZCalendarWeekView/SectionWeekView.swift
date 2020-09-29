@@ -1,12 +1,5 @@
 import Foundation
 
-//public enum Page: Int {
-//	var idx: Int { self.rawValue }
-//	case previous
-//	case current
-//	case next
-//}
-
 open class SectionWeekView: JZLongPressWeekView {
 
 	open var dataSource: SectionWeekViewDataSource! {
