@@ -160,28 +160,29 @@ open class SectionWeekView: JZLongPressWeekView, SectionLongPressDelegate {
         }
     }
 	
-	func getPageAndSubsectionIdx(_ xCollectionView: CGFloat) -> (Int, Int) {
-		let asd = (0..<collectionView.numberOfSections).map {
+	func getPageAndSubsectionIdx(_ xCollectionView: CGFloat) -> (Int, Int)? {
+		let section = (0..<collectionView.numberOfSections).map {
 			dataSource.collectionView(collectionView,
 									  layout: flowLayout,
 									  minMaxXsFor: $0)
 		}.firstIndex(where: {
 			$0.minX < xCollectionView && $0.maxX >= xCollectionView
 		})
-		return dataSource.getPageAndEmployeeIndex(asd!)!
+//		print("getPageAndSubsectionIdx")
+		return section.flatMap(dataSource.getPageAndEmployeeIndex)
 	}
 }
 
 //MARK:- SectionLongPressDelegate
 extension SectionWeekView {
 	public func weekView(_ weekView: JZLongPressWeekView, editingEvent: JZBaseEvent, didEndMoveLongPressAt startDate: Date, pageAndSectionIdx: (Int, Int)) {
-		print(startDate)
-		print(pageAndSectionIdx)
+//		print(startDate)
+//		print(pageAndSectionIdx)
 	}
 	
 	public func weekView(_ weekView: JZLongPressWeekView, didEndAddNewLongPressAt startDate: Date, pageAndSectionIdx: (Int, Int)) {
-		print(startDate)
-		print(pageAndSectionIdx)
+//		print(startDate)
+//		print(pageAndSectionIdx)
 	}
 }
 

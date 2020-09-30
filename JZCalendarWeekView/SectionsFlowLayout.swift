@@ -1,5 +1,5 @@
 class SectionsFlowLayout: JZWeekViewFlowLayout {
-	
+
 	override var collectionViewContentSize: CGSize {
 		        return CGSize(width: rowHeaderWidth + sectionWidth * 3,
                       height: maxSectionHeight)
@@ -14,7 +14,6 @@ class SectionsFlowLayout: JZWeekViewFlowLayout {
 		let calendarGridMinY = columnHeaderHeight + contentsMargin.top + allDayHeaderHeight
 		let calendarContentMinX = rowHeaderWidth + contentsMargin.left
 		let calendarContentMinY = columnHeaderHeight + contentsMargin.top + allDayHeaderHeight
-		
 		// Current time line
 		// TODO: Should improve this method, otherwise every column will display a timeline view
 		sectionIndexes.enumerate(_:) { (section, _) in

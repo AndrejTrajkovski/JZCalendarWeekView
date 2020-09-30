@@ -10,12 +10,15 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 	private var sectionsInfo: [Int: SectionInfo] = [:]
 	
 	public func updateXs(pageWidth: CGFloat) {
+//		print("updateXs")
 		self.sectionsInfo = Self.calcPageSectionXs(self.dateToSectionsMap,
 												 pageWidth: pageWidth)
+//		print("sectionsInfo", sectionsInfo)
 	}
 
 	public func update(date: Date,
 					   events: [Date: [[JZBaseEvent]]]? = nil) {
+//		print("update date")
 		self.initDate = date
 		if events != nil {
 			self.allEventsBySubSection = events!
@@ -26,6 +29,7 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 			date.add(component: .day, value: 2)
 		]
 		self.dateToSectionsMap = Self.calcDateToSectionsMap(events: self.allEventsBySubSection, pageDates: self.pageDates)
+//		print("dateToSectionsMap", dateToSectionsMap)
 	}
 
 	public func collectionView(_ collectionView: UICollectionView,
@@ -73,8 +77,8 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 //		print("getPageAndEmployeeIndex")
 		let sectionDate = sectionsInfo[section]!.date
 		let dateSections = dateToSectionsMap[sectionDate]!
-		let flatIdx = dateSections.firstIndex(of: section)!
-		return (pageDates.firstIndex(of: sectionDate)!, flatIdx)
+		let pageSectionIdx = dateSections.firstIndex(of: section)!
+		return (pageDates.firstIndex(of: sectionDate)!, pageSectionIdx)
 	}
 
 	func currentPageSectionWidth() -> CGFloat {

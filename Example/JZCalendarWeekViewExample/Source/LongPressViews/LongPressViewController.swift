@@ -38,7 +38,6 @@ class LongPressViewController: UIViewController {
 			calendarWeekView.dataSource = EmployeesSectionWeekViewDataSource()
 			calendarWeekView.setupCalendar(setDate: Date(),
 										   events: viewModel.eventsByDateAndSections)
-										   
 //            calendarWeekView.setupCalendar(numOfDays: 3,
 //                                           setDate: Date(),
 //                                           allEvents: viewModel.eventsByDate,
@@ -59,7 +58,6 @@ class LongPressViewController: UIViewController {
 
     /// For example only
     private func setupCalendarViewWithSelectedData() {
-        
     }
 }
 
@@ -75,12 +73,9 @@ extension LongPressViewController: JZLongPressViewDelegate, JZLongPressViewDataS
     func weekView(_ weekView: JZLongPressWeekView, didEndAddNewLongPressAt startDate: Date) {
         let newEvent = AllDayEvent(id: UUID().uuidString, title: "New Event", startDate: startDate, endDate: startDate.add(component: .hour, value: weekView.addNewDurationMins/60),
                              location: "Melbourne", isAllDay: false)
-
-        
     }
 
     func weekView(_ weekView: JZLongPressWeekView, editingEvent: JZBaseEvent, didEndMoveLongPressAt startDate: Date) {
-        
     }
 
     func weekView(_ weekView: JZLongPressWeekView, viewForAddNewLongPressAt startDate: Date) -> UIView {
