@@ -89,13 +89,13 @@ open class JZWeekViewHelper {
 		sorting:
 		((key: SectionId, value: [T]), (key: SectionId, value: [T])) -> Bool)
 		-> [Date: [[T]]] {
-		let res: [Date: [[T]]] = eventsBySection.mapValues { value in
-			let asd: [SectionId : [T]] = Dictionary.init(grouping: value,
-														   by: { return $0[keyPath: grouping] })
-			let asdf = asd.sorted(by: sorting)
-			return asdf.map(\.value)
-		}
-		return res
+			let res: [Date: [[T]]] = eventsBySection.mapValues { value in
+				let asd = Dictionary.init(grouping: value,
+										  by: { return $0[keyPath: grouping] })
+				let asdf = asd.sorted(by: sorting)
+				return asdf.map(\.value)
+			}
+			return res
 	}
 	
 	open class func groupEventsByPageAndSections<T: JZBaseEvent,
