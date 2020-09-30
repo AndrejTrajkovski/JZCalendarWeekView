@@ -205,17 +205,14 @@ extension LongPressViewController {
 protocol WithinPageGroupable {
 	associatedtype T: JZBaseEvent
 	associatedtype SectionId: Hashable
-	func groupId(event: T) -> SectionId
+	static var groupId: KeyPath<T, SectionId> { get }
 }
-protocol AppointmentGroupable: WithinPageGroupable where T == AppointmentEvent {
-	associatedtype V: Hashable
-	func groupId(event: AppointmentEvent) -> V
-}
+protocol AppointmentGroupable: WithinPageGroupable where T == AppointmentEvent {}
 
+typealias EmployeeId = Int
 struct ByEmployeeId: AppointmentGroupable {
-	func groupId(event: AppointmentEvent) -> Int {
-		event.employeeId
-	}
+	typealias T = AppointmentEvent
+	static let groupId: KeyPath<AppointmentEvent, EmployeeId> = \.employeeId
 }
 
 public extension Collection {
