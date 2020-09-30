@@ -34,15 +34,9 @@ class LongPressViewController: UIViewController, SectionLongPressDelegate {
             // For example only
             setupCalendarViewWithSelectedData()
         } else {
-//			calendarWeekView.setupCalend
 			calendarWeekView.dataSource = EmployeesSectionWeekViewDataSource()
 			calendarWeekView.setupCalendar(setDate: Date(),
 										   events: viewModel.eventsByDateAndSections)
-//            calendarWeekView.setupCalendar(numOfDays: 3,
-//                                           setDate: Date(),
-//                                           allEvents: viewModel.eventsByDate,
-//                                           scrollType: .pageScroll,
-//                                           scrollableRange: (nil, nil))
         }
 
         // LongPress delegate, datasorce and type setup
@@ -184,8 +178,10 @@ extension LongPressViewController {
         calendarWeekView.forceSectionReload(reloadEvents: viewModel.eventsByDateAndSections)
 	}
 
-	func getWithinPageId(date: Date, idx: Int, events: [Date: [[AppointmentEvent]]]) -> Int? {
-		return events[date.startOfDay]?[idx].first?.employeeId
+	func getWithinPageId(date: Date,
+						 idx: Int,
+						 events: [Date: [[AppointmentEvent]]]) -> Int? {
+		return events[date.startOfDay]?[safe: idx]?.first?.employeeId
 	}
 
 	public func weekView(_ weekView: JZLongPressWeekView, didEndAddNewLongPressAt startDate: Date, pageAndSectionIdx: (Int, Int)) {
@@ -219,5 +215,12 @@ protocol AppointmentGroupable: WithinPageGroupable where T == AppointmentEvent {
 struct ByEmployeeId: AppointmentGroupable {
 	func groupId(event: AppointmentEvent) -> Int {
 		event.employeeId
+	}
+}
+
+public extension Collection {
+	/// Returns the element at the specified index if it is within bounds, otherwise nil.
+	subscript (safe index: Index) -> Element? {
+		return indices.contains(index) ? self[index] : nil
 	}
 }

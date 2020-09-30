@@ -78,8 +78,10 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 	func getPageAndWithinPageIndex(_ section: Int) -> (Int, Int)? {
 		let sectionDate = sectionsInfo[section]!.date
 		let dateSections = dateToSectionsMap[sectionDate]!
-		let pageSectionIdx = dateSections.firstIndex(of: section)!
-		return (pageDates.firstIndex(of: sectionDate)!, pageSectionIdx)
+		let pageSectionIdx = dateSections.firstIndex(of: section)
+		return pageSectionIdx.map {
+			(pageDates.firstIndex(of: sectionDate)!, $0)
+		}
 	}
 
 	func currentPageSectionWidth() -> CGFloat {
