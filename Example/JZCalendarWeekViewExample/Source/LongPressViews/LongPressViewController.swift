@@ -202,17 +202,19 @@ extension LongPressViewController {
 }
 
 @available(iOS 13, *)
-protocol WithinPageGroupable {
-	associatedtype T: JZBaseEvent
-	associatedtype SectionId: Hashable
-	static var groupId: KeyPath<T, SectionId> { get }
-}
 protocol AppointmentGroupable: WithinPageGroupable where T == AppointmentEvent {}
 
 typealias EmployeeId = Int
 struct ByEmployeeId: AppointmentGroupable {
 	typealias T = AppointmentEvent
 	static let groupId: KeyPath<AppointmentEvent, EmployeeId> = \.employeeId
+}
+
+struct ByEmployeeIdSort: WithinPageSortable {
+	func ascendingSortBy(section1: (key: Int, value: [AppointmentEvent]),
+						 section2: (key: Int, value: [AppointmentEvent])) -> Bool {
+		return section1.key < section2.key
+	}
 }
 
 public extension Collection {

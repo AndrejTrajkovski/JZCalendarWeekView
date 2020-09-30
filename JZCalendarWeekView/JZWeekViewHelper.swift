@@ -83,29 +83,33 @@ public struct SectionSorting<A: JZBaseEvent, K: Hashable> {
 }
 
 open class JZWeekViewHelper {
-	open class func groupEventsByPageAndSections<T: JZBaseEvent, SectionKey>(
+	open class func groupEventsByPageAndSections<T: JZBaseEvent,
+		G: WithinPageGroupable, S: WithinPageSortable>(
 		eventsBySection: [Date: [T]],
-		grouping: SectionGrouping<T, SectionKey>,
-		sorting: SectionSorting<T, SectionKey>) -> [Date: [[T]]] {
+		grouping: G,
+		sorting: S)
+		-> [Date: [[T]]] where T == G.T, T == S.T, S.SectionId == G.SectionId {
 		let res: [Date: [[T]]] = eventsBySection.mapValues { value in
-			let asd = grouping.group(value)
-			let asdf = asd.sorted(by: sorting.ascendingBy).map(\.value)
-			return asdf
+			let asd: [G.SectionId : [T]] = Dictionary.init(grouping: value,
+														   by: { return $0[keyPath: G.self.groupId] })
+			let asdf = asd.sorted(by: sorting.ascendingSortBy(section1:section2:))
+			return asdf.map(\.value)
 		}
 		return res
 	}
 	
-	open class func groupEventsByPageAndSections<T: JZBaseEvent, SectionKey>(
+	open class func groupEventsByPageAndSections<T: JZBaseEvent,
+		G: WithinPageGroupable, S: WithinPageSortable>(
 		originalEvents: [T],
-		grouping: SectionGrouping<T, SectionKey>,
-		sorting: SectionSorting<T, SectionKey>) -> [Date: [[T]]] {
-		let byDate: [Date: [T]] = Self.getIntraEventsByDate(originalEvents: originalEvents)
-		return groupEventsByPageAndSections(eventsBySection: byDate,
-											grouping: grouping,
-											sorting: sorting)
+		grouping: G,
+		sorting: S)
+		-> [Date: [[T]]] where T == G.T, T == S.T, S.SectionId == G.SectionId {
+			let byDate: [Date: [T]] = Self.getIntraEventsByDate(originalEvents: originalEvents)
+			return groupEventsByPageAndSections(eventsBySection: byDate,
+												grouping: grouping,
+												sorting: sorting)
 	}
-
-    /**
+	/**
      Get calculated events dictionary with intraStartTime and intraEndTime
      - Parameters:
         - originalEvents: A list of original Events (subclassed from BaseEvent)
@@ -179,4 +183,17 @@ open class JZWeekViewHelper {
             weekView.refreshWeekView()
         }
     }
+}
+
+public protocol WithinPageGroupable {
+	associatedtype T: JZBaseEvent
+	associatedtype SectionId: Hashable
+	static var groupId: KeyPath<T, SectionId> { get }
+}
+
+public protocol WithinPageSortable {
+	associatedtype T: JZBaseEvent
+	associatedtype SectionId: Hashable
+	func ascendingSortBy(section1: (key: SectionId, value: [T]),
+						 section2: (key: SectionId, value: [T])) -> Bool
 }

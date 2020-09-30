@@ -34,8 +34,8 @@ class DefaultViewModel: NSObject {
 	//    lazy var eventsByDate = JZWeekViewHelper.getIntraEventsByDate(originalEvents: events)
 //	var eventsByDate: MyDataSource { JZWeekViewHelper.getIntraEventsByEmployee(originalEvents: events) }
 	var eventsByDateAndSections: [Date: [[JZBaseEvent]]] { JZWeekViewHelper.groupEventsByPageAndSections(originalEvents: events,
-																										 grouping: SectionGrouping.byEmployee,
-																										 sorting: SectionSorting.byEmployeeId)
+																										 grouping: ByEmployeeId(),
+																										 sorting: ByEmployeeIdSort())
 	}
 
 	var currentSelectedData: OptionsSelectedData!
