@@ -83,27 +83,28 @@ public struct SectionSorting<A: JZBaseEvent, K: Hashable> {
 }
 
 open class JZWeekViewHelper {
-	open class func groupEventsByPageAndSections<T: JZBaseEvent,
-		G: WithinPageGroupable, S: WithinPageSortable>(
+	open class func groupEventsByPageAndSections<T: JZBaseEvent, SectionId: Hashable>(
 		eventsBySection: [Date: [T]],
-		grouping: G,
-		sorting: S)
-		-> [Date: [[T]]] where T == G.T, T == S.T, S.SectionId == G.SectionId {
+		grouping: KeyPath<T, SectionId>,
+		sorting:
+		((key: SectionId, value: [T]), (key: SectionId, value: [T])) -> Bool)
+		-> [Date: [[T]]] {
 		let res: [Date: [[T]]] = eventsBySection.mapValues { value in
-			let asd: [G.SectionId : [T]] = Dictionary.init(grouping: value,
-														   by: { return $0[keyPath: G.self.groupId] })
-			let asdf = asd.sorted(by: sorting.ascendingSortBy(section1:section2:))
+			let asd: [SectionId : [T]] = Dictionary.init(grouping: value,
+														   by: { return $0[keyPath: grouping] })
+			let asdf = asd.sorted(by: sorting)
 			return asdf.map(\.value)
 		}
 		return res
 	}
 	
 	open class func groupEventsByPageAndSections<T: JZBaseEvent,
-		G: WithinPageGroupable, S: WithinPageSortable>(
+		SectionId: Hashable>(
 		originalEvents: [T],
-		grouping: G,
-		sorting: S)
-		-> [Date: [[T]]] where T == G.T, T == S.T, S.SectionId == G.SectionId {
+		grouping: KeyPath<T, SectionId>,
+		sorting:
+		((key: SectionId, value: [T]), (key: SectionId, value: [T])) -> Bool)
+		-> [Date: [[T]]] {
 			let byDate: [Date: [T]] = Self.getIntraEventsByDate(originalEvents: originalEvents)
 			return groupEventsByPageAndSections(eventsBySection: byDate,
 												grouping: grouping,
@@ -183,17 +184,4 @@ open class JZWeekViewHelper {
             weekView.refreshWeekView()
         }
     }
-}
-
-public protocol WithinPageGroupable {
-	associatedtype T: JZBaseEvent
-	associatedtype SectionId: Hashable
-	static var groupId: KeyPath<T, SectionId> { get }
-}
-
-public protocol WithinPageSortable {
-	associatedtype T: JZBaseEvent
-	associatedtype SectionId: Hashable
-	func ascendingSortBy(section1: (key: SectionId, value: [T]),
-						 section2: (key: SectionId, value: [T])) -> Bool
 }
