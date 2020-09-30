@@ -9,7 +9,7 @@
 import UIKit
 import JZCalendarWeekView
 
-class LongPressViewController: UIViewController {
+class LongPressViewController: UIViewController, SectionLongPressDelegate {
 
     @IBOutlet weak var calendarWeekView: EmployeesSectionWeekView!
     let viewModel = DefaultViewModel()
@@ -46,7 +46,7 @@ class LongPressViewController: UIViewController {
         }
 
         // LongPress delegate, datasorce and type setup
-		calendarWeekView.sectionLongPressDelegate = calendarWeekView
+		calendarWeekView.sectionLongPressDelegate = self
         calendarWeekView.longPressDelegate = self
         calendarWeekView.longPressDataSource = self
         calendarWeekView.longPressTypes = [.addNew, .move]
@@ -168,4 +168,56 @@ extension LongPressViewController: OptionsViewDelegate {
         dateFormatter.dateFormat = "MMMM YYYY"
         self.navigationItem.title = dateFormatter.string(from: calendarWeekView.initDate.add(component: .day, value: calendarWeekView.numOfDays))
     }
+}
+
+// MARK:- SectionLongPressDelegate
+extension LongPressViewController {
+	public func weekView(_ weekView: JZLongPressWeekView, editingEvent: JZBaseEvent, didEndMoveLongPressAt startDate: Date, pageAndSectionIdx: (Int, Int)) {
+		guard let event = editingEvent as? AppointmentEvent else { return }
+        let duration = Calendar.current.dateComponents([.minute], from: event.startDate, to: event.endDate).minute!
+        let selectedIndex = viewModel.events.firstIndex(where: { $0.id == event.id })!
+        viewModel.events[selectedIndex].startDate = startDate
+        viewModel.events[selectedIndex].endDate = startDate.add(component: .minute, value: duration)
+		if let newId = getWithinPageId(date: startDate, idx: pageAndSectionIdx.1, events: viewModel.eventsByDateAndSections as! [Date : [[AppointmentEvent]]]) {
+			viewModel.events[selectedIndex].employeeId = newId
+		}
+        calendarWeekView.forceSectionReload(reloadEvents: viewModel.eventsByDateAndSections)
+	}
+
+	func getWithinPageId(date: Date, idx: Int, events: [Date: [[AppointmentEvent]]]) -> Int? {
+		return events[date.startOfDay]?[idx].first?.employeeId
+	}
+
+	public func weekView(_ weekView: JZLongPressWeekView, didEndAddNewLongPressAt startDate: Date, pageAndSectionIdx: (Int, Int)) {
+		let newIdRange = Array(0...9999)
+		let filtered = newIdRange.filter { !viewModel.events.map(\.id).contains(String($0)) }
+		let newId = filtered.randomElement()!
+		let newEmployeeId = getWithinPageId(date: startDate, idx: pageAndSectionIdx.1, events: viewModel.eventsByDateAndSections as! [Date : [[AppointmentEvent]]]) ?? -1
+		let newEvent = AppointmentEvent(id: String(newId),
+										patient: nil,
+										startDate: startDate,
+										endDate: startDate.add(component: .hour, value: weekView.addNewDurationMins/60),
+										employeeId: newEmployeeId)
+		viewModel.events.append(newEvent)
+		calendarWeekView.forceSectionReload(reloadEvents: viewModel.eventsByDateAndSections)
+//		print(startDate)
+//		print(pageAndSectionIdx)
+	}
+}
+
+@available(iOS 13, *)
+protocol WithinPageGroupable {
+	associatedtype T: JZBaseEvent
+	associatedtype SectionId: Hashable
+	func groupId(event: T) -> SectionId
+}
+protocol AppointmentGroupable: WithinPageGroupable where T == AppointmentEvent {
+	associatedtype V: Hashable
+	func groupId(event: AppointmentEvent) -> V
+}
+
+struct ByEmployeeId: AppointmentGroupable {
+	func groupId(event: AppointmentEvent) -> Int {
+		event.employeeId
+	}
 }

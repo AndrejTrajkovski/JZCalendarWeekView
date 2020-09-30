@@ -83,7 +83,6 @@ public struct SectionSorting<A: JZBaseEvent, K: Hashable> {
 }
 
 open class JZWeekViewHelper {
-	
 	open class func groupEventsByPageAndSections<T: JZBaseEvent, SectionKey>(
 		eventsBySection: [Date: [T]],
 		grouping: SectionGrouping<T, SectionKey>,
@@ -105,7 +104,7 @@ open class JZWeekViewHelper {
 											grouping: grouping,
 											sorting: sorting)
 	}
-	
+
     /**
      Get calculated events dictionary with intraStartTime and intraEndTime
      - Parameters:

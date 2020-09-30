@@ -16,17 +16,19 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 //		print("sectionsInfo", sectionsInfo)
 	}
 
-	public func update(date: Date,
+	public func update(date: Date? = nil,
 					   events: [Date: [[JZBaseEvent]]]? = nil) {
 //		print("update date")
-		self.initDate = date
+		if date != nil {
+			self.initDate = date!
+		}
 		if events != nil {
 			self.allEventsBySubSection = events!
 		}
 		self.pageDates = [
-			date,
-			date.add(component: .day, value: 1),
-			date.add(component: .day, value: 2)
+			self.initDate,
+			self.initDate.add(component: .day, value: 1),
+			self.initDate.add(component: .day, value: 2)
 		]
 		self.dateToSectionsMap = Self.calcDateToSectionsMap(events: self.allEventsBySubSection, pageDates: self.pageDates)
 //		print("dateToSectionsMap", dateToSectionsMap)
@@ -49,7 +51,7 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 	public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, startTimeForItemAtIndexPath indexPath: IndexPath) -> Date {
 		let date = flowLayout.dateForColumnHeader(at: indexPath)
 		if let eventsByDate = allEventsBySubSection[date] {
-			let (_, employeeIdx) = getPageAndEmployeeIndex(indexPath.section)!
+			let (_, employeeIdx) = getPageAndWithinPageIndex(indexPath.section)!
 			let employeeEvents = eventsByDate[employeeIdx]
 			return employeeEvents[indexPath.item].intraStartDate
 		} else {
@@ -60,7 +62,7 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 	public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, endTimeForItemAtIndexPath indexPath: IndexPath) -> Date {
 		let date = flowLayout.dateForColumnHeader(at: indexPath)
 		if let eventsByDate = allEventsBySubSection[date] {
-			let (_, employeeIdx) = getPageAndEmployeeIndex(indexPath.section)!
+			let (_, employeeIdx) = getPageAndWithinPageIndex(indexPath.section)!
 			let employeeEvents = eventsByDate[employeeIdx]
 			return employeeEvents[indexPath.item].intraEndDate
 		} else {
@@ -73,8 +75,7 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
         return JZSupplementaryViewKinds.eventCell
     }
 
-	func getPageAndEmployeeIndex(_ section: Int) -> (Int, Int)? {
-//		print("getPageAndEmployeeIndex")
+	func getPageAndWithinPageIndex(_ section: Int) -> (Int, Int)? {
 		let sectionDate = sectionsInfo[section]!.date
 		let dateSections = dateToSectionsMap[sectionDate]!
 		let pageSectionIdx = dateSections.firstIndex(of: section)!
@@ -117,7 +118,7 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 	open func getCurrentEvent(with indexPath: IndexPath) -> JZBaseEvent? {
 		let date = flowLayout.dateForColumnHeader(at: indexPath)
 		let appointments = allEventsBySubSection[date]
-		guard let (_, employeeIdx) = getPageAndEmployeeIndex(indexPath.section) else { return nil }
+		guard let (_, employeeIdx) = getPageAndWithinPageIndex(indexPath.section) else { return nil }
 		let employeeEvents = appointments?[employeeIdx]
 		return employeeEvents?[indexPath.item]
 	}
@@ -134,7 +135,7 @@ extension SectionWeekViewDataSource {
 	open func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 		let date = flowLayout.dateForColumnHeader(at: IndexPath(item: 0, section: section))
 		if let eventsByDate = allEventsBySubSection[date] {
-			let (_, employeeIdx) = getPageAndEmployeeIndex(section)!
+			let (_, employeeIdx) = getPageAndWithinPageIndex(section)!
 			return eventsByDate[employeeIdx].count
 		} else {
 			return 0

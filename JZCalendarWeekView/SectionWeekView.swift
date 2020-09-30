@@ -6,7 +6,7 @@ public protocol SectionLongPressDelegate: class {
 	func weekView(_ weekView: JZLongPressWeekView, editingEvent: JZBaseEvent, didEndMoveLongPressAt startDate: Date, pageAndSectionIdx:(Int, Int))
 }
 
-open class SectionWeekView: JZLongPressWeekView, SectionLongPressDelegate {
+open class SectionWeekView: JZLongPressWeekView {
 
 	public weak var sectionLongPressDelegate: SectionLongPressDelegate?
 	open var dataSource: SectionWeekViewDataSource! {
@@ -52,6 +52,11 @@ open class SectionWeekView: JZLongPressWeekView, SectionLongPressDelegate {
 						  events: events)
 	}
 
+	public func forceSectionReload(reloadEvents: [Date : [[JZBaseEvent]]]) {
+		dataSource.update(events: reloadEvents)
+		self.forceReload()
+	}
+
 	override open func loadNextOrPrevPage(isNext: Bool) {
 		let addValue = isNext ? numOfDays : -numOfDays
 		self.initDate = self.initDate.add(component: .day, value: addValue!)
@@ -61,7 +66,7 @@ open class SectionWeekView: JZLongPressWeekView, SectionLongPressDelegate {
             self.forceReload()
         }
     }
-	
+
 	override func handleLongPressGesture(_ gestureRecognizer: UILongPressGestureRecognizer) {
 
         let pointInSelfView = gestureRecognizer.location(in: self)
@@ -169,20 +174,7 @@ open class SectionWeekView: JZLongPressWeekView, SectionLongPressDelegate {
 			$0.minX < xCollectionView && $0.maxX >= xCollectionView
 		})
 //		print("getPageAndSubsectionIdx")
-		return section.flatMap(dataSource.getPageAndEmployeeIndex)
-	}
-}
-
-//MARK:- SectionLongPressDelegate
-extension SectionWeekView {
-	public func weekView(_ weekView: JZLongPressWeekView, editingEvent: JZBaseEvent, didEndMoveLongPressAt startDate: Date, pageAndSectionIdx: (Int, Int)) {
-//		print(startDate)
-//		print(pageAndSectionIdx)
-	}
-	
-	public func weekView(_ weekView: JZLongPressWeekView, didEndAddNewLongPressAt startDate: Date, pageAndSectionIdx: (Int, Int)) {
-//		print(startDate)
-//		print(pageAndSectionIdx)
+		return section.flatMap(dataSource.getPageAndWithinPageIndex)
 	}
 }
 

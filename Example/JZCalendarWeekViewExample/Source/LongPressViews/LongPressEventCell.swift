@@ -46,7 +46,7 @@ class LongPressEventCell: JZLongPressEventCell {
 
 	func configureCell(event: AppointmentEvent) {
         self.event = event
-		locationLabel.text = "\(event.id), \(String(event.employeeId))"
+		locationLabel.text = "\(event.id), \(event.employeeId == -1 ? "No employee set" : String(event.employeeId))"
         titleLabel.text = String(event.roomId)
     }
 }
