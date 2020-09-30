@@ -87,23 +87,32 @@ open class JZWeekViewHelper {
 		eventsBySection: [Date: [T]],
 		grouping: KeyPath<T, SectionId>,
 		sorting:
-		((key: SectionId, value: [T]), (key: SectionId, value: [T])) -> Bool)
+		@escaping ((key: SectionId, value: [T]), (key: SectionId, value: [T])) -> Bool)
 		-> [Date: [[T]]] {
-			let res: [Date: [[T]]] = eventsBySection.mapValues { value in
-				let asd = Dictionary.init(grouping: value,
-										  by: { return $0[keyPath: grouping] })
-				let asdf = asd.sorted(by: sorting)
-				return asdf.map(\.value)
-			}
+			let asdf = Self.groupAndSortSections(grouping: grouping,
+												 sorting: sorting)
+			let res: [Date: [[T]]] = eventsBySection.mapValues(asdf)
 			return res
 	}
-	
+
+	class func groupAndSortSections<T: JZBaseEvent, SectionId: Hashable>(
+		grouping: KeyPath<T, SectionId>,
+		sorting:
+		@escaping ((key: SectionId, value: [T]), (key: SectionId, value: [T])) -> Bool)-> ([T]) -> [[T]] {
+		return { events in
+			let grouped = Dictionary.init(grouping: events,
+											by: { return $0[keyPath: grouping] })
+			let sorted = grouped.sorted(by: sorting)
+			return sorted.map(\.value)
+		}
+	}
+
 	open class func groupEventsByPageAndSections<T: JZBaseEvent,
 		SectionId: Hashable>(
 		originalEvents: [T],
 		grouping: KeyPath<T, SectionId>,
 		sorting:
-		((key: SectionId, value: [T]), (key: SectionId, value: [T])) -> Bool)
+		@escaping ((key: SectionId, value: [T]), (key: SectionId, value: [T])) -> Bool)
 		-> [Date: [[T]]] {
 			let byDate: [Date: [T]] = Self.getIntraEventsByDate(originalEvents: originalEvents)
 			return groupEventsByPageAndSections(eventsBySection: byDate,
