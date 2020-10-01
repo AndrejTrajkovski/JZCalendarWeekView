@@ -6,13 +6,31 @@ public protocol SectionLongPressDelegate: class {
 	func weekView(_ weekView: JZLongPressWeekView, editingEvent: JZBaseEvent, didEndMoveLongPressAt startDate: Date, pageAndSectionIdx:(Int, Int))
 }
 
+///Divides the calendar into 3 pages (previous, current, next). One page shows events for one date. Each page can then be sliced into subsections. Works in conjuction with SectionsFlowLayout, SectionWeekViewFlowLayoutDelegate, SectionsWeekViewDataSource and SectionLongPressDelegate.
 open class SectionWeekView: JZLongPressWeekView {
-
+	public var sectionsFlowLayout: SectionsFlowLayout!
+	public override var flowLayout: JZWeekViewFlowLayout! {
+		get {
+			return sectionsFlowLayout
+		}
+		set {
+			if let newSectionsFlowLayout = newValue as? SectionsFlowLayout {
+				sectionsFlowLayout = newSectionsFlowLayout
+			} else {
+				fatalError("should work with SectionsFlowLayout")
+			}
+		}
+	}
+	//must be 1 per page
+	public override var numOfDays: Int! {
+		get { 1 } set { }
+	}
+	
 	public weak var sectionLongPressDelegate: SectionLongPressDelegate?
 	open var dataSource: SectionWeekViewDataSource! {
 		didSet {
-			dataSource.flowLayout = flowLayout
-			flowLayout.delegate = dataSource
+			dataSource.flowLayout = sectionsFlowLayout
+			sectionsFlowLayout.delegate = dataSource
 			collectionView.dataSource = dataSource
 		}
 	}

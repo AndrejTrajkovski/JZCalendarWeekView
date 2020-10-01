@@ -3,7 +3,7 @@ protocol SectionWeekViewFlowLayoutDelegate: WeekViewFlowLayoutDelegate {
 						minMaxXsFor section: Int) -> (SectionInfo)
 }
 
-class SectionsFlowLayout: JZWeekViewFlowLayout {
+public class SectionsFlowLayout: JZWeekViewFlowLayout {
 
 	weak var sectionDelegate: SectionWeekViewFlowLayoutDelegate?
 	override var delegate: WeekViewFlowLayoutDelegate? {
@@ -19,7 +19,7 @@ class SectionsFlowLayout: JZWeekViewFlowLayout {
 		}
 	}
 	
-	override var collectionViewContentSize: CGSize {
+	public override var collectionViewContentSize: CGSize {
 		        return CGSize(width: rowHeaderWidth + sectionWidth * 3,
                       height: maxSectionHeight)
 	}

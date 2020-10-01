@@ -2,7 +2,7 @@ import Foundation
 
 open class SectionWeekViewDataSource: NSObject, SectionWeekViewFlowLayoutDelegate, UICollectionViewDelegate, UICollectionViewDataSource {
 
-	weak var flowLayout: JZWeekViewFlowLayout!
+	weak var flowLayout: SectionsFlowLayout!
 	private var pageDates: [Date] = []
 	private var allEventsBySubSection: [Date: [[JZBaseEvent]]] = [:]
 	private var dateToSectionsMap: [Date: [Int]] = [:]
