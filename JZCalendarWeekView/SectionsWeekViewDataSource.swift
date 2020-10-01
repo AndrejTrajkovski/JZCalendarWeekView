@@ -3,35 +3,28 @@ import Foundation
 open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICollectionViewDelegate, UICollectionViewDataSource {
 
 	weak var flowLayout: JZWeekViewFlowLayout!
-	private var initDate: Date!
 	private var pageDates: [Date] = []
 	private var allEventsBySubSection: [Date: [[JZBaseEvent]]] = [:]
 	private var dateToSectionsMap: [Date: [Int]] = [:]
 	private var sectionsInfo: [Int: SectionInfo] = [:]
-	
 	public func updateXs(pageWidth: CGFloat) {
-//		print("updateXs")
 		self.sectionsInfo = Self.calcPageSectionXs(self.dateToSectionsMap,
 												 pageWidth: pageWidth)
-//		print("sectionsInfo", sectionsInfo)
 	}
 
 	public func update(date: Date? = nil,
 					   events: [Date: [[JZBaseEvent]]]? = nil) {
-//		print("update date")
-		if date != nil {
-			self.initDate = date!
-		}
 		if events != nil {
 			self.allEventsBySubSection = events!
 		}
-		self.pageDates = [
-			self.initDate,
-			self.initDate.add(component: .day, value: 1),
-			self.initDate.add(component: .day, value: 2)
-		]
+		if date != nil {
+			self.pageDates = [
+				date!,
+				date!.add(component: .day, value: 1),
+				date!.add(component: .day, value: 2)
+			]
+		}
 		self.dateToSectionsMap = Self.calcDateToSectionsMap(events: self.allEventsBySubSection, pageDates: self.pageDates)
-//		print("dateToSectionsMap", dateToSectionsMap)
 	}
 
 	public func collectionView(_ collectionView: UICollectionView,
@@ -51,9 +44,9 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 	public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, startTimeForItemAtIndexPath indexPath: IndexPath) -> Date {
 		let date = flowLayout.dateForColumnHeader(at: indexPath)
 		if let eventsByDate = allEventsBySubSection[date] {
-			let (_, employeeIdx) = getPageAndWithinPageIndex(indexPath.section)!
-			let employeeEvents = eventsByDate[employeeIdx]
-			return employeeEvents[indexPath.item].intraStartDate
+			let (_, withinPageIdx) = getPageAndWithinPageIndex(indexPath.section)!
+			let withinPageEvents = eventsByDate[withinPageIdx]
+			return withinPageEvents[indexPath.item].intraStartDate
 		} else {
 			fatalError("Cannot get events")
 		}
@@ -62,9 +55,9 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 	public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, endTimeForItemAtIndexPath indexPath: IndexPath) -> Date {
 		let date = flowLayout.dateForColumnHeader(at: indexPath)
 		if let eventsByDate = allEventsBySubSection[date] {
-			let (_, employeeIdx) = getPageAndWithinPageIndex(indexPath.section)!
-			let employeeEvents = eventsByDate[employeeIdx]
-			return employeeEvents[indexPath.item].intraEndDate
+			let (_, withinPageIdx) = getPageAndWithinPageIndex(indexPath.section)!
+			let withinPageEvents = eventsByDate[withinPageIdx]
+			return withinPageEvents[indexPath.item].intraEndDate
 		} else {
 			fatalError("Cannot get events")
 		}
@@ -120,8 +113,8 @@ open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICo
 	open func getCurrentEvent(with indexPath: IndexPath) -> JZBaseEvent? {
 		let date = flowLayout.dateForColumnHeader(at: indexPath)
 		let appointments = allEventsBySubSection[date]
-		guard let (_, employeeIdx) = getPageAndWithinPageIndex(indexPath.section) else { return nil }
-		let employeeEvents = appointments?[employeeIdx]
+		guard let (_, withinPageIdx) = getPageAndWithinPageIndex(indexPath.section) else { return nil }
+		let employeeEvents = appointments?[withinPageIdx]
 		return employeeEvents?[indexPath.item]
 	}
 }
@@ -137,8 +130,8 @@ extension SectionWeekViewDataSource {
 	open func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 		let date = flowLayout.dateForColumnHeader(at: IndexPath(item: 0, section: section))
 		if let eventsByDate = allEventsBySubSection[date] {
-			let (_, employeeIdx) = getPageAndWithinPageIndex(section)!
-			return eventsByDate[employeeIdx].count
+			let (_, withinPageIdx) = getPageAndWithinPageIndex(section)!
+			return eventsByDate[withinPageIdx].count
 		} else {
 			return 0
 		}
