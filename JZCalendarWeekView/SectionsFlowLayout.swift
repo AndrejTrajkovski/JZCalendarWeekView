@@ -1,5 +1,24 @@
+protocol SectionWeekViewFlowLayoutDelegate: WeekViewFlowLayoutDelegate {
+	func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout,
+						minMaxXsFor section: Int) -> (SectionInfo)
+}
+
 class SectionsFlowLayout: JZWeekViewFlowLayout {
 
+	weak var sectionDelegate: SectionWeekViewFlowLayoutDelegate?
+	override var delegate: WeekViewFlowLayoutDelegate? {
+		get {
+			return sectionDelegate
+		}
+		set {
+			if let newSectionDelegate = newValue as? SectionWeekViewFlowLayoutDelegate {
+				sectionDelegate = newSectionDelegate
+			} else {
+				fatalError("should conform to SectionWeekViewFlowLayoutDelegate")
+			}
+		}
+	}
+	
 	override var collectionViewContentSize: CGSize {
 		        return CGSize(width: rowHeaderWidth + sectionWidth * 3,
                       height: maxSectionHeight)
@@ -17,7 +36,7 @@ class SectionsFlowLayout: JZWeekViewFlowLayout {
 		// Current time line
 		// TODO: Should improve this method, otherwise every column will display a timeline view
 		sectionIndexes.enumerate(_:) { (section, _) in
-			let sectionMinMaxXs = delegate!.collectionView(collectionView,
+			let sectionMinMaxXs = sectionDelegate!.collectionView(collectionView,
 														   layout: self,
 														   minMaxXsFor: section)
 			let sectionMinX = sectionMinMaxXs.minX
@@ -68,7 +87,7 @@ class SectionsFlowLayout: JZWeekViewFlowLayout {
 		// Column Header
 		let columnHeaderMinY = fmax(collectionView.contentOffset.y, 0.0)
 		sectionIndexes.enumerate(_:) { (section, _) in
-			let sectionMinMaxXs = delegate!.collectionView(collectionView,
+			let sectionMinMaxXs = sectionDelegate!.collectionView(collectionView,
 														   layout: self,
 														   minMaxXsFor: section)
 			let sectionMinX = sectionMinMaxXs.minX
@@ -87,7 +106,7 @@ class SectionsFlowLayout: JZWeekViewFlowLayout {
 	override func layoutItemsAttributes(section: Int, sectionX: CGFloat, calendarStartY: CGFloat) {
 		var attributes =  UICollectionViewLayoutAttributes()
 		var sectionItemAttributes = [UICollectionViewLayoutAttributes]()
-		let sectionWidth = delegate!.collectionView(collectionView!,
+		let sectionWidth = sectionDelegate!.collectionView(collectionView!,
 													layout: self,
 													minMaxXsFor: section).width
 	

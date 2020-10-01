@@ -17,9 +17,6 @@ public protocol WeekViewFlowLayoutDelegate: class {
     func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, endTimeForItemAtIndexPath indexPath: IndexPath) -> Date
     /// TODO: Get the cell type for given item indexPath (Used for different cell types in the future)
     func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, cellTypeForItemAtIndexPath indexPath: IndexPath) -> String
-	
-	func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout,
-						minMaxXsFor section: Int) -> (SectionInfo)
 }
 
 open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {

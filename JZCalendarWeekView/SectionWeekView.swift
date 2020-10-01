@@ -177,9 +177,3 @@ open class SectionWeekView: JZLongPressWeekView {
 		return section.flatMap(dataSource.getPageAndWithinPageIndex)
 	}
 }
-
-extension JZBaseWeekView {
-	public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, minMaxXsFor section: Int) -> (SectionInfo) {
-		fatalError("only for SectionWeekView subclass")
-	}
-}

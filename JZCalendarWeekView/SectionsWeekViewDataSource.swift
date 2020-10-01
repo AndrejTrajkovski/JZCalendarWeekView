@@ -1,6 +1,6 @@
 import Foundation
 
-open class SectionWeekViewDataSource: NSObject, WeekViewFlowLayoutDelegate, UICollectionViewDelegate, UICollectionViewDataSource {
+open class SectionWeekViewDataSource: NSObject, SectionWeekViewFlowLayoutDelegate, UICollectionViewDelegate, UICollectionViewDataSource {
 
 	weak var flowLayout: JZWeekViewFlowLayout!
 	private var pageDates: [Date] = []
