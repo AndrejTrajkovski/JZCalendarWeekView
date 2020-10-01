@@ -21,11 +21,6 @@ open class SectionWeekView: JZLongPressWeekView {
 			}
 		}
 	}
-	//must be 1 per page
-	public override var numOfDays: Int! {
-		get { 1 } set { }
-	}
-	
 	public weak var sectionLongPressDelegate: SectionLongPressDelegate?
 	open var dataSource: SectionWeekViewDataSource! {
 		didSet {
@@ -35,6 +30,11 @@ open class SectionWeekView: JZLongPressWeekView {
 		}
 	}
 
+	//must be 1 per page
+	public override var numOfDays: Int! {
+		get { 1 } set { }
+	}
+	
 	override open func setup() {
         flowLayout = SectionsFlowLayout()
         collectionView = JZCollectionView(frame: bounds, collectionViewLayout: flowLayout)
@@ -191,7 +191,6 @@ open class SectionWeekView: JZLongPressWeekView {
 		}.firstIndex(where: {
 			$0.minX < xCollectionView && $0.maxX >= xCollectionView
 		})
-//		print("getPageAndSubsectionIdx")
 		return section.flatMap(dataSource.getPageAndWithinPageIndex)
 	}
 }
