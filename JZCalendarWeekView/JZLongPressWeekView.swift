@@ -490,9 +490,7 @@ extension JZLongPressWeekView: UIGestureRecognizerDelegate {
     /// used by handleLongPressGesture only
     func getLongPressViewStartDate(pointInCollectionView: CGPoint, pointInSelfView: CGPoint) -> Date {
         let longPressViewTopDate = getDateForPoint(pointCollectionView: CGPoint(x: pointInCollectionView.x, y: pointInCollectionView.y - pressPosition!.yToViewTop), pointSelfView: pointInSelfView)
-//		print("longPressViewTopDate", longPressViewTopDate)
         let longPressViewStartDate = getLongPressStartDate(date: longPressViewTopDate, dateInSection: getDateForPointX(xCollectionView: pointInCollectionView.x, xSelfView: pointInSelfView.x), timeMinInterval: moveTimeMinInterval)
-//		print("longPressViewStartDate", longPressViewTopDate)
         return longPressViewStartDate
     }
 

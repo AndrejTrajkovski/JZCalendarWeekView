@@ -69,7 +69,8 @@ public enum JZCurrentTimelineType {
 }
 
 open class JZWeekViewHelper {
-	/**
+
+    /**
      Get calculated events dictionary with intraStartTime and intraEndTime
      - Parameters:
         - originalEvents: A list of original Events (subclassed from BaseEvent)

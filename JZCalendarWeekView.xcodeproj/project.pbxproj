@@ -12,6 +12,7 @@
 		1F2F29B922959C1E004B7CA1 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2F29B822959C1E004B7CA1 /* Helpers.swift */; };
 		1FB6140D2130FE7400F08ACD /* JZCurrentTimelinePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB6140C2130FE7400F08ACD /* JZCurrentTimelinePage.swift */; };
 		82182C4125260A1300E5479F /* SectionWeekViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82182C4025260A1300E5479F /* SectionWeekViewHelper.swift */; };
+		82182C4325260D2600E5479F /* SectionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82182C4225260D2600E5479F /* SectionInfo.swift */; };
 		82A78058251A89D8006D6DAA /* SectionWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A78057251A89D8006D6DAA /* SectionWeekView.swift */; };
 		82A78061251CF600006D6DAA /* SectionsFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A78060251CF600006D6DAA /* SectionsFlowLayout.swift */; };
 		82A78063251E06E1006D6DAA /* SectionsWeekViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A78062251E06E1006D6DAA /* SectionsWeekViewDataSource.swift */; };
@@ -58,6 +59,7 @@
 		1F2F29B822959C1E004B7CA1 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		1FB6140C2130FE7400F08ACD /* JZCurrentTimelinePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JZCurrentTimelinePage.swift; sourceTree = "<group>"; };
 		82182C4025260A1300E5479F /* SectionWeekViewHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionWeekViewHelper.swift; sourceTree = "<group>"; };
+		82182C4225260D2600E5479F /* SectionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionInfo.swift; sourceTree = "<group>"; };
 		82A78057251A89D8006D6DAA /* SectionWeekView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionWeekView.swift; sourceTree = "<group>"; };
 		82A78060251CF600006D6DAA /* SectionsFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionsFlowLayout.swift; sourceTree = "<group>"; };
 		82A78062251E06E1006D6DAA /* SectionsWeekViewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionsWeekViewDataSource.swift; sourceTree = "<group>"; };
@@ -160,6 +162,7 @@
 				8E1BA955206B4687007BE13C /* Utils */,
 				8E1BA94D206B4329007BE13C /* JZCalendarWeekView.h */,
 				8E1BA94E206B4329007BE13C /* Info.plist */,
+				82182C4225260D2600E5479F /* SectionInfo.swift */,
 			);
 			path = JZCalendarWeekView;
 			sourceTree = "<group>";
@@ -353,6 +356,7 @@
 				8E023C84206C732300C523BE /* JZBaseEvent.swift in Sources */,
 				8E1BA964206B4E82007BE13C /* JZCornerHeader.swift in Sources */,
 				8E1BA96E206B5B55007BE13C /* JZRowHeaderBackground.swift in Sources */,
+				82182C4325260D2600E5479F /* SectionInfo.swift in Sources */,
 				8EF7EBCD20A55C8E00D5CEEA /* JZAllDayCorner.swift in Sources */,
 				8E1BA972206B61B7007BE13C /* JZLongPressEventCell.swift in Sources */,
 				8E1BA966206B4F0B007BE13C /* JZGridLine.swift in Sources */,

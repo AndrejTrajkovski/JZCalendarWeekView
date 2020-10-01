@@ -8,13 +8,6 @@
 
 import UIKit
 
-public struct SectionInfo {
-	let minX: CGFloat
-	let maxX: CGFloat
-	let date: Date
-	var width: CGFloat { maxX - minX}
-}
-
 public protocol WeekViewFlowLayoutDelegate: class {
     /// Get the date for given section
     func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, dayForSection section: Int) -> Date
@@ -343,8 +336,7 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
             sectionItemAttributes.append(attributes)
         }
 
-        adjustItemsForOverlap(sectionItemAttributes, inSection: section, sectionMinX: sectionX,
-							  currentSectionZ: zIndexForElementKind(JZSupplementaryViewKinds.eventCell), sectionWidth: sectionWidth)
+        adjustItemsForOverlap(sectionItemAttributes, inSection: section, sectionMinX: sectionX, currentSectionZ: zIndexForElementKind(JZSupplementaryViewKinds.eventCell), sectionWidth: sectionWidth)
     }
 
     func layoutVerticalGridLinesAttributes(section: Int, sectionX: CGFloat, calendarGridMinY: CGFloat, sectionHeight: CGFloat) {
