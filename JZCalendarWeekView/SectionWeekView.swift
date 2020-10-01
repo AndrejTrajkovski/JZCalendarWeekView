@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 public protocol SectionLongPressDelegate: class {
 	func weekView(_ weekView: JZLongPressWeekView, didEndAddNewLongPressAt startDate: Date, pageAndSectionIdx:(Int, Int))

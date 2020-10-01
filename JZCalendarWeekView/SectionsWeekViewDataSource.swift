@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 open class SectionWeekViewDataSource: NSObject, SectionWeekViewFlowLayoutDelegate, UICollectionViewDelegate, UICollectionViewDataSource {
 

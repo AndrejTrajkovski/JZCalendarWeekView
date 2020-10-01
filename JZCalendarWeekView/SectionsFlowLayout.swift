@@ -1,3 +1,5 @@
+import UIKit
+
 protocol SectionWeekViewFlowLayoutDelegate: WeekViewFlowLayoutDelegate {
 	func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout,
 						minMaxXsFor section: Int) -> (SectionInfo)
@@ -18,7 +20,7 @@ public class SectionsFlowLayout: JZWeekViewFlowLayout {
 			}
 		}
 	}
-	
+
 	public override var collectionViewContentSize: CGSize {
 		        return CGSize(width: rowHeaderWidth + sectionWidth * 3,
                       height: maxSectionHeight)
