@@ -33,7 +33,7 @@ class DefaultViewModel: NSObject {
 	]
 	    lazy var eventsByDate = JZWeekViewHelper.getIntraEventsByDate(originalEvents: events)
 //	var eventsByDate: MyDataSource { JZWeekViewHelper.getIntraEventsByEmployee(originalEvents: events) }
-	var eventsByDateAndSections: [Date: [[JZBaseEvent]]] { JZWeekViewHelper.groupEventsByPageAndSections(originalEvents: events,
+	var eventsByDateAndSections: [Date: [[JZBaseEvent]]] { SectionWeekViewHelper.groupEventsByPageAndSections(originalEvents: events,
 																										 grouping: \.employeeId,
 																										 sorting: { v1, v2 in
 																									v1.key < v2.key
