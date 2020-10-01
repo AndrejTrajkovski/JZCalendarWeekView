@@ -36,7 +36,7 @@ class LongPressViewController: UIViewController, SectionLongPressDelegate {
         } else {
 			calendarWeekView.dataSource = EmployeesSectionWeekViewDataSource()
 			calendarWeekView.setupCalendar(setDate: Date(),
-										   events: viewModel.eventsByDateAndSections)
+										   events: viewModel.eventsByDateOnly)
         }
 
         // LongPress delegate, datasorce and type setup
@@ -172,10 +172,10 @@ extension LongPressViewController {
         let selectedIndex = viewModel.events.firstIndex(where: { $0.id == event.id })!
         viewModel.events[selectedIndex].startDate = startDate
         viewModel.events[selectedIndex].endDate = startDate.add(component: .minute, value: duration)
-		if let newId = getWithinPageId(date: startDate, idx: pageAndSectionIdx.1, events: viewModel.eventsByDateAndSections as! [Date : [[AppointmentEvent]]]) {
+		if let newId = getWithinPageId(date: startDate, idx: pageAndSectionIdx.1, events: viewModel.eventsByDateOnly as! [Date : [[AppointmentEvent]]]) {
 			viewModel.events[selectedIndex].employeeId = newId
 		}
-        calendarWeekView.forceSectionReload(reloadEvents: viewModel.eventsByDateAndSections)
+        calendarWeekView.forceSectionReload(reloadEvents: viewModel.eventsByDateOnly)
 	}
 
 	func getWithinPageId(date: Date,
@@ -188,14 +188,14 @@ extension LongPressViewController {
 		let newIdRange = Array(0...9999)
 		let filtered = newIdRange.filter { !viewModel.events.map(\.id).contains(String($0)) }
 		let newId = filtered.randomElement()!
-		let newEmployeeId = getWithinPageId(date: startDate, idx: pageAndSectionIdx.1, events: viewModel.eventsByDateAndSections as! [Date : [[AppointmentEvent]]]) ?? -1
+		let newEmployeeId = getWithinPageId(date: startDate, idx: pageAndSectionIdx.1, events: viewModel.eventsByDateOnly as! [Date : [[AppointmentEvent]]]) ?? -1
 		let newEvent = AppointmentEvent(id: String(newId),
 										patient: nil,
 										startDate: startDate,
 										endDate: startDate.add(component: .hour, value: weekView.addNewDurationMins/60),
 										employeeId: newEmployeeId)
 		viewModel.events.append(newEvent)
-		calendarWeekView.forceSectionReload(reloadEvents: viewModel.eventsByDateAndSections)
+		calendarWeekView.forceSectionReload(reloadEvents: viewModel.eventsByDateOnly)
 //		print(startDate)
 //		print(pageAndSectionIdx)
 	}

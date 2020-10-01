@@ -35,23 +35,3 @@ public class AppointmentEvent: JZBaseEvent {
 		return AppointmentEvent(id: id, patient: patient, service: service, color: color, startDate: startDate, endDate: endDate, employeeId: employeeId, roomId: roomId)
 	}
 }
-
-public extension SectionGrouping where A == AppointmentEvent, K == Int {
-	static let byEmployee = SectionGrouping(
-		group: { array in return Dictionary.init(grouping: array, by: { $0.employeeId }) }
-	)
-
-	static let byRoom = SectionGrouping(
-		group: { array in return Dictionary.init(grouping: array, by: { $0.roomId }) }
-	)
-}
-
-public extension SectionSorting where A == AppointmentEvent, K == Int {
-	static let byAppointmentCount = SectionSorting<AppointmentEvent, Int> {
-		$0.value.count > $1.value.count
-	}
-
-	static let byEmployeeId = SectionSorting<AppointmentEvent, Int> {
-		$0.key < $1.key
-	}
-}

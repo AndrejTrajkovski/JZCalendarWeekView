@@ -13,7 +13,7 @@ class DefaultViewController: UIViewController {
 
     @IBOutlet weak var calendarWeekView: DefaultWeekView!
 
-    let viewModel = DefaultViewModel()
+    let viewModel = DefaultViewModel2()
 
     override func viewDidLoad() {
         super.viewDidLoad()

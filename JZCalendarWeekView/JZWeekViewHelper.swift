@@ -68,20 +68,6 @@ public enum JZCurrentTimelineType {
     case page // Display the current time line in the whole page including today
 }
 
-public struct SectionGrouping<A: JZBaseEvent, K: Hashable> {
-	let group: ([A]) -> [K: [A]]
-	public init(group: @escaping ([A]) -> [K: [A]]) {
-		self.group = group
-	}
-}
-
-public struct SectionSorting<A: JZBaseEvent, K: Hashable> {
-	let ascendingBy: ((key: K, value: [A]), (key: K, value: [A])) -> Bool
-	public init(ascendingBy: @escaping ((key: K, value: [A]), (key: K, value: [A])) -> Bool) {
-		self.ascendingBy = ascendingBy
-	}
-}
-
 open class JZWeekViewHelper {
 	open class func groupEventsByPageAndSections<T: JZBaseEvent, SectionId: Hashable>(
 		eventsBySection: [Date: [T]],
