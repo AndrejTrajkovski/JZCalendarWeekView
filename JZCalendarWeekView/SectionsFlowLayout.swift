@@ -38,7 +38,7 @@ public class SectionsFlowLayout: JZWeekViewFlowLayout {
 		sectionIndexes.enumerate(_:) { (section, _) in
 			let sectionMinMaxXs = sectionDelegate!.collectionView(collectionView,
 														   layout: self,
-														   minMaxXsFor: section)
+				minMaxXsFor: section).moveFor(points: rowHeaderWidth)
 			let sectionMinX = sectionMinMaxXs.minX
 			let sectionWidth = sectionMinMaxXs.width
 			let timeY = calendarContentMinY + (CGFloat(currentTimeComponents.hour!).toDecimal1Value() * hourHeight
@@ -89,7 +89,7 @@ public class SectionsFlowLayout: JZWeekViewFlowLayout {
 		sectionIndexes.enumerate(_:) { (section, _) in
 			let sectionMinMaxXs = sectionDelegate!.collectionView(collectionView,
 														   layout: self,
-														   minMaxXsFor: section)
+														   minMaxXsFor: section).moveFor(points: rowHeaderWidth)
 			let sectionMinX = sectionMinMaxXs.minX
 			let sectionWidth = sectionMinMaxXs.width
 			(attributes, columnHeaderAttributes) = layoutAttributesForSupplemantaryView(at: IndexPath(item: 0, section: section),

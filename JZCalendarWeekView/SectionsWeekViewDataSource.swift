@@ -86,7 +86,7 @@ open class SectionWeekViewDataSource: NSObject, SectionWeekViewFlowLayoutDelegat
 	static func calcPageSectionXs(_ dateToSectionsMap: [Date: [Int]],
 								  pageWidth: CGFloat) -> [Int: SectionInfo] {
 		var pageSectionXx: [Int: SectionInfo] = [:]
-		var minX: CGFloat = 42 //TODO: pass in rowWidth from flowlayout
+		var minX: CGFloat = 0 //TODO: pass in rowWidth from flowlayout
 		let sections = dateToSectionsMap.sorted(by: { $0.key < $1.key}).flatMap({ $0.value })
 		for section in sections {
 			let pageDict = dateToSectionsMap.first(where: { $0.value.contains(section)})!
