@@ -1,3 +1,5 @@
+import Foundation
+
 public struct SectionInfo {
 	let minX: CGFloat
 	let maxX: CGFloat
