@@ -79,6 +79,7 @@ public class SectionsFlowLayout: JZWeekViewFlowLayout {
 		attributes.frame = CGRect(x: rowHeaderMinX, y: collectionView.contentOffset.y, width: rowHeaderWidth, height: collectionView.frame.height)
 		attributes.zIndex = zIndexForElementKind(JZDecorationViewKinds.rowHeaderBackground)
 		
+		
 		// column header background
 		(attributes, columnHeaderBackgroundAttributes) = layoutAttributesForDecorationView(at: IndexPath(item: 0, section: 0),
 																						   ofKind: JZDecorationViewKinds.columnHeaderBackground,
@@ -88,6 +89,7 @@ public class SectionsFlowLayout: JZWeekViewFlowLayout {
 		attributes.zIndex = zIndexForElementKind(JZDecorationViewKinds.columnHeaderBackground)
 		// Column Header
 		let columnHeaderMinY = fmax(collectionView.contentOffset.y, 0.0)
+		print("columnHeaderMinY: ", columnHeaderMinY)
 		sectionIndexes.enumerate(_:) { (section, _) in
 			let sectionMinMaxXs = sectionDelegate!.collectionView(collectionView,
 														   layout: self,
@@ -143,4 +145,11 @@ public class SectionsFlowLayout: JZWeekViewFlowLayout {
 							  currentSectionZ: zIndexForElementKind(JZSupplementaryViewKinds.eventCell), sectionWidth: sectionWidth)
 	}
 	
+	override open func rectForSection(_ section: Int) -> CGRect {
+		let sectionWidth = sectionDelegate!.collectionView(collectionView!,
+		layout: self,
+		minMaxXsFor: section).width
+		return CGRect(x: rowHeaderWidth + sectionWidth * CGFloat(section), y: 0,
+                      width: sectionWidth, height: collectionViewContentSize.height)
+    }
 }
