@@ -307,7 +307,7 @@ open class JZBaseWeekView: UIView {
     /// Get current event with item indexPath
     ///
     /// - Parameter indexPath: The indexPath of an item in collectionView
-    open func getCurrentEvent(with indexPath: IndexPath) -> JZBaseEvent? {
+    @objc open func getCurrentEvent(with indexPath: IndexPath) -> JZBaseEvent? {
         let date = flowLayout.dateForColumnHeader(at: indexPath)
         return isAllDaySupported ? notAllDayEventsBySection[date]?[indexPath.row] : allEventsBySection[date]?[indexPath.row]
     }
@@ -353,7 +353,7 @@ open class JZBaseWeekView: UIView {
 
     /// Get Date for specific section.
     /// The 0 section start from previous page, which means the first date section in current page should be **numOfDays**.
-    open func getDateForSection(_ section: Int) -> Date {
+    @objc open func getDateForSection(_ section: Int) -> Date {
         return Calendar.current.date(byAdding: .day, value: section, to: initDate)!
     }
 
@@ -705,11 +705,11 @@ extension JZBaseWeekView {
 // MARK: - WeekViewFlowLayoutDelegate
 extension JZBaseWeekView: WeekViewFlowLayoutDelegate {
 
-    public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, dayForSection section: Int) -> Date {
+    @objc public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, dayForSection section: Int) -> Date {
         return getDateForSection(section)
     }
 
-    public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, startTimeForItemAtIndexPath indexPath: IndexPath) -> Date {
+    @objc public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, startTimeForItemAtIndexPath indexPath: IndexPath) -> Date {
         let date = flowLayout.dateForColumnHeader(at: indexPath)
 
         if let events = allEventsBySection[date] {
@@ -720,7 +720,7 @@ extension JZBaseWeekView: WeekViewFlowLayoutDelegate {
         }
     }
 
-    public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, endTimeForItemAtIndexPath indexPath: IndexPath) -> Date {
+    @objc public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, endTimeForItemAtIndexPath indexPath: IndexPath) -> Date {
         let date = flowLayout.dateForColumnHeader(at: indexPath)
 
         if let events = allEventsBySection[date] {

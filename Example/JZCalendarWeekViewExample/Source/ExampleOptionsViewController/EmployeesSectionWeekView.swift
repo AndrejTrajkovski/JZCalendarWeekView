@@ -6,10 +6,7 @@ class EmployeesSectionWeekView: SectionWeekView {
         super.registerViewClasses()
         self.collectionView.register(UINib(nibName: LongPressEventCell.className, bundle: nil), forCellWithReuseIdentifier: LongPressEventCell.className)
     }
-}
-
-class EmployeesSectionWeekViewDataSource: SectionWeekViewDataSource {
-
+	
 	override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LongPressEventCell.className, for: indexPath) as? LongPressEventCell,
 			let event = getCurrentEvent(with: indexPath) as? AppointmentEvent {

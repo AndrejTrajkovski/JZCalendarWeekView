@@ -33,10 +33,9 @@ class LongPressViewController: UIViewController, SectionLongPressDelegate {
             // For example only
             setupCalendarViewWithSelectedData()
         } else {
-			calendarWeekView.dataSource = EmployeesSectionWeekViewDataSource()
+//			calendarWeekView.dataSource = EmployeesSectionWeekViewDataSource()
 			let keyPath: KeyPath<JZBaseEvent, String> =
 				\JZBaseEvent.id
-//			calendarWeekView.dataSource.grouping = keyPath
 			calendarWeekView.setupCalendar(setDate: Date(),
 										   events: viewModel.eventsByDateAndSections)
         }

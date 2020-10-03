@@ -10,7 +10,6 @@
 		82438E60252891C00086F51B /* DefaultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E5BB3D32072F4A000FA853F /* DefaultViewController.swift */; };
 		82A7805E251C2EBD006D6DAA /* AppointmentEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A7805D251C2EBD006D6DAA /* AppointmentEvent.swift */; };
 		82A78064251E2384006D6DAA /* LongPressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EBD62E92096F8AD00520E58 /* LongPressViewController.swift */; };
-		82A78066251E26E2006D6DAA /* ExampleDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A78065251E26E2006D6DAA /* ExampleDataSource.swift */; };
 		82A780682520BDE7006D6DAA /* EmployeesSectionWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A780672520BDE7006D6DAA /* EmployeesSectionWeekView.swift */; };
 		8E048ED4207EF65000A532BA /* OptionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E048ED3207EF65000A532BA /* OptionsViewModel.swift */; };
 		8E048ED6207EF83300A532BA /* ExpandableHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E048ED5207EF83300A532BA /* ExpandableHeaderView.swift */; };
@@ -82,7 +81,6 @@
 
 /* Begin PBXFileReference section */
 		82A7805D251C2EBD006D6DAA /* AppointmentEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppointmentEvent.swift; sourceTree = "<group>"; };
-		82A78065251E26E2006D6DAA /* ExampleDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleDataSource.swift; sourceTree = "<group>"; };
 		82A780672520BDE7006D6DAA /* EmployeesSectionWeekView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmployeesSectionWeekView.swift; sourceTree = "<group>"; };
 		8E048ED3207EF65000A532BA /* OptionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsViewModel.swift; sourceTree = "<group>"; };
 		8E048ED5207EF83300A532BA /* ExpandableHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableHeaderView.swift; sourceTree = "<group>"; };
@@ -238,7 +236,6 @@
 				8EC8A469209999A2002C7634 /* LongPressEventCell.swift */,
 				8EC8A46A209999A2002C7634 /* LongPressEventCell.xib */,
 				82A7805D251C2EBD006D6DAA /* AppointmentEvent.swift */,
-				82A78065251E26E2006D6DAA /* ExampleDataSource.swift */,
 			);
 			path = LongPressViews;
 			sourceTree = "<group>";
@@ -361,7 +358,6 @@
 				8E2E6567208D5F3600FB2CE4 /* BlackGridLine.swift in Sources */,
 				8E5BB404207322BA00FA853F /* AllDayEvent.swift in Sources */,
 				8EC8A46B209999A2002C7634 /* LongPressEventCell.swift in Sources */,
-				82A78066251E26E2006D6DAA /* ExampleDataSource.swift in Sources */,
 				8E048ED9207F26F500A532BA /* OptionsTableViewCell.swift in Sources */,
 				8E9A7DF520969919009AEB6E /* LongPressWeekView.swift in Sources */,
 				8E7263DF2074B55300ECF7CD /* EventCell.swift in Sources */,
