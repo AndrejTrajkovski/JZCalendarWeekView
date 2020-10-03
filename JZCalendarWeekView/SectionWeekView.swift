@@ -100,13 +100,14 @@ open class SectionWeekView: JZLongPressWeekView {
         }
     }
 
+	//what is section index in the context of JZBaseWeekView, is a page in SectionWeekView
 	override open func getDateForSection(_ section: Int) -> Date {
-		return sectionToDateMap[section]!
+		return pageDates[section]
 	}
 
-	override open func getDateForPointX(_ xCollectionView: CGFloat) -> Date {
-		return sectionToDateMap[getSection(xCollectionView)!]!
-    }
+//	override open func getDateForPointX(_ xCollectionView: CGFloat) -> Date {
+//		return sectionToDateMap[getSection(xCollectionView)!]!
+//    }
 
 	override func handleLongPressGesture(_ gestureRecognizer: UILongPressGestureRecognizer) {
 
@@ -207,11 +208,11 @@ open class SectionWeekView: JZLongPressWeekView {
     }
 
 	override public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, dayForSection section: Int) -> Date {
-		return getDateForSection(section)
+		return sectionToDateMap[section]!
 	}
 
 	override public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, startTimeForItemAtIndexPath indexPath: IndexPath) -> Date {
-		let date = getDateForSection(indexPath.section)
+		let date = sectionToDateMap[indexPath.section]!
 		if let eventsByDate = allEventsBySubSection[date] {
 			let (_, withinPageIdx) = getPageAndWithinPageIndex(indexPath.section)!
 			let withinPageEvents = eventsByDate[withinPageIdx]
@@ -222,7 +223,7 @@ open class SectionWeekView: JZLongPressWeekView {
 	}
 
 	override public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, endTimeForItemAtIndexPath indexPath: IndexPath) -> Date {
-		let date = getDateForSection(indexPath.section)
+		let date = sectionToDateMap[indexPath.section]!
 		if let eventsByDate = allEventsBySubSection[date] {
 			let (_, withinPageIdx) = getPageAndWithinPageIndex(indexPath.section)!
 			let withinPageEvents = eventsByDate[withinPageIdx]
@@ -241,14 +242,8 @@ open class SectionWeekView: JZLongPressWeekView {
 		}
 	}
 
-//	func currentPageSectionWidth() -> CGFloat {
-//		let middlePageDate = pageDates[1]
-//		let middleSectionsIdxs = dateToSectionsMap[middlePageDate]!
-//		return sectionsFlowLayout.sectionsXPoints[middleSectionsIdxs.first!]!.width
-//	}
-
 	@objc open override func getCurrentEvent(with indexPath: IndexPath) -> JZBaseEvent? {
-		let date = getDateForSection(indexPath.section)
+		let date = sectionToDateMap[indexPath.section]!
 		let appointments = allEventsBySubSection[date]
 		guard let (_, withinPageIdx) = getPageAndWithinPageIndex(indexPath.section) else { return nil }
 		let employeeEvents = appointments?[withinPageIdx]
