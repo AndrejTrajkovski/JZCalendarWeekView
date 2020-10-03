@@ -10,11 +10,12 @@ public class SectionsFlowLayout: JZWeekViewFlowLayout {
 
 	func updateSectionsXs(_ dateToSectionsMap: [Date: [Int]]) {
 		//in SectionsFlowLayout context sectionWidth is per page width
+		//sectionWidth is set before this call in layoutSubviews of JZBaseWeekView
 		sectionsXPoints = calcSectionXs(dateToSectionsMap,
 										pageWidth: sectionWidth,
 										offset: rowHeaderWidth)
 	}
-
+	
 	override open func prepareHorizontalTileSectionLayoutForSections(_ sectionIndexes: NSIndexSet) {
 		guard let collectionView = collectionView, collectionView.numberOfSections != 0 else { return }
 
