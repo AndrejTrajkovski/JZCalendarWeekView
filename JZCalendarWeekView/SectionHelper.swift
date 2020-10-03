@@ -1,6 +1,6 @@
 import Foundation 
 
-open class SectionWeekViewHelper<T: JZBaseEvent> {
+open class SectionHelper<T: JZBaseEvent> {
 	
 	open class func groupEventsByPageAndSections<T: JZBaseEvent, SectionId: Hashable>(
 		events: [T],

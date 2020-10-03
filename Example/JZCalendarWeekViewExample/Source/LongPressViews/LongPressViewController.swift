@@ -36,7 +36,7 @@ class LongPressViewController: UIViewController, SectionLongPressDelegate {
 			calendarWeekView.dataSource = EmployeesSectionWeekViewDataSource()
 			let keyPath: KeyPath<JZBaseEvent, String> =
 				\JZBaseEvent.id
-			calendarWeekView.dataSource.grouping = keyPath
+//			calendarWeekView.dataSource.grouping = keyPath
 			calendarWeekView.setupCalendar(setDate: Date(),
 										   events: viewModel.eventsByDateAndSections)
         }
@@ -174,7 +174,9 @@ extension LongPressViewController {
         let selectedIndex = viewModel.events.firstIndex(where: { $0.id == event.id })!
         viewModel.events[selectedIndex].startDate = startDate
         viewModel.events[selectedIndex].endDate = startDate.add(component: .minute, value: duration)
-		if let newId = getWithinPageId(date: startDate, idx: pageAndSectionIdx.1, events: viewModel.eventsByDateAndSections as! [Date : [[AppointmentEvent]]]) {
+		// TODO: Add logic when a page is flipped not to update the employee id but add a new section in the page
+		if let newId = getWithinPageId(date: startDate, idx: pageAndSectionIdx.1, events: viewModel.eventsByDateAndSections as! [Date : [[AppointmentEvent]]])
+		{
 			viewModel.events[selectedIndex].employeeId = newId
 		}
         calendarWeekView.forceSectionReload(reloadEvents: viewModel.eventsByDateAndSections)

@@ -43,7 +43,7 @@ open class SectionWeekViewDataSource: NSObject, SectionWeekViewFlowLayoutDelegat
 	}
 
 	public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, startTimeForItemAtIndexPath indexPath: IndexPath) -> Date {
-		let date = flowLayout.dateForColumnHeader(at: indexPath)
+		let date = getDateForSection(indexPath.section)
 		if let eventsByDate = allEventsBySubSection[date] {
 			let (_, withinPageIdx) = getPageAndWithinPageIndex(indexPath.section)!
 			let withinPageEvents = eventsByDate[withinPageIdx]
@@ -54,7 +54,7 @@ open class SectionWeekViewDataSource: NSObject, SectionWeekViewFlowLayoutDelegat
 	}
 
 	public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, endTimeForItemAtIndexPath indexPath: IndexPath) -> Date {
-		let date = flowLayout.dateForColumnHeader(at: indexPath)
+		let date = getDateForSection(indexPath.section)
 		if let eventsByDate = allEventsBySubSection[date] {
 			let (_, withinPageIdx) = getPageAndWithinPageIndex(indexPath.section)!
 			let withinPageEvents = eventsByDate[withinPageIdx]
@@ -112,7 +112,7 @@ open class SectionWeekViewDataSource: NSObject, SectionWeekViewFlowLayoutDelegat
 	}
 
 	open func getCurrentEvent(with indexPath: IndexPath) -> JZBaseEvent? {
-		let date = flowLayout.dateForColumnHeader(at: indexPath)
+		let date = getDateForSection(indexPath.section)
 		let appointments = allEventsBySubSection[date]
 		guard let (_, withinPageIdx) = getPageAndWithinPageIndex(indexPath.section) else { return nil }
 		let employeeEvents = appointments?[withinPageIdx]
@@ -129,9 +129,9 @@ extension SectionWeekViewDataSource {
 	}
 
 	open func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		let date = flowLayout.dateForColumnHeader(at: IndexPath(item: 0, section: section))
+		let (pageIdx, withinPageIdx) = getPageAndWithinPageIndex(section)!
+		let date = pageDates[pageIdx]
 		if let eventsByDate = allEventsBySubSection[date] {
-			let (_, withinPageIdx) = getPageAndWithinPageIndex(section)!
 			return eventsByDate[withinPageIdx].count
 		} else {
 			return 0
@@ -181,7 +181,7 @@ extension SectionWeekViewDataSource {
 	}
 	
 	open func getPageTypeCurrentTimeline(timeline: JZCurrentTimelinePage, indexPath: IndexPath) -> UICollectionReusableView {
-        let date = flowLayout.dateForColumnHeader(at: indexPath)
+		let date = getDateForSection(indexPath.section)
         let daysToToday = Date.daysBetween(start: date, end: Date(), ignoreHours: true)
         timeline.isHidden = abs(daysToToday) > 0
         timeline.updateView(needShowBallView: daysToToday == 0)

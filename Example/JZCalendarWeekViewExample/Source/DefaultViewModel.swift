@@ -37,14 +37,14 @@ class DefaultViewModel: NSObject {
 	var eventsByDateAndSections: [Date: [[JZBaseEvent]]] {
 		JZWeekViewHelper.getIntraEventsByDate(originalEvents: events)
 			.mapValues {
-				[$0]
-//				SectionWeekViewHelper.groupEventsByPageAndSections(events: $0,
-//																   grouping: \.employeeId,
-//																   sorting: {
-//																	$0.key < $1.key
-//				})
+//				[$0]
+				SectionHelper.groupEventsByPageAndSections(events: $0,
+																   grouping: \.employeeId,
+																   sorting: {
+																	$0.key < $1.key
+				})
 		}
 	}
-	
+
 	var currentSelectedData: OptionsSelectedData!
 }
