@@ -56,7 +56,7 @@ open class SectionWeekView: JZLongPressWeekView, SectionWeekViewFlowLayoutDelega
 	override open func setup() {
         flowLayout = SectionsFlowLayout()
         collectionView = JZCollectionView(frame: bounds, collectionViewLayout: flowLayout)
-		sectionsFlowLayout.delegate = self
+		sectionsFlowLayout.sectionDelegate = self
 		collectionView.dataSource = self
 		collectionView.delegate = self
         collectionView.isDirectionalLockEnabled = true
@@ -104,10 +104,6 @@ open class SectionWeekView: JZLongPressWeekView, SectionWeekViewFlowLayoutDelega
             self.forceReload()
         }
     }
-
-	override open func getDateForSection(_ section: Int) -> Date {
-		return sectionsInfo[section]!.date
-	}
 	
 	override func handleLongPressGesture(_ gestureRecognizer: UILongPressGestureRecognizer) {
 
@@ -207,17 +203,6 @@ open class SectionWeekView: JZLongPressWeekView, SectionWeekViewFlowLayoutDelega
         }
     }
 
-	func getPageAndSubsectionIdx(_ xCollectionView: CGFloat) -> (Int, Int)? {
-		let section = sectionsInfo.first(where: {
-			$0.value.minX < xCollectionView && $0.value.maxX >= xCollectionView
-			})?.key
-//		let section = sectionsInfo.sorted(by: { $0.key < $1.key })
-//			.firstIndex(where: {
-//
-//		})
-		return section.flatMap(self.getPageAndWithinPageIndex)
-	}
-
 	public func collectionView(_ collectionView: UICollectionView,
 							   layout: JZWeekViewFlowLayout,
 							   minMaxXsFor section: Int) -> SectionInfo {
@@ -225,11 +210,11 @@ open class SectionWeekView: JZLongPressWeekView, SectionWeekViewFlowLayoutDelega
 	}
 
 	override public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, dayForSection section: Int) -> Date {
-		return getDateForSection(section)
+		return sectionsInfo[section]!.date
 	}
 
 	override public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, startTimeForItemAtIndexPath indexPath: IndexPath) -> Date {
-		let date = getDateForSection(indexPath.section)
+		let date = sectionsInfo[indexPath.section]!.date
 		if let eventsByDate = allEventsBySubSection[date] {
 			let (_, withinPageIdx) = getPageAndWithinPageIndex(indexPath.section)!
 			let withinPageEvents = eventsByDate[withinPageIdx]
@@ -240,7 +225,7 @@ open class SectionWeekView: JZLongPressWeekView, SectionWeekViewFlowLayoutDelega
 	}
 
 	override public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, endTimeForItemAtIndexPath indexPath: IndexPath) -> Date {
-		let date = getDateForSection(indexPath.section)
+		let date = sectionsInfo[indexPath.section]!.date
 		if let eventsByDate = allEventsBySubSection[date] {
 			let (_, withinPageIdx) = getPageAndWithinPageIndex(indexPath.section)!
 			let withinPageEvents = eventsByDate[withinPageIdx]
@@ -266,7 +251,7 @@ open class SectionWeekView: JZLongPressWeekView, SectionWeekViewFlowLayoutDelega
 	}
 
 	@objc open override func getCurrentEvent(with indexPath: IndexPath) -> JZBaseEvent? {
-		let date = getDateForSection(indexPath.section)
+		let date = sectionsInfo[indexPath.section]!.date
 		let appointments = allEventsBySubSection[date]
 		guard let (_, withinPageIdx) = getPageAndWithinPageIndex(indexPath.section) else { return nil }
 		let employeeEvents = appointments?[withinPageIdx]
@@ -291,4 +276,16 @@ extension SectionWeekView {
 			return 0
 		}
 	}
+
+	func getPageAndSubsectionIdx(_ xCollectionView: CGFloat) -> (Int, Int)? {
+		let section = (0..<collectionView.numberOfSections).map {
+			self.collectionView(collectionView,
+									  layout: flowLayout,
+									  minMaxXsFor: $0)
+		}.firstIndex(where: {
+			$0.minX < xCollectionView && $0.maxX >= xCollectionView
+		})
+		return section.flatMap(self.getPageAndWithinPageIndex)
+	}
+
 }

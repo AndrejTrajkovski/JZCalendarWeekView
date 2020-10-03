@@ -42,7 +42,7 @@ class LongPressViewController: UIViewController, SectionLongPressDelegate {
 
         // LongPress delegate, datasorce and type setup
 		calendarWeekView.sectionLongPressDelegate = self
-        calendarWeekView.longPressDelegate = self
+//        calendarWeekView.longPressDelegate = self
         calendarWeekView.longPressDataSource = self
         calendarWeekView.longPressTypes = [.addNew, .move]
 
