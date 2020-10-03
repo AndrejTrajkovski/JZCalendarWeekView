@@ -23,20 +23,22 @@ open class SectionHelper<T: JZBaseEvent> {
 			return sorted.map(\.value)
 		}
 	}
-	
-	static func calcPageSectionXs(_ dateToSectionsMap: [Date: [Int]],
-								  pageWidth: CGFloat) -> [Int: SectionInfo] {
-		var pageSectionXx: [Int: SectionInfo] = [:]
-		var minX: CGFloat = 0
+
+	static func calcPageSectionXsAndDates(_ dateToSectionsMap: [Date: [Int]],
+										  pageWidth: CGFloat) -> ([Int: SectionXs], [Int: Date]) {
+		var sectionDates: [Int: Date] = [:]
+		var pageSectionXx: [Int: SectionXs] = [:]
+		var minX: CGFloat = 42
 		let sections = dateToSectionsMap.sorted(by: { $0.key < $1.key}).flatMap({ $0.value })
 		for section in sections {
 			let pageDict = dateToSectionsMap.first(where: { $0.value.contains(section)})!
 			let width = (pageWidth / CGFloat(pageDict.value.count))
 			let maxX = minX + width
-			pageSectionXx[section] = SectionInfo(minX: minX, maxX: maxX, date: pageDict.key)
+			pageSectionXx[section] = SectionXs(minX: minX, maxX: maxX)
 			minX = maxX
+			sectionDates[section] = pageDict.key
 		}
-		return pageSectionXx
+		return (pageSectionXx, sectionDates)
 	}
 	
 	static func calcDateToSectionsMap(events: [Date: [[JZBaseEvent]]], pageDates: [Date]) -> [Date: [Int]] {

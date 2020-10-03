@@ -1,26 +1,8 @@
 import UIKit
 
-protocol SectionWeekViewFlowLayoutDelegate: WeekViewFlowLayoutDelegate {
-	func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout,
-						minMaxXsFor section: Int) -> (SectionInfo)
-}
-
 public class SectionsFlowLayout: JZWeekViewFlowLayout {
 
-	weak var sectionDelegate: SectionWeekViewFlowLayoutDelegate?
-	override var delegate: WeekViewFlowLayoutDelegate? {
-		get {
-			return sectionDelegate
-		}
-		set {
-			if let newSectionDelegate = newValue as? SectionWeekViewFlowLayoutDelegate {
-				sectionDelegate = newSectionDelegate
-			} else {
-				fatalError("should conform to SectionWeekViewFlowLayoutDelegate")
-			}
-		}
-	}
-
+	public var sectionsXPoints: [Int: SectionXs] = [:]
 	public override var collectionViewContentSize: CGSize {
 		        return CGSize(width: rowHeaderWidth + sectionWidth * 3,
                       height: maxSectionHeight)
@@ -38,9 +20,7 @@ public class SectionsFlowLayout: JZWeekViewFlowLayout {
 		// Current time line
 		// TODO: Should improve this method, otherwise every column will display a timeline view
 		sectionIndexes.enumerate(_:) { (section, _) in
-			let sectionMinMaxXs = sectionDelegate!.collectionView(collectionView,
-														   layout: self,
-				minMaxXsFor: section).moveFor(points: rowHeaderWidth)
+			let sectionMinMaxXs = sectionsXPoints[section]!
 			let sectionMinX = sectionMinMaxXs.minX
 			let sectionWidth = sectionMinMaxXs.width
 			let timeY = calendarContentMinY + (CGFloat(currentTimeComponents.hour!).toDecimal1Value() * hourHeight
@@ -91,9 +71,7 @@ public class SectionsFlowLayout: JZWeekViewFlowLayout {
 		let columnHeaderMinY = fmax(collectionView.contentOffset.y, 0.0)
 		print("columnHeaderMinY: ", columnHeaderMinY)
 		sectionIndexes.enumerate(_:) { (section, _) in
-			let sectionMinMaxXs = sectionDelegate!.collectionView(collectionView,
-														   layout: self,
-														   minMaxXsFor: section).moveFor(points: rowHeaderWidth)
+			let sectionMinMaxXs = sectionsXPoints[section]!
 			let sectionMinX = sectionMinMaxXs.minX
 			let sectionWidth = sectionMinMaxXs.width
 			(attributes, columnHeaderAttributes) = layoutAttributesForSupplemantaryView(at: IndexPath(item: 0, section: section),
@@ -110,9 +88,7 @@ public class SectionsFlowLayout: JZWeekViewFlowLayout {
 	override func layoutItemsAttributes(section: Int, sectionX: CGFloat, calendarStartY: CGFloat) {
 		var attributes =  UICollectionViewLayoutAttributes()
 		var sectionItemAttributes = [UICollectionViewLayoutAttributes]()
-		let sectionWidth = sectionDelegate!.collectionView(collectionView!,
-													layout: self,
-													minMaxXsFor: section).width
+		let sectionWidth = sectionsXPoints[section]!.width
 	
 		for item in 0..<collectionView!.numberOfItems(inSection: section) {
 			let itemIndexPath = IndexPath(item: item, section: section)
@@ -146,9 +122,7 @@ public class SectionsFlowLayout: JZWeekViewFlowLayout {
 	}
 	
 	override open func rectForSection(_ section: Int) -> CGRect {
-		let sectionWidth = sectionDelegate!.collectionView(collectionView!,
-		layout: self,
-		minMaxXsFor: section).width
+		let sectionWidth = sectionsXPoints[section]!.width
 		return CGRect(x: rowHeaderWidth + sectionWidth * CGFloat(section), y: 0,
                       width: sectionWidth, height: collectionViewContentSize.height)
     }
