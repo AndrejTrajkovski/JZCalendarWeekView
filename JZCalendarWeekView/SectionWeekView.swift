@@ -23,15 +23,10 @@ open class SectionWeekView: JZLongPressWeekView {
 		}
 	}
 	public weak var sectionLongPressDelegate: SectionLongPressDelegate?
-	
 	private var pageDates: [Date] = []
 	private var allEventsBySubSection: [Date: [[JZBaseEvent]]] = [:]
 	private var dateToSectionsMap: [Date: [Int]] = [:]
 	private var sectionToDateMap: [Int: Date] = [:]
-	public func updateXs(pageWidth: CGFloat) {
-		(sectionsFlowLayout.sectionsXPoints, sectionToDateMap) = SectionHelper.calcPageSectionXsAndDates(self.dateToSectionsMap,
-																				pageWidth: pageWidth)
-	}
 
 	public func update(date: Date? = nil,
 					   events: [Date: [[JZBaseEvent]]]? = nil) {
@@ -45,7 +40,7 @@ open class SectionWeekView: JZLongPressWeekView {
 				date!.add(component: .day, value: 2)
 			]
 		}
-		self.dateToSectionsMap = SectionHelper.calcDateToSectionsMap(events: self.allEventsBySubSection, pageDates: self.pageDates)
+		(dateToSectionsMap, sectionToDateMap) = SectionHelper.calcDateToSectionsMap(events: self.allEventsBySubSection, pageDates: self.pageDates)
 	}
 
 	//must be 1 per page
@@ -72,7 +67,7 @@ open class SectionWeekView: JZLongPressWeekView {
 
 	open override func layoutSubviews() {
 		super.layoutSubviews()
-		updateXs(pageWidth: getSectionWidth())
+		sectionsFlowLayout.updateSectionsXs(dateToSectionsMap)
 	}
 
 	public func setupCalendar(

@@ -2,10 +2,17 @@ import UIKit
 
 public class SectionsFlowLayout: JZWeekViewFlowLayout {
 
-	public var sectionsXPoints: [Int: SectionXs] = [:]
+	var sectionsXPoints: [Int: SectionXs] = [:]
 	public override var collectionViewContentSize: CGSize {
 		        return CGSize(width: rowHeaderWidth + sectionWidth * 3,
                       height: maxSectionHeight)
+	}
+
+	func updateSectionsXs(_ dateToSectionsMap: [Date: [Int]]) {
+		//in SectionsFlowLayout context sectionWidth is per page width
+		sectionsXPoints = calcSectionXs(dateToSectionsMap,
+										pageWidth: sectionWidth,
+										offset: rowHeaderWidth)
 	}
 
 	override open func prepareHorizontalTileSectionLayoutForSections(_ sectionIndexes: NSIndexSet) {
@@ -126,4 +133,22 @@ public class SectionsFlowLayout: JZWeekViewFlowLayout {
 		return CGRect(x: rowHeaderWidth + sectionWidth * CGFloat(section), y: 0,
                       width: sectionWidth, height: collectionViewContentSize.height)
     }
+}
+
+extension SectionsFlowLayout {
+	func calcSectionXs(_ dateToSectionsMap: [Date: [Int]],
+								  pageWidth: CGFloat,
+								  offset: CGFloat) -> [Int: SectionXs]{
+		var pageSectionXx: [Int: SectionXs] = [:]
+		var minX: CGFloat = offset
+		let sections = dateToSectionsMap.sorted(by: { $0.key < $1.key}).flatMap({ $0.value })
+		for section in sections {
+			let pageDict = dateToSectionsMap.first(where: { $0.value.contains(section)})!
+			let width = (pageWidth / CGFloat(pageDict.value.count))
+			let maxX = minX + width
+			pageSectionXx[section] = SectionXs(minX: minX, maxX: maxX)
+			minX = maxX
+		}
+		return pageSectionXx
+	}
 }

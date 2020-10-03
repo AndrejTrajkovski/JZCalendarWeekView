@@ -24,32 +24,20 @@ open class SectionHelper<T: JZBaseEvent> {
 		}
 	}
 
-	static func calcPageSectionXsAndDates(_ dateToSectionsMap: [Date: [Int]],
-										  pageWidth: CGFloat) -> ([Int: SectionXs], [Int: Date]) {
-		var sectionDates: [Int: Date] = [:]
-		var pageSectionXx: [Int: SectionXs] = [:]
-		var minX: CGFloat = 42
-		let sections = dateToSectionsMap.sorted(by: { $0.key < $1.key}).flatMap({ $0.value })
-		for section in sections {
-			let pageDict = dateToSectionsMap.first(where: { $0.value.contains(section)})!
-			let width = (pageWidth / CGFloat(pageDict.value.count))
-			let maxX = minX + width
-			pageSectionXx[section] = SectionXs(minX: minX, maxX: maxX)
-			minX = maxX
-			sectionDates[section] = pageDict.key
-		}
-		return (pageSectionXx, sectionDates)
-	}
-	
-	static func calcDateToSectionsMap(events: [Date: [[JZBaseEvent]]], pageDates: [Date]) -> [Date: [Int]] {
+	static func calcDateToSectionsMap(events: [Date: [[JZBaseEvent]]], pageDates: [Date]) -> ([Date: [Int]], [Int: Date]) {
 		var runningTotal = 0
 		var result: [Date: [Int]] = [:]
+		var viceVersa: [Int: Date] = [:]
 		for pageDate in pageDates {
 			let dateEvents = events[pageDate]
 			let upper = (dateEvents?.count ?? 1) + runningTotal
-			result[pageDate] = Array(runningTotal..<upper)
+			let sections = Array(runningTotal..<upper)
+			result[pageDate] = sections
+			sections.forEach {
+				viceVersa[$0] = pageDate
+			}
 			runningTotal = upper
 		}
-		return result
+		return (result, viceVersa)
 	}
 }
