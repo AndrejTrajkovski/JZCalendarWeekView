@@ -393,7 +393,7 @@ open class JZBaseWeekView: UIView {
      Get date excluding time from **gesture point in collectionView only** rather than collectionView contentOffset
         - Parameter xCollectionView: gesture point x in collectionView
      */
-    open func getDateForPointX(_ xCollectionView: CGFloat) -> Date {
+    @objc open func getDateForPointX(_ xCollectionView: CGFloat) -> Date {
         // RowHeader(horizontal UICollectionReusableView) should be considered in gesture point
         // Margin area for point X can also get actual date, because it is always the middle view unlike point Y
         let adjustedX = xCollectionView - flowLayout.rowHeaderWidth - flowLayout.contentsMargin.left
