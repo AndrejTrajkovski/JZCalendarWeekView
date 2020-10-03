@@ -31,21 +31,20 @@ class DefaultViewModel: NSObject {
 		AppointmentEvent(id: "8", startDate: thirdDate, endDate: thirdDate.add(component: .hour, value: 1), employeeId: 1),
 		AppointmentEvent(id: "9", startDate: thirdDate, endDate: thirdDate.add(component: .hour, value: 1), employeeId: 14)
 	]
-	    lazy var eventsByDate = JZWeekViewHelper.getIntraEventsByDate(originalEvents: events)
-//	var eventsByDate: MyDataSource { JZWeekViewHelper.getIntraEventsByEmployee(originalEvents: events) }
-	var eventsByDateAndSections: [Date: [[JZBaseEvent]]] { SectionWeekViewHelper.groupEventsByPageAndSections(originalEvents: events,
-																										 grouping: \.employeeId,
-																										 sorting: { v1, v2 in
-																									v1.key < v2.key
-	})
-	}
 
-	var eventsByDateOnly: [Date: [[JZBaseEvent]]] {
+	lazy var eventsByDate = JZWeekViewHelper.getIntraEventsByDate(originalEvents: events)
+
+	var eventsByDateAndSections: [Date: [[JZBaseEvent]]] {
 		JZWeekViewHelper.getIntraEventsByDate(originalEvents: events)
 			.mapValues {
 				[$0]
+//				SectionWeekViewHelper.groupEventsByPageAndSections(events: $0,
+//																   grouping: \.employeeId,
+//																   sorting: {
+//																	$0.key < $1.key
+//				})
 		}
 	}
-
+	
 	var currentSelectedData: OptionsSelectedData!
 }

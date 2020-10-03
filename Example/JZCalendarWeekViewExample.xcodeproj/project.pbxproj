@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		82182C3E2525EC1B00E5479F /* DefaultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E5BB3D32072F4A000FA853F /* DefaultViewController.swift */; };
+		82438E60252891C00086F51B /* DefaultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E5BB3D32072F4A000FA853F /* DefaultViewController.swift */; };
 		82A7805E251C2EBD006D6DAA /* AppointmentEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A7805D251C2EBD006D6DAA /* AppointmentEvent.swift */; };
 		82A78064251E2384006D6DAA /* LongPressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EBD62E92096F8AD00520E58 /* LongPressViewController.swift */; };
 		82A78066251E26E2006D6DAA /* ExampleDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A78065251E26E2006D6DAA /* ExampleDataSource.swift */; };
@@ -372,7 +372,7 @@
 				8E7263E32074B73300ECF7CD /* DefaultWeekView.swift in Sources */,
 				82A7805E251C2EBD006D6DAA /* AppointmentEvent.swift in Sources */,
 				8E5BB3D22072F4A000FA853F /* AppDelegate.swift in Sources */,
-				82182C3E2525EC1B00E5479F /* DefaultViewController.swift in Sources */,
+				82438E60252891C00086F51B /* DefaultViewController.swift in Sources */,
 				82A78064251E2384006D6DAA /* LongPressViewController.swift in Sources */,
 				8E048ED6207EF83300A532BA /* ExpandableHeaderView.swift in Sources */,
 				8E0D30B1208EBB0F00B7FC59 /* ToastUtil.swift in Sources */,

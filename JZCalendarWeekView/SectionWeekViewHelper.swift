@@ -1,16 +1,15 @@
-import Foundation
+import Foundation 
 
-open class SectionWeekViewHelper {
+open class SectionWeekViewHelper<T: JZBaseEvent> {
+	
 	open class func groupEventsByPageAndSections<T: JZBaseEvent, SectionId: Hashable>(
-		eventsBySection: [Date: [T]],
+		events: [T],
 		grouping: KeyPath<T, SectionId>,
 		sorting:
 		@escaping ((key: SectionId, value: [T]), (key: SectionId, value: [T])) -> Bool)
-		-> [Date: [[T]]] {
-			let asdf = Self.groupAndSortSections(grouping: grouping,
-												 sorting: sorting)
-			let res: [Date: [[T]]] = eventsBySection.mapValues(asdf)
-			return res
+		-> [[T]] {
+			return Self.groupAndSortSections(grouping: grouping,
+											 sorting: sorting)(events)
 	}
 
 	class func groupAndSortSections<T: JZBaseEvent, SectionId: Hashable>(
@@ -23,18 +22,5 @@ open class SectionWeekViewHelper {
 			let sorted = grouped.sorted(by: sorting)
 			return sorted.map(\.value)
 		}
-	}
-
-	open class func groupEventsByPageAndSections<T: JZBaseEvent,
-		SectionId: Hashable>(
-		originalEvents: [T],
-		grouping: KeyPath<T, SectionId>,
-		sorting:
-		@escaping ((key: SectionId, value: [T]), (key: SectionId, value: [T])) -> Bool)
-		-> [Date: [[T]]] {
-			let byDate: [Date: [T]] = JZWeekViewHelper.getIntraEventsByDate(originalEvents: originalEvents)
-			return groupEventsByPageAndSections(eventsBySection: byDate,
-												grouping: grouping,
-												sorting: sorting)
 	}
 }
