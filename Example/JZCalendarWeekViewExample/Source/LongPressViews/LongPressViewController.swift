@@ -199,8 +199,6 @@ extension LongPressViewController {
 										employeeId: newEmployeeId)
 		viewModel.events.append(newEvent)
 		calendarWeekView.forceSectionReload(reloadEvents: viewModel.eventsByDateAndSections)
-//		print(startDate)
-//		print(pageAndSectionIdx)
 	}
 }
 
