@@ -24,14 +24,14 @@ let package = Package(
         .target(
             name: "JZCalendarWeekView",
             dependencies: [],
-            path: "JZCalendarWeekView"),
-        .target(
-            name: "JZCalendarWeekViewExample",
-            dependencies: ["JZCalendarWeekView"],
-            path: "Example"),
-        .testTarget(
-            name: "JZCalendarWeekViewTests",
-            dependencies: ["JZCalendarWeekView"],
-            path: "Tests")
+            path: "JZCalendarWeekView")
+//        .target(
+//            name: "JZCalendarWeekViewExample",
+//            dependencies: ["JZCalendarWeekView"],
+//            path: "Example"),
+//        .testTarget(
+//            name: "JZCalendarWeekViewTests",
+//            dependencies: ["JZCalendarWeekView"],
+//            path: "Tests")
     ]
 )
