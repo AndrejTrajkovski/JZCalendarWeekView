@@ -66,7 +66,7 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
         return cachedCurrentTimeComponents[0]!
     }
 
-    typealias AttDic = [IndexPath: UICollectionViewLayoutAttributes]
+    public typealias AttDic = [IndexPath: UICollectionViewLayoutAttributes]
 
     var allAttributes = [UICollectionViewLayoutAttributes]()
     var itemAttributes = AttDic()
@@ -175,22 +175,26 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
         let needsToPopulateAllAttributes = (allAttributes.count == 0)
 
         if needsToPopulateAllAttributes {
-            allAttributes.append(contentsOf: columnHeaderAttributes.values)
-            allAttributes.append(contentsOf: columnHeaderBackgroundAttributes.values)
-            allAttributes.append(contentsOf: rowHeaderAttributes.values)
-            allAttributes.append(contentsOf: rowHeaderBackgroundAttributes.values)
-            allAttributes.append(contentsOf: verticalGridlineAttributes.values)
-            allAttributes.append(contentsOf: horizontalGridlineAttributes.values)
-            allAttributes.append(contentsOf: cornerHeaderAttributes.values)
-            allAttributes.append(contentsOf: currentTimeLineAttributes.values)
-            allAttributes.append(contentsOf: itemAttributes.values)
-
-            allAttributes.append(contentsOf: allDayCornerAttributes.values)
-            allAttributes.append(contentsOf: allDayHeaderAttributes.values)
-            allAttributes.append(contentsOf: allDayHeaderBackgroundAttributes.values)
+			populateAllAttributes()
         }
     }
 
+	open func populateAllAttributes() {
+		allAttributes.append(contentsOf: columnHeaderAttributes.values)
+		allAttributes.append(contentsOf: columnHeaderBackgroundAttributes.values)
+		allAttributes.append(contentsOf: rowHeaderAttributes.values)
+		allAttributes.append(contentsOf: rowHeaderBackgroundAttributes.values)
+		allAttributes.append(contentsOf: verticalGridlineAttributes.values)
+		allAttributes.append(contentsOf: horizontalGridlineAttributes.values)
+		allAttributes.append(contentsOf: cornerHeaderAttributes.values)
+		allAttributes.append(contentsOf: currentTimeLineAttributes.values)
+		allAttributes.append(contentsOf: itemAttributes.values)
+
+		allAttributes.append(contentsOf: allDayCornerAttributes.values)
+		allAttributes.append(contentsOf: allDayHeaderAttributes.values)
+		allAttributes.append(contentsOf: allDayHeaderBackgroundAttributes.values)
+	}
+	
     open func prepareHorizontalTileSectionLayoutForSections(_ sectionIndexes: NSIndexSet) {
         guard let collectionView = collectionView, collectionView.numberOfSections != 0 else { return }
 

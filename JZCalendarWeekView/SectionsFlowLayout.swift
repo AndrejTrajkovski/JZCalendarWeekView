@@ -1,6 +1,6 @@
 import UIKit
 
-public class SectionsFlowLayout: JZWeekViewFlowLayout {
+open class SectionsFlowLayout: JZWeekViewFlowLayout {
 
 	var sectionsXPoints: [Int: SectionXs] = [:]
 	public override var collectionViewContentSize: CGSize {
@@ -129,7 +129,7 @@ public class SectionsFlowLayout: JZWeekViewFlowLayout {
 	}
 	
 	override open func rectForSection(_ section: Int) -> CGRect {
-		let sectionWidth = sectionsXPoints[section]!.width
+		let sectionWidth = sectionsXPoints[section]?.width ?? 0
 		return CGRect(x: rowHeaderWidth + sectionWidth * CGFloat(section), y: 0,
                       width: sectionWidth, height: collectionViewContentSize.height)
     }

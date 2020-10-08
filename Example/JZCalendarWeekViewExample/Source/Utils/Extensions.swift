@@ -15,7 +15,7 @@ extension Date {
         return Calendar.current.date(byAdding: component, value: value, to: self)!
     }
 
-    var startOfDay: Date {
+    public var startOfDay: Date {
         return Calendar.current.startOfDay(for: self)
     }
 }

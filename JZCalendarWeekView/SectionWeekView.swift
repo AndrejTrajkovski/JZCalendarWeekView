@@ -28,18 +28,14 @@ open class SectionWeekView: JZLongPressWeekView {
 	private var dateToSectionsMap: [Date: [Int]] = [:]
 	private var sectionToDateMap: [Int: Date] = [:]
 
-	public func update(date: Date? = nil,
-					   events: [Date: [[JZBaseEvent]]]? = nil) {
-		if events != nil {
-			self.allEventsBySubSection = events!
-		}
-		if date != nil {
-			self.pageDates = [
-				date!,
-				date!.add(component: .day, value: 1),
-				date!.add(component: .day, value: 2)
-			]
-		}
+	public func update(date: Date,
+					   events: [Date: [[JZBaseEvent]]]) {
+		self.allEventsBySubSection = events
+		self.pageDates = [
+			date,
+			date.add(component: .day, value: 1),
+			date.add(component: .day, value: 2)
+		]
 		(dateToSectionsMap, sectionToDateMap) = SectionHelper.calcDateToSectionsMap(events: self.allEventsBySubSection, pageDates: self.pageDates)
 	}
 
@@ -72,28 +68,26 @@ open class SectionWeekView: JZLongPressWeekView {
 
 	public func setupCalendar(
 		setDate: Date,
-		events: [Date: [[JZBaseEvent]]],
-		visibleTime: Date = Date()
+		events: [Date: [[JZBaseEvent]]]
 	) {
 		super.setupCalendar(numOfDays: 1,
 							setDate: setDate,
 							allEvents: [:],
 							scrollType: .pageScroll,
-							currentTimelineType: .page,
-							visibleTime: visibleTime)
+							currentTimelineType: .page)
 		update(date: initDate,
-						  events: events)
+			   events: events)
 	}
 
 	public func forceSectionReload(reloadEvents: [Date : [[JZBaseEvent]]]) {
-		update(events: reloadEvents)
+		update(date: initDate, events: reloadEvents)
 		self.forceReload()
 	}
 
 	override open func loadNextOrPrevPage(isNext: Bool) {
 		let addValue = isNext ? numOfDays : -numOfDays
 		self.initDate = self.initDate.add(component: .day, value: addValue!)
-		update(date: initDate)
+		update(date: initDate, events: self.allEventsBySubSection)
 		DispatchQueue.main.async { [unowned self] in
             self.layoutSubviews()
             self.forceReload()
