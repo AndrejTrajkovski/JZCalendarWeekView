@@ -208,25 +208,11 @@ open class SectionWeekView: JZLongPressWeekView {
 	}
 
 	override public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, startTimeForItemAtIndexPath indexPath: IndexPath) -> Date {
-		let date = sectionToDateMap[indexPath.section]!
-		if let eventsByDate = allEventsBySubSection[date],
-		   let withinPageIdx = getPageAndWithinPageIndex(indexPath.section).1 {
-			let withinPageEvents = eventsByDate[withinPageIdx]
-			return withinPageEvents[indexPath.item].intraStartDate
-		} else {
-			fatalError("Cannot get events")
-		}
+		return getCurrentEvent(with: indexPath)!.intraStartDate
 	}
 
 	override public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, endTimeForItemAtIndexPath indexPath: IndexPath) -> Date {
-		let date = sectionToDateMap[indexPath.section]!
-		if let eventsByDate = allEventsBySubSection[date],
-		   let withinPageIdx = getPageAndWithinPageIndex(indexPath.section).1  {
-			let withinPageEvents = eventsByDate[withinPageIdx]
-			return withinPageEvents[indexPath.item].intraEndDate
-		} else {
-			fatalError("Cannot get events")
-		}
+		return getCurrentEvent(with: indexPath)!.intraEndDate
 	}
 
 	public func getPageAndWithinPageIndex(_ section: Int) -> (Int?, Int?) {
