@@ -28,7 +28,7 @@ open class SectionsFlowLayout: JZWeekViewFlowLayout {
 		// Current time line
 		// TODO: Should improve this method, otherwise every column will display a timeline view
 		sectionIndexes.enumerate(_:) { (section, _) in
-			let sectionMinMaxXs = sectionsXPoints[section]!
+			guard let sectionMinMaxXs = sectionsXPoints[section] else { return }
 			let sectionMinX = sectionMinMaxXs.minX
 			let sectionWidth = sectionMinMaxXs.width
 			let timeY = calendarContentMinY + (CGFloat(currentTimeComponents.hour!).toDecimal1Value() * hourHeight
@@ -78,7 +78,7 @@ open class SectionsFlowLayout: JZWeekViewFlowLayout {
 		// Column Header
 		let columnHeaderMinY = fmax(collectionView.contentOffset.y, 0.0)
 		sectionIndexes.enumerate(_:) { (section, _) in
-			let sectionMinMaxXs = sectionsXPoints[section]!
+			guard let sectionMinMaxXs = sectionsXPoints[section] else { return }
 			let sectionMinX = sectionMinMaxXs.minX
 			let sectionWidth = sectionMinMaxXs.width
 			(attributes, columnHeaderAttributes) = layoutAttributesForSupplemantaryView(at: IndexPath(item: 0, section: section),
