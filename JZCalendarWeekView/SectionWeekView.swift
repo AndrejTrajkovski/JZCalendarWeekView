@@ -95,6 +95,7 @@ open class SectionWeekView: JZLongPressWeekView {
 		DispatchQueue.main.async { [unowned self] in
             self.layoutSubviews()
             self.forceReload()
+			self.baseDelegate?.userDidFlipPage(self, isNextPage: isNext)
         }
     }
 

@@ -15,6 +15,9 @@ public protocol JZBaseViewDelegate: class {
     ///   - weekView: current JZBaseWeekView
     ///   - initDate: the new value of initDate
     func initDateDidChange(_ weekView: JZBaseWeekView, initDate: Date)
+	
+	func userDidFlipPage(_ weekView: JZBaseWeekView,
+						 isNextPage: Bool)
 }
 
 extension JZBaseViewDelegate {
@@ -282,11 +285,14 @@ open class JZBaseWeekView: UIView {
     /// - Parameters:
     ///    - date: this date is the current date in one-day view rather than initDate
     open func updateWeekView(to date: Date) {
-        self.initDate = date.startOfDay.add(component: .day, value: -numOfDays)
-        DispatchQueue.main.async { [unowned self] in
-            self.layoutSubviews()
-            self.forceReload()
-        }
+		let potentialInitDate = date.startOfDay.add(component: .day, value: -numOfDays)
+		if potentialInitDate != initDate {
+			self.initDate = potentialInitDate
+				DispatchQueue.main.async { [unowned self] in
+					self.layoutSubviews()
+					self.forceReload()
+				}
+		}
     }
 
     /// Vertically scroll collectionView to the specific time in a day.
@@ -612,6 +618,7 @@ extension JZBaseWeekView: UICollectionViewDelegate, UICollectionViewDelegateFlow
         let addValue = isNext ? numOfDays : -numOfDays
         self.initDate = self.initDate.add(component: .day, value: addValue!)
         self.forceReload()
+		self.baseDelegate?.userDidFlipPage(self, isNextPage: isNext)
     }
 
 }
