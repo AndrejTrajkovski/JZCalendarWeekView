@@ -90,6 +90,8 @@ open class JZLongPressWeekView: JZBaseWeekView {
         var indexPath: IndexPath!
         /// Save current all changed opacity cell contentViews to change them back when end or cancel longPress, have to save them because of cell reusage
         var allOpacityContentViews = [UIView]()
+		
+		var yPointInsideCell: CGFloat!
     }
     /// When moving the longPress view, if it causes the collectionView scrolling
     var isScrolling: Bool = false
@@ -401,12 +403,13 @@ extension JZLongPressWeekView: UIGestureRecognizerDelegate {
 
         let state = gestureRecognizer.state
         var currentMovingCell: UICollectionViewCell!
-
+		
         if isLongPressing == false {
             if let indexPath = collectionView.indexPathForItem(at: pointInCollectionView) {
                 // Can add some conditions for allowing only few types of cells can be moved
                 currentLongPressType = .move
                 currentMovingCell = collectionView.cellForItem(at: indexPath)
+				currentEditingInfo.yPointInsideCell = gestureRecognizer.location(in: currentMovingCell).y
             } else {
                 currentLongPressType = .addNew
             }
@@ -447,9 +450,15 @@ extension JZLongPressWeekView: UIGestureRecognizerDelegate {
 
         } else if state == .changed {
             let topYPoint = max(pointInSelfView.y - pressPosition!.yToViewTop, longPressTopMarginY)
-            longPressView.center = CGPoint(x: pointInSelfView.x - pressPosition!.xToViewLeft + currentEditingInfo.cellSize.width/2,
-                                           y: topYPoint + currentEditingInfo.cellSize.height/2)
-
+			if currentEditingInfo.yPointInsideCell < 10.0 {
+//				print(longPressViewStartDate)
+				let previousY = longPressView.frame.minY
+				print(topYPoint)
+				longPressView.frame = CGRect.init(x: pointInSelfView.x - pressPosition!.xToViewLeft, y: topYPoint, width: currentEditingInfo.cellSize.width, height: longPressView.frame.height - topYPoint + previousY)
+			} else {
+				longPressView.center = CGPoint(x: pointInSelfView.x - pressPosition!.xToViewLeft + currentEditingInfo.cellSize.width/2,
+											   y: topYPoint + currentEditingInfo.cellSize.height/2)
+			}
         } else if state == .cancelled {
 
             UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseOut, animations: {
