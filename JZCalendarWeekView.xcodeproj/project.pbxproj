@@ -13,6 +13,7 @@
 		1FB6140D2130FE7400F08ACD /* JZCurrentTimelinePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB6140C2130FE7400F08ACD /* JZCurrentTimelinePage.swift */; };
 		820800DF252A8B2B00C07C32 /* SectionXs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820800DE252A8B2B00C07C32 /* SectionXs.swift */; };
 		82182C4125260A1300E5479F /* SectionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82182C4025260A1300E5479F /* SectionHelper.swift */; };
+		824BBA162540C4A600CD4521 /* JZColumnBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824BBA152540C4A600CD4521 /* JZColumnBackground.swift */; };
 		82A78058251A89D8006D6DAA /* SectionWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A78057251A89D8006D6DAA /* SectionWeekView.swift */; };
 		82A78061251CF600006D6DAA /* SectionsFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A78060251CF600006D6DAA /* SectionsFlowLayout.swift */; };
 		8E023C78206C6E4B00C523BE /* JZLongPressWeekViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E023C77206C6E4B00C523BE /* JZLongPressWeekViewTests.swift */; };
@@ -59,6 +60,7 @@
 		1FB6140C2130FE7400F08ACD /* JZCurrentTimelinePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JZCurrentTimelinePage.swift; sourceTree = "<group>"; };
 		820800DE252A8B2B00C07C32 /* SectionXs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionXs.swift; sourceTree = "<group>"; };
 		82182C4025260A1300E5479F /* SectionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHelper.swift; sourceTree = "<group>"; };
+		824BBA152540C4A600CD4521 /* JZColumnBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = JZColumnBackground.swift; path = JZCalendarWeekView/ReusableViews/JZColumnBackground.swift; sourceTree = "<group>"; };
 		82A78057251A89D8006D6DAA /* SectionWeekView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionWeekView.swift; sourceTree = "<group>"; };
 		82A78060251CF600006D6DAA /* SectionsFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionsFlowLayout.swift; sourceTree = "<group>"; };
 		8E023C75206C6E4B00C523BE /* JZCalendarWeekViewTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JZCalendarWeekViewTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -126,6 +128,7 @@
 		8E1BA940206B4329007BE13C = {
 			isa = PBXGroup;
 			children = (
+				824BBA152540C4A600CD4521 /* JZColumnBackground.swift */,
 				8E1BA94C206B4329007BE13C /* JZCalendarWeekView */,
 				8E023C76206C6E4B00C523BE /* Tests */,
 				8E1BA94B206B4329007BE13C /* Products */,
@@ -338,6 +341,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				824BBA162540C4A600CD4521 /* JZColumnBackground.swift in Sources */,
 				8E99A0A22134E84800415071 /* JZCollectionView.swift in Sources */,
 				82A78061251CF600006D6DAA /* SectionsFlowLayout.swift in Sources */,
 				8EEB40DA214B8DDE0027D45E /* WeakTimer.swift in Sources */,

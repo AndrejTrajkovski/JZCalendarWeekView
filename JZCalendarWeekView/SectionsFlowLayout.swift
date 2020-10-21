@@ -1,7 +1,9 @@
 import UIKit
 
 open class SectionsFlowLayout: JZWeekViewFlowLayout {
-	
+
+	var cachedBackgroundStartTime = [Int: DateComponents]()
+	var cachedBackgroundEndTime = [Int: DateComponents]()
 	var columnBackgroundAttributes = AttDic()
 	var sectionsXPoints: [Int: SectionXs] = [:]
 	public override var collectionViewContentSize: CGSize {
@@ -16,17 +18,19 @@ open class SectionsFlowLayout: JZWeekViewFlowLayout {
 										pageWidth: sectionWidth,
 										offset: rowHeaderWidth)
 	}
-	
+
 	override open func populateAllAttributes(){
 		super.populateAllAttributes()
 		allAttributes.append(contentsOf: columnBackgroundAttributes.values)
 	}
-	
+
 	override func invalidateLayoutCache() {
 		super.invalidateLayoutCache()
+		cachedBackgroundStartTime.removeAll()
+		cachedBackgroundEndTime.removeAll()
 		columnBackgroundAttributes.removeAll()
 	}
-	
+
 	override open func prepareHorizontalTileSectionLayoutForSections(_ sectionIndexes: NSIndexSet) {
 		guard let collectionView = collectionView, collectionView.numberOfSections != 0 else { return }
 
@@ -58,10 +62,10 @@ open class SectionsFlowLayout: JZWeekViewFlowLayout {
 																					withItemCache: cornerHeaderAttributes)
 		attributes.frame = CGRect(origin: collectionView.contentOffset, size: CGSize(width: rowHeaderWidth, height: columnHeaderHeight))
 		attributes.zIndex = zIndexForElementKind(JZSupplementaryViewKinds.cornerHeader)
-	
+
 		// Row header
 		let rowHeaderMinX = fmax(collectionView.contentOffset.x, 0)
-	
+
 		for rowHeaderIndex in 0...24 {
 			(attributes, rowHeaderAttributes) = layoutAttributesForSupplemantaryView(at: IndexPath(item: rowHeaderIndex, section: 0),
 																					 ofKind: JZSupplementaryViewKinds.rowHeader,
@@ -99,10 +103,37 @@ open class SectionsFlowLayout: JZWeekViewFlowLayout {
 			attributes.zIndex = zIndexForElementKind(JZSupplementaryViewKinds.columnHeader)
 			layoutVerticalGridLinesAttributes(section: section, sectionX: sectionMinX, calendarGridMinY: calendarGridMinY, sectionHeight: sectionHeight)
 			layoutItemsAttributes(section: section, sectionX: sectionMinX, calendarStartY: calendarGridMinY)
+			layoutColumnBackgroundAttributes(section: section, sectionX: sectionMinX, calendarStartY: calendarGridMinY)
 		}
 		layoutHorizontalGridLinesAttributes(calendarStartX: calendarContentMinX, calendarStartY: calendarContentMinY)
 	}
-
+	
+	func layoutColumnBackgroundAttributes(section: Int, sectionX: CGFloat, calendarStartY: CGFloat) {
+		var attributes =  UICollectionViewLayoutAttributes()
+		let sectionWidth = sectionsXPoints[section]!.width
+		(attributes, columnBackgroundAttributes) = layoutAttributesForSupplemantaryView(at: IndexPath(item: 0, section: section),
+																					   ofKind: JZSupplementaryViewKinds.columnBackground,
+																					   withItemCache: columnBackgroundAttributes)
+		let backgroundStartTime = startTimeForBgSection(section)
+		let backgroundEndTime = endTimeForBgSection(section)
+		let startHourY = CGFloat(backgroundStartTime.hour!) * hourHeight
+		let startMinuteY = CGFloat(backgroundStartTime.minute!) * minuteHeight
+		let endHourY: CGFloat
+		let endMinuteY = CGFloat(backgroundEndTime.minute!) * minuteHeight
+		if backgroundStartTime.day! != backgroundStartTime.day! {
+			endHourY = CGFloat(Calendar.current.maximumRange(of: .hour)!.count) * hourHeight + CGFloat(backgroundStartTime.hour!) * hourHeight
+		} else {
+			endHourY = CGFloat(backgroundStartTime.hour!) * hourHeight
+		}
+		let itemMinX = (sectionX + itemMargin.left).toDecimal1Value()
+		let itemMinY = (startHourY + startMinuteY + calendarStartY + itemMargin.top).toDecimal1Value()
+		let itemMaxX = (itemMinX + (sectionWidth - (itemMargin.left + itemMargin.right))).toDecimal1Value()
+		let itemMaxY = (endHourY + endMinuteY + calendarStartY - itemMargin.bottom).toDecimal1Value()
+		
+		attributes.frame = CGRect(x: itemMinX, y: itemMinY, width: itemMaxX - itemMinX, height: 100)
+		attributes.zIndex = zIndexForElementKind(JZSupplementaryViewKinds.columnBackground)
+	}
+	
 	override func layoutItemsAttributes(section: Int, sectionX: CGFloat, calendarStartY: CGFloat) {
 		var attributes =  UICollectionViewLayoutAttributes()
 		var sectionItemAttributes = [UICollectionViewLayoutAttributes]()
@@ -144,6 +175,32 @@ open class SectionsFlowLayout: JZWeekViewFlowLayout {
 		return CGRect(x: rowHeaderWidth + sectionWidth * CGFloat(section), y: 0,
                       width: sectionWidth, height: collectionViewContentSize.height)
     }
+	
+	func startTimeForBgSection(_ section: Int) -> DateComponents {
+		if cachedBackgroundStartTime[section] != nil {
+			return cachedBackgroundStartTime[section]!
+		} else {
+			if let date = delegate?.collectionView(collectionView!, layout: self, startTimeForBackgroundAtSection: section) {
+				cachedBackgroundStartTime[section] = Calendar.current.dateComponents([.day, .hour, .minute], from: date)
+				return cachedBackgroundStartTime[section]!
+			} else {
+				fatalError()
+			}
+		}
+	}
+
+	func endTimeForBgSection(_ section: Int) -> DateComponents {
+		if cachedBackgroundEndTime[section] != nil {
+			return cachedBackgroundEndTime[section]!
+		} else {
+			if let date = delegate?.collectionView(collectionView!, layout: self, endTimeForBackgroundAtSection: section) {
+				cachedBackgroundEndTime[section] = Calendar.current.dateComponents([.day, .hour, .minute], from: date)
+				return cachedBackgroundEndTime[section]!
+			} else {
+				fatalError()
+			}
+		}
+	}
 }
 
 extension SectionsFlowLayout {

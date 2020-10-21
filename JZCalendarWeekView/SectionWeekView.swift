@@ -220,7 +220,15 @@ open class SectionWeekView: JZLongPressWeekView {
 	override public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, endTimeForItemAtIndexPath indexPath: IndexPath) -> Date {
 		return getCurrentEvent(with: indexPath)!.intraEndDate
 	}
-
+	
+//	public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, startTimeForBackgroundAtSection section: Int) -> Date {
+//		
+//	}
+//	
+//	public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, endTimeForBackgroundAtSection section: Int) -> Date {
+//		
+//	}
+	
 	public func getPageAndWithinPageIndex(_ section: Int) -> (Int?, Int?) {
 		guard let sectionDate = sectionToDateMap[section] else {
 			return (nil, nil)

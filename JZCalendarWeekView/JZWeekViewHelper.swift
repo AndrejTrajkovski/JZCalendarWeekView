@@ -14,6 +14,7 @@ public enum JZSupplementaryViewKinds {
     public static let allDayHeader = JZAllDayHeader.className
     public static let eventCell = "eventCell"
     public static let currentTimeline = "currentTimeline"
+	public static let columnBackground = JZColumnBackground.className
 }
 
 public enum JZDecorationViewKinds {
