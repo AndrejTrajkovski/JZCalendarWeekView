@@ -78,7 +78,7 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
     var horizontalGridlineAttributes = AttDic()
     var cornerHeaderAttributes = AttDic()
     var currentTimeLineAttributes = AttDic()
-
+	
     var allDayHeaderAttributes = AttDic()
     var allDayHeaderBackgroundAttributes = AttDic()
     var allDayCornerAttributes = AttDic()
@@ -189,7 +189,7 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
 		allAttributes.append(contentsOf: cornerHeaderAttributes.values)
 		allAttributes.append(contentsOf: currentTimeLineAttributes.values)
 		allAttributes.append(contentsOf: itemAttributes.values)
-
+		
 		allAttributes.append(contentsOf: allDayCornerAttributes.values)
 		allAttributes.append(contentsOf: allDayHeaderAttributes.values)
 		allAttributes.append(contentsOf: allDayHeaderBackgroundAttributes.values)
@@ -701,7 +701,7 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
         cornerHeaderAttributes.removeAll()
         itemAttributes.removeAll()
         allAttributes.removeAll()
-
+		
         allDayHeaderAttributes.removeAll()
         allDayHeaderBackgroundAttributes.removeAll()
         allDayCornerAttributes.removeAll()

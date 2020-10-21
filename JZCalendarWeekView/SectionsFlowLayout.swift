@@ -1,7 +1,8 @@
 import UIKit
 
 open class SectionsFlowLayout: JZWeekViewFlowLayout {
-
+	
+	var columnBackgroundAttributes = AttDic()
 	var sectionsXPoints: [Int: SectionXs] = [:]
 	public override var collectionViewContentSize: CGSize {
 		        return CGSize(width: rowHeaderWidth + sectionWidth * 3,
@@ -14,6 +15,16 @@ open class SectionsFlowLayout: JZWeekViewFlowLayout {
 		sectionsXPoints = calcSectionXs(dateToSectionsMap,
 										pageWidth: sectionWidth,
 										offset: rowHeaderWidth)
+	}
+	
+	override open func populateAllAttributes(){
+		super.populateAllAttributes()
+		allAttributes.append(contentsOf: columnBackgroundAttributes.values)
+	}
+	
+	override func invalidateLayoutCache() {
+		super.invalidateLayoutCache()
+		columnBackgroundAttributes.removeAll()
 	}
 	
 	override open func prepareHorizontalTileSectionLayoutForSections(_ sectionIndexes: NSIndexSet) {
