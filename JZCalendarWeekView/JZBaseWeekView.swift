@@ -713,11 +713,11 @@ extension JZBaseWeekView {
 extension JZBaseWeekView: WeekViewFlowLayoutDelegate {
 
 	@objc public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, endTimeForBackgroundAtSection section: Int) -> Date {
-		return Date().add(component: .hour, value: 1)
+		return Date().add(component: .minute, value: Array(30...50).randomElement()!)
 	}
 	
 	@objc public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, startTimeForBackgroundAtSection section: Int) -> Date {
-		return Date().add(component: .hour, value: -1)
+		return Date().add(component: .minute, value: Array(30...50).randomElement()!)
 	}
 	
     @objc public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, dayForSection section: Int) -> Date {

@@ -123,14 +123,14 @@ open class SectionsFlowLayout: JZWeekViewFlowLayout {
 		if backgroundStartTime.day! != backgroundStartTime.day! {
 			endHourY = CGFloat(Calendar.current.maximumRange(of: .hour)!.count) * hourHeight + CGFloat(backgroundStartTime.hour!) * hourHeight
 		} else {
-			endHourY = CGFloat(backgroundStartTime.hour!) * hourHeight
+			endHourY = CGFloat(backgroundEndTime.hour!) * hourHeight
 		}
 		let itemMinX = (sectionX + itemMargin.left).toDecimal1Value()
-		let itemMinY = (startHourY + startMinuteY + calendarStartY + itemMargin.top).toDecimal1Value()
 		let itemMaxX = (itemMinX + (sectionWidth - (itemMargin.left + itemMargin.right))).toDecimal1Value()
 		let itemMaxY = (endHourY + endMinuteY + calendarStartY - itemMargin.bottom).toDecimal1Value()
+		let itemMinY = (startHourY + startMinuteY + calendarStartY + itemMargin.top).toDecimal1Value()
 		
-		attributes.frame = CGRect(x: itemMinX, y: itemMinY, width: itemMaxX - itemMinX, height: 100)
+		attributes.frame = CGRect(x: itemMinX, y: itemMinY, width: itemMaxX - itemMinX, height: itemMaxY - itemMinY)
 		attributes.zIndex = zIndexForElementKind(JZSupplementaryViewKinds.columnBackground)
 	}
 	

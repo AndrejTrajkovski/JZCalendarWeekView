@@ -792,7 +792,7 @@ open class JZWeekViewFlowLayout: UICollectionViewFlowLayout {
     open func zIndexForElementKind(_ kind: String) -> Int {
         switch kind {
 		case JZSupplementaryViewKinds.columnBackground:
-			return minOverlayZ + 11
+			return minOverlayZ + 4
         case JZSupplementaryViewKinds.cornerHeader, JZDecorationViewKinds.allDayCorner:
             return minOverlayZ + 10
         case JZSupplementaryViewKinds.allDayHeader:
