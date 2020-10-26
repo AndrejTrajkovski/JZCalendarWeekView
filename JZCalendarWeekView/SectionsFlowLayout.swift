@@ -42,6 +42,7 @@ open class SectionsFlowLayout: JZWeekViewFlowLayout {
 		let calendarContentMinY = columnHeaderHeight + contentsMargin.top + allDayHeaderHeight
 		// Current time line
 		// TODO: Should improve this method, otherwise every column will display a timeline view
+		
 		sectionIndexes.enumerate(_:) { (section, _) in
 			guard let sectionMinMaxXs = sectionsXPoints[section] else { return }
 			let sectionMinX = sectionMinMaxXs.minX
@@ -92,6 +93,7 @@ open class SectionsFlowLayout: JZWeekViewFlowLayout {
 		attributes.zIndex = zIndexForElementKind(JZDecorationViewKinds.columnHeaderBackground)
 		// Column Header
 		let columnHeaderMinY = fmax(collectionView.contentOffset.y, 0.0)
+		print(collectionView.contentOffset.y)
 		sectionIndexes.enumerate(_:) { (section, _) in
 			guard let sectionMinMaxXs = sectionsXPoints[section] else { return }
 			let sectionMinX = sectionMinMaxXs.minX
@@ -103,35 +105,35 @@ open class SectionsFlowLayout: JZWeekViewFlowLayout {
 			attributes.zIndex = zIndexForElementKind(JZSupplementaryViewKinds.columnHeader)
 			layoutVerticalGridLinesAttributes(section: section, sectionX: sectionMinX, calendarGridMinY: calendarGridMinY, sectionHeight: sectionHeight)
 			layoutItemsAttributes(section: section, sectionX: sectionMinX, calendarStartY: calendarGridMinY)
-			layoutColumnBackgroundAttributes(section: section, sectionX: sectionMinX, calendarStartY: calendarGridMinY)
+		}
+		
+		sectionIndexes.enumerate { (section, _) in
+			guard let sectionMinMaxXs = sectionsXPoints[section] else { return }
+			let sectionMinX = sectionMinMaxXs.minX
+			let sectionWidth = sectionMinMaxXs.width
+			(attributes, columnBackgroundAttributes) = layoutAttributesForSupplemantaryView(at: IndexPath(item: 0, section: section),
+																						   ofKind: JZSupplementaryViewKinds.columnBackground,
+																						   withItemCache: columnBackgroundAttributes)
+			let backgroundStartTime = startTimeForBgSection(section)
+			let backgroundEndTime = endTimeForBgSection(section)
+			let startHourY = CGFloat(backgroundStartTime.hour!) * hourHeight
+			let startMinuteY = CGFloat(backgroundStartTime.minute!) * minuteHeight
+			let endHourY: CGFloat
+			let endMinuteY = CGFloat(backgroundEndTime.minute!) * minuteHeight
+			if backgroundStartTime.day! != backgroundStartTime.day! {
+				endHourY = CGFloat(Calendar.current.maximumRange(of: .hour)!.count) * hourHeight + CGFloat(backgroundStartTime.hour!) * hourHeight
+			} else {
+				endHourY = CGFloat(backgroundEndTime.hour!) * hourHeight
+			}
+			let itemMinX = (sectionMinX + itemMargin.left).toDecimal1Value()
+			let itemMaxX = (itemMinX + (sectionWidth - (itemMargin.left + itemMargin.right))).toDecimal1Value()
+			let itemMaxY = (endHourY + endMinuteY + calendarGridMinY - itemMargin.bottom).toDecimal1Value()
+			let itemMinY = (startHourY + startMinuteY + calendarGridMinY + itemMargin.top).toDecimal1Value()
+			
+			attributes.frame = CGRect(x: itemMinX, y: itemMinY, width: itemMaxX - itemMinX, height: itemMaxY - itemMinY)
+			attributes.zIndex = zIndexForElementKind(JZSupplementaryViewKinds.columnBackground)
 		}
 		layoutHorizontalGridLinesAttributes(calendarStartX: calendarContentMinX, calendarStartY: calendarContentMinY)
-	}
-	
-	func layoutColumnBackgroundAttributes(section: Int, sectionX: CGFloat, calendarStartY: CGFloat) {
-		var attributes =  UICollectionViewLayoutAttributes()
-		let sectionWidth = sectionsXPoints[section]!.width
-		(attributes, columnBackgroundAttributes) = layoutAttributesForSupplemantaryView(at: IndexPath(item: 0, section: section),
-																					   ofKind: JZSupplementaryViewKinds.columnBackground,
-																					   withItemCache: columnBackgroundAttributes)
-		let backgroundStartTime = startTimeForBgSection(section)
-		let backgroundEndTime = endTimeForBgSection(section)
-		let startHourY = CGFloat(backgroundStartTime.hour!) * hourHeight
-		let startMinuteY = CGFloat(backgroundStartTime.minute!) * minuteHeight
-		let endHourY: CGFloat
-		let endMinuteY = CGFloat(backgroundEndTime.minute!) * minuteHeight
-		if backgroundStartTime.day! != backgroundStartTime.day! {
-			endHourY = CGFloat(Calendar.current.maximumRange(of: .hour)!.count) * hourHeight + CGFloat(backgroundStartTime.hour!) * hourHeight
-		} else {
-			endHourY = CGFloat(backgroundEndTime.hour!) * hourHeight
-		}
-		let itemMinX = (sectionX + itemMargin.left).toDecimal1Value()
-		let itemMaxX = (itemMinX + (sectionWidth - (itemMargin.left + itemMargin.right))).toDecimal1Value()
-		let itemMaxY = (endHourY + endMinuteY + calendarStartY - itemMargin.bottom).toDecimal1Value()
-		let itemMinY = (startHourY + startMinuteY + calendarStartY + itemMargin.top).toDecimal1Value()
-		
-		attributes.frame = CGRect(x: itemMinX, y: itemMinY, width: itemMaxX - itemMinX, height: itemMaxY - itemMinY)
-		attributes.zIndex = zIndexForElementKind(JZSupplementaryViewKinds.columnBackground)
 	}
 	
 	override func layoutItemsAttributes(section: Int, sectionX: CGFloat, calendarStartY: CGFloat) {
@@ -171,9 +173,9 @@ open class SectionsFlowLayout: JZWeekViewFlowLayout {
 	}
 	
 	override open func rectForSection(_ section: Int) -> CGRect {
-		let sectionWidth = sectionsXPoints[section]?.width ?? 0
-		return CGRect(x: rowHeaderWidth + sectionWidth * CGFloat(section), y: 0,
-                      width: sectionWidth, height: collectionViewContentSize.height)
+		let sectionX = sectionsXPoints[section] ?? SectionXs(minX: rowHeaderWidth, maxX: rowHeaderWidth)
+		return CGRect(x: sectionX.minX, y: 0,
+					  width: sectionX.width, height: collectionViewContentSize.height)
     }
 	
 	func startTimeForBgSection(_ section: Int) -> DateComponents {
