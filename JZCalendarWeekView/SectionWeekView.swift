@@ -28,19 +28,56 @@ open class SectionWeekView: JZLongPressWeekView {
 	}
 	public weak var sectionLongPressDelegate: SectionLongPressDelegate?
 	private var pageDates: [Date] = []
+	public var sectionKeyPath: AnyHashableKeyPath<JZBaseEvent>!
+	public var sectionIds: [AnyHashable] = []
 	public var allEventsBySubSection: [Date: [[JZBaseEvent]]] = [:]
 	private var dateToSectionsMap: [Date: [Int]] = [:]
 	private var sectionToDateMap: [Int: Date] = [:]
 	
-	public func update(date: Date,
-						events: [Date: [[JZBaseEvent]]]) {
-		self.allEventsBySubSection = events
+	func group<T: Hashable>(_ events: [JZBaseEvent],
+							_ sectionIds: [T],
+							_ sectionKeyPath: AnyHashableKeyPath<JZBaseEvent>) -> [Date: [[JZBaseEvent]]] {
+		let byDate = JZWeekViewHelper.getIntraEventsByDate(originalEvents: events)
+		return byDate.mapValues { eventsByDate in
+			group(sectionIds,
+				  eventsByDate,
+				  sectionKeyPath)
+		}
+	}
+	
+	public func update<T: Hashable>(selectedDate: Date,
+									sectionIds: [T],
+									events: [JZBaseEvent],
+									sectionKeyPath: AnyHashableKeyPath<JZBaseEvent>) {
+		let byDateAndSection = group(events, sectionIds, sectionKeyPath)
+		update(selectedDate,
+			   sectionIds,
+			   byDateAndSection,
+			   sectionKeyPath)
+	}
+	
+	public func update<T: Hashable>(_ selectedDate: Date,
+									_ sectionIds: [T],
+									_ byDateAndSection: [Date: [[JZBaseEvent]]],
+									_ sectionKeyPath: AnyHashableKeyPath<JZBaseEvent>) {
+		self.sectionKeyPath = sectionKeyPath
+		self.sectionIds = sectionIds.map(AnyHashable.init)
+		self.allEventsBySubSection = byDateAndSection
 		self.pageDates = [
-			date,
-			date.add(component: .day, value: 1),
-			date.add(component: .day, value: 2)
+			selectedDate,
+			selectedDate.add(component: .day, value: 1),
+			selectedDate.add(component: .day, value: 2)
 		]
-		(dateToSectionsMap, sectionToDateMap) = SectionHelper.calcDateToSectionsMap(events: self.allEventsBySubSection, pageDates: self.pageDates)
+		(dateToSectionsMap, sectionToDateMap) = SectionHelper.calcDateToSectionsMap(events: byDateAndSection, pageDates: self.pageDates)
+	}
+	
+	func group<T: Hashable>(_ sectionIds: [T],
+							_ events: [JZBaseEvent],
+							_ keyPath: AnyHashableKeyPath<JZBaseEvent>) -> [[JZBaseEvent]] {
+		let eventsBySection = Dictionary.init(grouping: events, by: { keyPath.get($0) })
+		return sectionIds.reduce(into: [T: [JZBaseEvent]](), { res, sectionId in
+			res[sectionId] = eventsBySection[sectionId, default: []]
+		}).map(\.value)
 	}
 
 	//must be 1 per page
@@ -71,27 +108,36 @@ open class SectionWeekView: JZLongPressWeekView {
 	}
 
 	public func setupCalendar(
-		setDate: Date,
-		events: [Date: [[JZBaseEvent]]]
+		setDate: Date
 	) {
 		super.setupCalendar(numOfDays: 1,
 							setDate: setDate,
 							allEvents: [:],
 							scrollType: .pageScroll,
 							currentTimelineType: .page)
-		update(date: initDate,
-			   events: events)
+		//FIXME: Maybe delete this call
+//		update(selectedDate: setDate,
+//			   sectionIds: [],
+//			   events: [])
 	}
 	
-	open func forceSectionReload(reloadEvents: [Date : [[JZBaseEvent]]]) {
-		update(date: initDate, events: reloadEvents)
+	open func forceSectionReload<T: Hashable>(reloadEvents: [JZBaseEvent],
+											  sectionIds: [T],
+											  sectionKeyPath: AnyHashableKeyPath<JZBaseEvent>) {
+		update(selectedDate: initDate,
+			   sectionIds: sectionIds,
+			   events: reloadEvents,
+			   sectionKeyPath: sectionKeyPath)
 		self.forceReload()
 	}
 
 	override open func loadNextOrPrevPage(isNext: Bool) {
 		let addValue = isNext ? numOfDays : -numOfDays
 		self.initDate = self.initDate.add(component: .day, value: addValue!)
-		update(date: initDate, events: self.allEventsBySubSection)
+		update(initDate,
+			   sectionIds,
+			   allEventsBySubSection,
+			   sectionKeyPath)
 		DispatchQueue.main.async { [unowned self] in
             self.layoutSubviews()
             self.forceReload()
@@ -221,11 +267,11 @@ open class SectionWeekView: JZLongPressWeekView {
 		return getCurrentEvent(with: indexPath)!.intraEndDate
 	}
 	
-//	public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, startTimeForBackgroundAtSection section: Int) -> Date {
+//	public override func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, startTimeForBackgroundAtSection section: Int) -> Date {
 //		
 //	}
 //	
-//	public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, endTimeForBackgroundAtSection section: Int) -> Date {
+//	public override func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, endTimeForBackgroundAtSection section: Int) -> Date {
 //		
 //	}
 	
@@ -310,5 +356,20 @@ public extension Collection {
 	/// Returns the element at the specified index if it is within bounds, otherwise nil.
 	subscript (safe index: Index) -> Element? {
 		return indices.contains(index) ? self[index] : nil
+	}
+}
+
+public struct AnyHashableKeyPath<T> {
+	public let get: (T) -> AnyHashable
+	public let set: (inout T, AnyHashable) -> ()
+	
+	public init<S: Hashable>(_ kpth: WritableKeyPath<T, S>) {
+		set = {
+			$0[keyPath: kpth] = $1.base as! S
+		}
+		
+		get = {
+			$0[keyPath: kpth]
+		}
 	}
 }
