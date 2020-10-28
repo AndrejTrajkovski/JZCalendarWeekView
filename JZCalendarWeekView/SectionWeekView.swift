@@ -11,6 +11,13 @@ public protocol SectionLongPressDelegate: class {
 				  startPageAndSectionIdx: (Int?, Int?))
 }
 
+final class AnyEvent {
+	let value: JZBaseEvent
+	init(value: JZBaseEvent) {
+		self.value = value
+	}
+}
+
 ///Divides the calendar into 3 pages (previous, current, next). One page shows events for one date. Each page can then be sliced into subsections. Works in conjuction with SectionsFlowLayout, SectionsWeekViewDataSource and SectionLongPressDelegate.
 open class SectionWeekView: JZLongPressWeekView {
 	public var sectionsFlowLayout: SectionsFlowLayout!
@@ -28,15 +35,15 @@ open class SectionWeekView: JZLongPressWeekView {
 	}
 	public weak var sectionLongPressDelegate: SectionLongPressDelegate?
 	private var pageDates: [Date] = []
-	public var sectionKeyPath: AnyHashableKeyPath<JZBaseEvent>!
+	public var sectionKeyPath: AnyHashableKeyPath<Any>!
 	public var sectionIds: [AnyHashable] = []
 	public var allEventsBySubSection: [Date: [[JZBaseEvent]]] = [:]
 	private var dateToSectionsMap: [Date: [Int]] = [:]
 	private var sectionToDateMap: [Int: Date] = [:]
 	
-	func group<T: Hashable>(_ events: [JZBaseEvent],
+	func group<T: Hashable, E: JZBaseEvent>(_ events: [E],
 							_ sectionIds: [T],
-							_ sectionKeyPath: AnyHashableKeyPath<JZBaseEvent>) -> [Date: [[JZBaseEvent]]] {
+							_ sectionKeyPath: AnyHashableKeyPath<E>) -> [Date: [[E]]] {
 		let byDate = JZWeekViewHelper.getIntraEventsByDate(originalEvents: events)
 		return byDate.mapValues { eventsByDate in
 			group(sectionIds,
@@ -45,10 +52,10 @@ open class SectionWeekView: JZLongPressWeekView {
 		}
 	}
 	
-	public func update<T: Hashable>(selectedDate: Date,
+	public func update<T: Hashable, E: JZBaseEvent>(selectedDate: Date,
 									sectionIds: [T],
-									events: [JZBaseEvent],
-									sectionKeyPath: AnyHashableKeyPath<JZBaseEvent>) {
+									events: [E],
+									sectionKeyPath: AnyHashableKeyPath<E>) {
 		let byDateAndSection = group(events, sectionIds, sectionKeyPath)
 		update(selectedDate,
 			   sectionIds,
@@ -56,10 +63,10 @@ open class SectionWeekView: JZLongPressWeekView {
 			   sectionKeyPath)
 	}
 	
-	public func update<T: Hashable>(_ selectedDate: Date,
+	public func update<T: Hashable, E: JZBaseEvent>(_ selectedDate: Date,
 									_ sectionIds: [T],
-									_ byDateAndSection: [Date: [[JZBaseEvent]]],
-									_ sectionKeyPath: AnyHashableKeyPath<JZBaseEvent>) {
+									_ byDateAndSection: [Date: [[E]]],
+									_ sectionKeyPath: AnyHashableKeyPath<E>) {
 		self.sectionKeyPath = sectionKeyPath
 		self.sectionIds = sectionIds.map(AnyHashable.init)
 		self.allEventsBySubSection = byDateAndSection
@@ -71,11 +78,11 @@ open class SectionWeekView: JZLongPressWeekView {
 		(dateToSectionsMap, sectionToDateMap) = SectionHelper.calcDateToSectionsMap(events: byDateAndSection, pageDates: self.pageDates)
 	}
 	
-	func group<T: Hashable>(_ sectionIds: [T],
-							_ events: [JZBaseEvent],
-							_ keyPath: AnyHashableKeyPath<JZBaseEvent>) -> [[JZBaseEvent]] {
+	func group<T: Hashable, E: JZBaseEvent>(_ sectionIds: [T],
+							_ events: [E],
+							_ keyPath: AnyHashableKeyPath<E>) -> [[E]] {
 		let eventsBySection = Dictionary.init(grouping: events, by: { keyPath.get($0) })
-		return sectionIds.reduce(into: [T: [JZBaseEvent]](), { res, sectionId in
+		return sectionIds.reduce(into: [T: [E]](), { res, sectionId in
 			res[sectionId] = eventsBySection[sectionId, default: []]
 		}).map(\.value)
 	}
@@ -121,9 +128,9 @@ open class SectionWeekView: JZLongPressWeekView {
 //			   events: [])
 	}
 	
-	open func forceSectionReload<T: Hashable>(reloadEvents: [JZBaseEvent],
+	open func forceSectionReload<T: Hashable, E: JZBaseEvent>(reloadEvents: [E],
 											  sectionIds: [T],
-											  sectionKeyPath: AnyHashableKeyPath<JZBaseEvent>) {
+											  sectionKeyPath: AnyHashableKeyPath<E>) {
 		update(selectedDate: initDate,
 			   sectionIds: sectionIds,
 			   events: reloadEvents,
@@ -359,7 +366,7 @@ public extension Collection {
 	}
 }
 
-public struct AnyHashableKeyPath<T> {
+public struct AnyHashableKeyPath<T: JZBaseEvent> {
 	public let get: (T) -> AnyHashable
 	public let set: (inout T, AnyHashable) -> ()
 	
