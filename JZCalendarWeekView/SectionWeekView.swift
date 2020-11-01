@@ -23,7 +23,7 @@ public protocol SectionLongPressDelegate: class {
 
 ///Divides the calendar into 3 pages (previous, current, next). One page shows events for one date. Each page can then be sliced into subsections. Works in conjuction with SectionsFlowLayout, SectionsWeekViewDataSource and SectionLongPressDelegate.
 open class SectionWeekView: JZLongPressWeekView {
-	public var sectionsDataSource: SectionDataSource!
+	public var sectionsDataSource: SectionDataSource?
 	public var sectionsFlowLayout: SectionsFlowLayout!
 	public override var flowLayout: JZWeekViewFlowLayout! {
 		get {
@@ -63,8 +63,8 @@ open class SectionWeekView: JZLongPressWeekView {
 
 	open override func layoutSubviews() {
 		super.layoutSubviews()
-		let sectionXs = sectionsDataSource.makeSectionXs(pageWidth: flowLayout.sectionWidth, offset: flowLayout.rowHeaderWidth)
-		sectionsFlowLayout.updateSectionsXs(sectionXs)
+		let sectionXs = sectionsDataSource?.makeSectionXs(pageWidth: flowLayout.sectionWidth, offset: flowLayout.rowHeaderWidth)
+		sectionXs.map(sectionsFlowLayout.updateSectionsXs)
 	}
 
 	public func setupCalendar(
@@ -84,7 +84,7 @@ open class SectionWeekView: JZLongPressWeekView {
 	override open func loadNextOrPrevPage(isNext: Bool) {
 		let addValue = isNext ? numOfDays : -numOfDays
 		self.initDate = self.initDate.add(component: .day, value: addValue!)
-		sectionsDataSource.update(initDate: self.initDate)
+		sectionsDataSource?.update(initDate: self.initDate)
 		DispatchQueue.main.async { [unowned self] in
             self.layoutSubviews()
             self.forceReload()
@@ -180,7 +180,7 @@ open class SectionWeekView: JZLongPressWeekView {
 				sectionLongPressDelegate?.weekView(self, didEndAddNewLongPressAt: longPressViewStartDate, pageAndSectionIdx: longPressPageAndSubsection)
             } else if currentLongPressType == .move {
 //                longPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndMoveLongPressAt: longPressViewStartDate)
-				sectionLongPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndMoveLongPressAt: longPressViewStartDate, endPageAndSectionIdx: longPressPageAndSubsection, startPageAndSectionIdx: sectionsDataSource.getPageAndWithinPageIndex(currentEditingInfo.indexPath.section))
+				sectionLongPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndMoveLongPressAt: longPressViewStartDate, endPageAndSectionIdx: longPressPageAndSubsection, startPageAndSectionIdx: sectionsDataSource?.getPageAndWithinPageIndex(currentEditingInfo.indexPath.section) ?? (nil, nil))
             }
         }
 
@@ -203,7 +203,7 @@ open class SectionWeekView: JZLongPressWeekView {
     }
 
 	override public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, dayForSection section: Int) -> Date {
-		sectionsDataSource.dayFor(section: section)
+		sectionsDataSource!.dayFor(section: section)
 	}
 
 	override public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, startTimeForItemAtIndexPath indexPath: IndexPath) -> Date {
@@ -223,7 +223,7 @@ open class SectionWeekView: JZLongPressWeekView {
 //	}
 	
 	@objc open override func getCurrentEvent(with indexPath: IndexPath) -> JZBaseEvent? {
-		return sectionsDataSource.getCurrentEvent(at: indexPath)
+		return sectionsDataSource?.getCurrentEvent(at: indexPath)
 	}
 }
 
@@ -232,11 +232,11 @@ extension SectionWeekView {
 
 	open override func numberOfSections(in collectionView: UICollectionView) -> Int {
 		//filter neighbor dates only
-		sectionsDataSource.numberOfSections()
+		sectionsDataSource?.numberOfSections() ?? 0
 	}
 
 	open override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		sectionsDataSource.numberOfItemsIn(section: section)
+		sectionsDataSource?.numberOfItemsIn(section: section) ?? 0
 	}
 	
 	func getSection(_ xCollectionView: CGFloat) -> Int? {
@@ -246,8 +246,9 @@ extension SectionWeekView {
 	}
 
 	func getPageAndSubsectionIdx(_ xCollectionView: CGFloat) -> (Int?, Int?) {
-		if let section = getSection(xCollectionView) {
-			return sectionsDataSource.getPageAndWithinPageIndex(section)
+		if let section = getSection(xCollectionView),
+		   let dataSource = sectionsDataSource {
+			return dataSource.getPageAndWithinPageIndex(section)
 		} else {
 			return (nil, nil)
 		}
