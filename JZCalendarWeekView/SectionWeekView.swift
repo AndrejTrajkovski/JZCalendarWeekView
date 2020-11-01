@@ -9,6 +9,7 @@ public protocol SectionDataSource: class {
 	func makeSectionXs(pageWidth: CGFloat, offset: CGFloat) -> [Int: SectionXs]
 	func getPageAndWithinPageIndex(_ section: Int) -> (Int?, Int?)
 	func update(initDate: Date)
+//	func getDateAndSectionId(for section: Int) -> (Date?, SectionId?)
 }
 
 public protocol SectionLongPressDelegate: class {
