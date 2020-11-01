@@ -9,10 +9,6 @@ public protocol SectionDataSource: class {
 	func makeSectionXs(pageWidth: CGFloat, offset: CGFloat) -> [Int: SectionXs]
 	func getPageAndWithinPageIndex(_ section: Int) -> (Int?, Int?)
 	func update(initDate: Date)
-	func forceSectionReload(
-		initDate: Date,
-		reloadEvents: [JZBaseEvent],
-		sectionIds: [AnyHashable])
 }
 
 public protocol SectionLongPressDelegate: class {
