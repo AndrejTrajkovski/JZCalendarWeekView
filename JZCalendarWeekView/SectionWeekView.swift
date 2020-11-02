@@ -1,17 +1,6 @@
 import Foundation
 import UIKit
 
-public protocol SectionDataSource: class {
-	func numberOfSections() -> Int
-	func numberOfItemsIn(section: Int) -> Int
-	func getCurrentEvent(at indexPath: IndexPath) -> JZBaseEvent?
-	func dayFor(section: Int) -> Date
-	func makeSectionXs(pageWidth: CGFloat, offset: CGFloat) -> [Int: SectionXs]
-	func getPageAndWithinPageIndex(_ section: Int) -> (Int?, Int?)
-	func update(initDate: Date)
-//	func getDateAndSectionId(for section: Int) -> (Date?, SectionId?)
-}
-
 public protocol SectionLongPressDelegate: class {
 	func weekView(_ weekView: JZLongPressWeekView, didEndAddNewLongPressAt startDate: Date, pageAndSectionIdx:(Int?, Int?))
 
@@ -23,8 +12,8 @@ public protocol SectionLongPressDelegate: class {
 }
 
 ///Divides the calendar into 3 pages (previous, current, next). One page shows events for one date. Each page can then be sliced into subsections. Works in conjuction with SectionsFlowLayout, SectionsWeekViewDataSource and SectionLongPressDelegate.
-open class SectionWeekView: JZLongPressWeekView {
-	public var sectionsDataSource: SectionDataSource?
+open class SectionWeekView<Event: JZBaseEvent, SectionId: Hashable>: JZLongPressWeekView {
+	public var sectionsDataSource: SectionWeekViewDataSource<Event, SectionId>?
 	public var sectionsFlowLayout: SectionsFlowLayout!
 	public override var flowLayout: JZWeekViewFlowLayout! {
 		get {
@@ -215,6 +204,15 @@ open class SectionWeekView: JZLongPressWeekView {
 		return getCurrentEvent(with: indexPath)!.intraEndDate
 	}
 	
+	open override func numberOfSections(in collectionView: UICollectionView) -> Int {
+		//filter neighbor dates only
+		sectionsDataSource?.numberOfSections() ?? 0
+	}
+
+	open override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+		sectionsDataSource?.numberOfItemsIn(section: section) ?? 0
+	}
+	
 //	public override func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, startTimeForBackgroundAtSection section: Int) -> Date {
 //		
 //	}
@@ -230,15 +228,6 @@ open class SectionWeekView: JZLongPressWeekView {
 
 //MARK:- UICollectionViewDataSource
 extension SectionWeekView {
-
-	open override func numberOfSections(in collectionView: UICollectionView) -> Int {
-		//filter neighbor dates only
-		sectionsDataSource?.numberOfSections() ?? 0
-	}
-
-	open override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		sectionsDataSource?.numberOfItemsIn(section: section) ?? 0
-	}
 	
 	func getSection(_ xCollectionView: CGFloat) -> Int? {
 		return sectionsFlowLayout.sectionsXPoints.first(where: {
