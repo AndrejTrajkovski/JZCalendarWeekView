@@ -114,4 +114,8 @@ extension SectionWeekViewDataSource {
 			   sectionIds,
 			   allEventsBySection)
 	}
+	
+	public func sectionId(for section: Int) -> SectionId {
+		sectionIds[section % 3]
+	}
 }
