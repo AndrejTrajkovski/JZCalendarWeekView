@@ -66,9 +66,7 @@ open class SectionWeekView<Event: JZBaseEvent, SectionId: Hashable>: JZLongPress
 							scrollType: .pageScroll,
 							currentTimelineType: .page)
 		//FIXME: Maybe delete this call
-//		update(selectedDate: setDate,
-//			   sectionIds: [],
-//			   events: [])
+//		sectionsDataSource?.update(initDate: setDate)
 	}
 
 	override open func loadNextOrPrevPage(isNext: Bool) {

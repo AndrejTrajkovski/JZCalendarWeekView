@@ -109,7 +109,7 @@ extension SectionWeekViewDataSource {
 		return getEvents(at: indexPath.section)[safe: indexPath.item]
 	}
 
-	func update(initDate: Date) {
+	public func update(initDate: Date) {
 		update(initDate,
 			   sectionIds,
 			   allEventsBySection)
