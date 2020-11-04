@@ -1,45 +1,40 @@
 import Foundation
 import CoreGraphics
 
-public class SectionWeekViewDataSource<Event: JZBaseEvent, SectionId: Hashable> {
+@available(iOS 13, *)
+public class SectionWeekViewDataSource<Event: JZBaseEvent, Section: Identifiable & Equatable,Subsection: Identifiable & Equatable> {
 	
 	public init() {}
 	
 	private var pageDates: [Date] = []
-	public var sectionIds: [SectionId] = []
-	public var allEventsBySection: [Date: [SectionId: [Event]]] = [:]
+	public var sections: [Section] = []
+	public var subsections: [Section.ID: [Subsection]] = [:]
+	public var allEventsBySection: [Date: [Section.ID: [Subsection.ID: [Event]]]] = [:]
 	private var dateToSectionsMap: [Date: [Int]] = [:]
-	private var sectionToDateMap: [Int: Date] = [:]
-	
-	public func calcDateToSectionsMap(sectionIds: [SectionId], pageDates: [Date]) -> ([Date: [Int]], [Int: Date]) {
-		var runningTotal = 0
-		var result: [Date: [Int]] = [:]
-		var viceVersa: [Int: Date] = [:]
-		for pageDate in pageDates {
-			let upper = sectionIds.count + runningTotal
-			let sections = Array(runningTotal..<upper)
-			result[pageDate] = sections
-			sections.forEach {
-				viceVersa[$0] = pageDate
-			}
-			runningTotal = upper
-		}
-		return (result, viceVersa)
-	}
+	private var sectionToIdsMap: [Int: (Date, Section.ID, Subsection.ID)] = [:]
 
+	public func update(initDate: Date) {
+		update(initDate,
+			   sections,
+			   subsections,
+			   allEventsBySection)
+	}
+	
 	public func update(_ selectedDate: Date,
-					   _ sectionIds: [SectionId],
-					   _ byDateAndSection: [Date: [SectionId: [Event]]]) {
-		
-		self.sectionIds = sectionIds
+					   _ sections: [Section],
+					   _ subsections: [Section.ID: [Subsection]],
+					   _ byDateAndSection: [Date: [Section.ID: [Subsection.ID: [Event]]]]) {
+		self.sections = sections
+		self.subsections = subsections
 		self.allEventsBySection = byDateAndSection
 		self.pageDates = [
 			selectedDate,
 			selectedDate.add(component: .day, value: 1),
 			selectedDate.add(component: .day, value: 2)
 		]
-		(dateToSectionsMap, sectionToDateMap) = calcDateToSectionsMap(sectionIds: sectionIds,
-																	  pageDates: self.pageDates)
+		(dateToSectionsMap, sectionToIdsMap) = calcSectionToIdsMap(sections: sections,
+																   subsections: subsections,
+																   pageDates: self.pageDates)
 	}
 
 	func calcSectionXs(_ dateToSectionsMap: [Date: [Int]],
@@ -59,10 +54,11 @@ public class SectionWeekViewDataSource<Event: JZBaseEvent, SectionId: Hashable> 
 	}
 }
 
+@available(iOS 13, *)
 extension SectionWeekViewDataSource {
 
 	func numberOfSections() -> Int {
-		sectionIds.count * 3
+		sections.count * 3
 	}
 
 	func numberOfItemsIn(section: Int) -> Int {
@@ -70,52 +66,78 @@ extension SectionWeekViewDataSource {
 	}
 
 	func dayFor(section: Int) -> Date {
-		sectionToDateMap[section]!
+		sectionToIdsMap[section]!.0
 	}
 
 	func makeSectionXs(pageWidth: CGFloat, offset: CGFloat) -> [Int: SectionXs] {
 		return calcSectionXs(dateToSectionsMap, pageWidth: pageWidth, offset: offset)
 	}
 
-	public func getPageAndWithinPageIndex(_ section: Int) -> (Int?, Int?) {
-		guard let sectionDate = sectionToDateMap[section] else {
-			return (nil, nil)
-		}
-		guard let dateSections = dateToSectionsMap[sectionDate],
-			  let pageSectionIdx = dateSections.firstIndex(of: section) else {
-			return (pageDates.firstIndex(of: sectionDate)!, nil)
-		}
-		return (pageDates.firstIndex(of: sectionDate)!, pageSectionIdx)
-	}
-
-	func getDateAndSectionId(for section: Int) -> (Date?, SectionId?) {
-		guard let sectionDate = sectionToDateMap[section] else {
-			return (nil, nil)
-		}
-		guard let dateSections = dateToSectionsMap[sectionDate],
-			  let pageSectionIdx = dateSections.firstIndex(of: section) else {
-			return (sectionDate, nil)
-		}
-		return (sectionDate, sectionIds[pageSectionIdx])
+	func getDateSectionIdAndSubsectionId(for section: Int) -> (Date?, Section.ID?, Subsection.ID?) {
+		return sectionToIdsMap[section] ?? (nil, nil, nil)
+//		guard let sectionDate = sectionToDateMap[section] else {
+//			return (nil, nil, nil)
+//		}
+//		guard let dateSections = dateToSectionsMap[sectionDate],
+//			  let sectionIdx = dateSections.firstIndex(of: section) else {
+//			return (sectionDate, nil, nil)
+//		}
+//		let sectionId = sections[sectionIdx].id
+//		let idx = sections.firstIndex(where: { $0.id == sectionId })
 	}
 
 	func getEvents(at section: Int) -> [Event] {
-		let(optDate, optSectionId) = getDateAndSectionId(for: section)
-		guard let date = optDate, let sectionId = optSectionId else { return [] }
-		return allEventsBySection[date]?[sectionId] ?? []
+		let (optDate, optSectionId, optSubsectionId) = sectionToIdsMap[section] ?? (nil, nil, nil)
+		guard let date = optDate, let sectionId = optSectionId, let subsectionId = optSubsectionId else { return [] }
+		return allEventsBySection[date]?[sectionId]?[subsectionId] ?? []
 	}
 
 	func getCurrentEvent(at indexPath: IndexPath) -> Event? {
 		return getEvents(at: indexPath.section)[safe: indexPath.item]
 	}
-
-	public func update(initDate: Date) {
-		update(initDate,
-			   sectionIds,
-			   allEventsBySection)
-	}
 	
-	public func sectionId(for section: Int) -> SectionId {
-		sectionIds[section % 3]
+	public func section(for section: Int) -> Section {
+		sections[section % 3]
+	}
+}
+
+extension SectionWeekViewDataSource {
+	public func calcSectionToIdsMap(sections: [Section],
+									subsections: [Section.ID: [Subsection]],
+									pageDates: [Date]) -> ([Date: [Int]], [Int: (Date, Section.ID, Subsection.ID)]) {
+		var runningTotal = 0
+		var result: [Int: (Date, Section.ID, Subsection.ID)] = [:]
+		var pageDatesResult: [Date: [Int]] = [:]
+		for dateIdx in 0..<pageDates.count {
+			let pageDate = pageDates[dateIdx]
+			for sectionIdx in 0..<sections.count {
+				let section = sections[sectionIdx]
+				let subsectionsForSection = subsections[section.id] ?? []
+//				for subsectionIdx in 0..<(subsections.count ?? 0) {
+					let upper = subsections.count + runningTotal
+					let sectionsIdxs = Array(runningTotal..<upper)
+					pageDatesResult[pageDate] = sectionsIdxs
+					sectionsIdxs.enumerated().forEach { idx, element in
+						result[element] = (pageDate, section.id, subsectionsForSection[idx].id)
+					}
+					runningTotal = upper
+//				}
+			}
+		}
+		return (pageDatesResult, result)
+//		var viceVersa: [Int: (Date, Section.ID, Subsection.ID)] = [:]
+//		for pageDate in pageDates {
+//			let resss: [[Subsection]] = sections.compactMap { (section: Section) in
+//				let values = subsections[section.id]
+//				return values
+//			}
+//			let upper = subsections.values.count + runningTotal
+//			let sections = Array(runningTotal..<upper)
+//			result[pageDate] = sections
+//			sections.forEach {
+//				viceVersa[$0] = pageDate
+//			}
+//			runningTotal = upper
+//		}
 	}
 }

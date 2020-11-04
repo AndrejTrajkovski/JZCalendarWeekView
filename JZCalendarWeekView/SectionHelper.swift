@@ -71,23 +71,29 @@ open class SectionHelper<T: JZBaseEvent> {
 //
 	
 	@available(iOS 13, *)
-	public class func group<T: Identifiable, E: JZBaseEvent>(_ events: [E],
-							_ sections: [T],
-							_ sectionKeyPath: ReferenceWritableKeyPath<E, T.ID>) -> [Date: [T.ID: [E]]] {
+	public class func group<SectionId: Hashable, Subsection: Identifiable, E: JZBaseEvent>(_ events: [E],
+																							 _ subsections: [Subsection],
+																							 _ sectionKeyPath: KeyPath<E, SectionId>,
+																							 _ subsectionKeyPath: KeyPath<E, Subsection.ID>)
+	-> [Date: [SectionId: [Subsection.ID: [E]]]] {
 		let byDate = JZWeekViewHelper.getIntraEventsByDate(originalEvents: events)
-		return byDate.mapValues { eventsByDate in
-			group(sections,
-				  eventsByDate,
-				  sectionKeyPath)
+		return byDate.mapValues {
+			let byEmployee = Dictionary.init(grouping: $0, by: { $0[keyPath: sectionKeyPath] })
+			let final = byEmployee.mapValues { eventsByDate in
+				group(subsections,
+					  eventsByDate,
+					  subsectionKeyPath)
+			}
+			return final
 		}
 	}
 	
 	@available(iOS 13, *)
-	public class func group<T: Identifiable, E: JZBaseEvent>(_ sections: [T],
-												_ events: [E],
-												_ keyPath: ReferenceWritableKeyPath<E, T.ID>) -> [T.ID: [E]] {
+	public class func group<T: Identifiable, E: JZBaseEvent>(_ subsections: [T],
+															 _ events: [E],
+															 _ keyPath: KeyPath<E, T.ID>) -> [T.ID: [E]] {
 		let eventsBySection = Dictionary.init(grouping: events, by: { $0[keyPath: keyPath] })
-		return sections.map(\.id).reduce(into: [T.ID: [E]](), { res, sectionId in
+		return subsections.map(\.id).reduce(into: [T.ID: [E]](), { res, sectionId in
 			res[sectionId] = eventsBySection[sectionId, default: []]
 		})
 	}

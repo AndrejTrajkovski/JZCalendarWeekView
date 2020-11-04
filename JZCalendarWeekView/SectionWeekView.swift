@@ -2,18 +2,20 @@ import Foundation
 import UIKit
 
 public protocol SectionLongPressDelegate: class {
-	func weekView(_ weekView: JZLongPressWeekView, didEndAddNewLongPressAt startDate: Date, pageAndSectionIdx:(Int?, Int?))
+	func weekView<SectionId: Hashable, SubsectionId: Hashable>(_ weekView: JZLongPressWeekView, didEndAddNewLongPressAt startDate: Date, pageAndSectionIdx:(Date?, SectionId?, SubsectionId?))
 
-	func weekView(_ weekView: JZLongPressWeekView,
-				  editingEvent: JZBaseEvent,
-				  didEndMoveLongPressAt startDate: Date,
-				  endPageAndSectionIdx:(Int?, Int?),
-				  startPageAndSectionIdx: (Int?, Int?))
+	func weekView<Event: JZBaseEvent, SectionId: Hashable, SubsectionId: Hashable>
+	(_ weekView: JZLongPressWeekView,
+	 editingEvent: Event,
+	 didEndMoveLongPressAt startDate: Date,
+	 endPageAndSectionIdx:(Date?, SectionId?, SubsectionId?),
+	 startPageAndSectionIdx: (Date?, SectionId?, SubsectionId?))
 }
 
 ///Divides the calendar into 3 pages (previous, current, next). One page shows events for one date. Each page can then be sliced into subsections. Works in conjuction with SectionsFlowLayout, SectionsWeekViewDataSource and SectionLongPressDelegate.
-open class SectionWeekView<Event: JZBaseEvent, SectionId: Hashable>: JZLongPressWeekView {
-	public var sectionsDataSource: SectionWeekViewDataSource<Event, SectionId>?
+@available(iOS 13, *)
+open class SectionWeekView<Event: JZBaseEvent, Section: Identifiable & Equatable, Subsection: Identifiable & Equatable>: JZLongPressWeekView {
+	public var sectionsDataSource: SectionWeekViewDataSource<Event, Section, Subsection>?
 	public var sectionsFlowLayout: SectionsFlowLayout!
 	public override var flowLayout: JZWeekViewFlowLayout! {
 		get {
@@ -112,12 +114,11 @@ open class SectionWeekView<Event: JZBaseEvent, SectionId: Hashable>: JZLongPress
 
         // The startDate of the longPressView (the date of top Y in longPressView)
         var longPressViewStartDate: Date!
-		var longPressPageAndSubsection: (Int?, Int?)
+		var longPressPageAndSubsection: (Date?, Section.ID?, Subsection.ID?)
         // pressPosition is nil only when state equals began
         if pressPosition != nil {
             longPressViewStartDate = getLongPressViewStartDate(pointInCollectionView: pointInCollectionView, pointInSelfView: pointInSelfView)
 			longPressPageAndSubsection = getPageAndSubsectionIdx(pointInCollectionView.x)
-			print("long pressing", longPressPageAndSubsection)
         }
 
         if state == .began {
@@ -127,7 +128,6 @@ open class SectionWeekView<Event: JZBaseEvent, SectionId: Hashable>: JZLongPress
                                                             (currentEditingInfo.cellSize.width/2, currentEditingInfo.cellSize.height/2)
             longPressViewStartDate = getLongPressViewStartDate(pointInCollectionView: pointInCollectionView, pointInSelfView: pointInSelfView)
 			longPressPageAndSubsection = getPageAndSubsectionIdx(pointInCollectionView.x)
-			print("began", longPressPageAndSubsection)
             longPressView = initLongPressView(selectedCell: currentMovingCell, type: currentLongPressType, startDate: longPressViewStartDate)
             longPressView.frame.size = currentEditingInfo.cellSize
             longPressView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
@@ -168,7 +168,8 @@ open class SectionWeekView<Event: JZBaseEvent, SectionId: Hashable>: JZLongPress
 				sectionLongPressDelegate?.weekView(self, didEndAddNewLongPressAt: longPressViewStartDate, pageAndSectionIdx: longPressPageAndSubsection)
             } else if currentLongPressType == .move {
 //                longPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndMoveLongPressAt: longPressViewStartDate)
-				sectionLongPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndMoveLongPressAt: longPressViewStartDate, endPageAndSectionIdx: longPressPageAndSubsection, startPageAndSectionIdx: sectionsDataSource?.getPageAndWithinPageIndex(currentEditingInfo.indexPath.section) ?? (nil, nil))
+				let startIds = sectionsDataSource?.getDateSectionIdAndSubsectionId(for: currentEditingInfo.indexPath.section) ?? (nil, nil, nil)
+				sectionLongPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndMoveLongPressAt: longPressViewStartDate, endPageAndSectionIdx: longPressPageAndSubsection, startPageAndSectionIdx: startIds)
             }
         }
 
@@ -225,6 +226,7 @@ open class SectionWeekView<Event: JZBaseEvent, SectionId: Hashable>: JZLongPress
 }
 
 //MARK:- UICollectionViewDataSource
+@available(iOS 13, *)
 extension SectionWeekView {
 	
 	func getSection(_ xCollectionView: CGFloat) -> Int? {
@@ -233,12 +235,12 @@ extension SectionWeekView {
 		})?.key
 	}
 
-	func getPageAndSubsectionIdx(_ xCollectionView: CGFloat) -> (Int?, Int?) {
+	func getPageAndSubsectionIdx(_ xCollectionView: CGFloat) -> (Date?, Section.ID?, Subsection.ID?) {
 		if let section = getSection(xCollectionView),
 		   let dataSource = sectionsDataSource {
-			return dataSource.getPageAndWithinPageIndex(section)
+			return dataSource.getDateSectionIdAndSubsectionId(for: section)
 		} else {
-			return (nil, nil)
+			return (nil, nil, nil)
 		}
 	}
 }

@@ -91,7 +91,6 @@ open class SectionsFlowLayout: JZWeekViewFlowLayout {
 		attributes.zIndex = zIndexForElementKind(JZDecorationViewKinds.columnHeaderBackground)
 		// Column Header
 		let columnHeaderMinY = fmax(collectionView.contentOffset.y, 0.0)
-		print(collectionView.contentOffset.y)
 		sectionIndexes.enumerate(_:) { (section, _) in
 			guard let sectionMinMaxXs = sectionsXPoints[section] else { return }
 			let sectionMinX = sectionMinMaxXs.minX

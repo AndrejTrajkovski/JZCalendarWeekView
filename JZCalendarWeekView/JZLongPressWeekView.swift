@@ -523,9 +523,6 @@ extension JZLongPressWeekView: UIGestureRecognizerDelegate {
             } else if currentLongPressType == .move {
                 longPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndMoveLongPressAt: longPressViewStartDate)
 			} else if case .changeDuration(let direction) = currentLongPressType {
-				print(longPressViewStartDate)
-				print(pointInSelfView)
-				print(pointInCollectionView)
 				var startHourMinute: (Int, Int)!
 				var endHourMinute: (Int, Int)!
 				switch direction {
