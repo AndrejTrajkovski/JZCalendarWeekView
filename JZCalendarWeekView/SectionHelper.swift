@@ -78,8 +78,8 @@ open class SectionHelper<T: JZBaseEvent> {
 	-> [Date: [SectionId: [Subsection.ID: [E]]]] {
 		let byDate = JZWeekViewHelper.getIntraEventsByDate(originalEvents: events)
 		return byDate.mapValues {
-			let byEmployee = Dictionary.init(grouping: $0, by: { $0[keyPath: sectionKeyPath] })
-			let final = byEmployee.mapValues { eventsByDate in
+			let byLocation = Dictionary.init(grouping: $0, by: { $0[keyPath: sectionKeyPath] })
+			let final = byLocation.mapValues { eventsByDate in
 				group(subsections,
 					  eventsByDate,
 					  subsectionKeyPath)

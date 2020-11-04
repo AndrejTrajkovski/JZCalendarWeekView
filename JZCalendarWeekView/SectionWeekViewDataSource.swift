@@ -8,7 +8,7 @@ public class SectionWeekViewDataSource<Event: JZBaseEvent, Section: Identifiable
 	
 	private var pageDates: [Date] = []
 	public var sections: [Section] = []
-	public var subsections: [Section.ID: [Subsection]] = [:]
+	public var subsections: [Section.ID: [Subsection.ID]] = [:]
 	public var allEventsBySection: [Date: [Section.ID: [Subsection.ID: [Event]]]] = [:]
 	private var dateToSectionsMap: [Date: [Int]] = [:]
 	private var sectionToIdsMap: [Int: (Date, Section.ID, Subsection.ID)] = [:]
@@ -22,7 +22,7 @@ public class SectionWeekViewDataSource<Event: JZBaseEvent, Section: Identifiable
 	
 	public func update(_ selectedDate: Date,
 					   _ sections: [Section],
-					   _ subsections: [Section.ID: [Subsection]],
+					   _ subsections: [Section.ID: [Subsection.ID]],
 					   _ byDateAndSection: [Date: [Section.ID: [Subsection.ID: [Event]]]]) {
 		self.sections = sections
 		self.subsections = subsections
@@ -38,8 +38,8 @@ public class SectionWeekViewDataSource<Event: JZBaseEvent, Section: Identifiable
 	}
 
 	func calcSectionXs(_ dateToSectionsMap: [Date: [Int]],
-								  pageWidth: CGFloat,
-								  offset: CGFloat) -> [Int: SectionXs]{
+					   pageWidth: CGFloat,
+					   offset: CGFloat) -> [Int: SectionXs]{
 		var pageSectionXx: [Int: SectionXs] = [:]
 		var minX: CGFloat = offset
 		let sections = dateToSectionsMap.sorted(by: { $0.key < $1.key}).flatMap({ $0.value })
@@ -103,25 +103,26 @@ extension SectionWeekViewDataSource {
 
 extension SectionWeekViewDataSource {
 	public func calcSectionToIdsMap(sections: [Section],
-									subsections: [Section.ID: [Subsection]],
+									subsections: [Section.ID: [Subsection.ID]],
 									pageDates: [Date]) -> ([Date: [Int]], [Int: (Date, Section.ID, Subsection.ID)]) {
 		var runningTotal = 0
 		var result: [Int: (Date, Section.ID, Subsection.ID)] = [:]
 		var pageDatesResult: [Date: [Int]] = [:]
 		for dateIdx in 0..<pageDates.count {
 			let pageDate = pageDates[dateIdx]
+			pageDatesResult[pageDate] = []
 			for sectionIdx in 0..<sections.count {
 				let section = sections[sectionIdx]
-				let subsectionsForSection = subsections[section.id] ?? []
-//				for subsectionIdx in 0..<(subsections.count ?? 0) {
-					let upper = subsections.count + runningTotal
-					let sectionsIdxs = Array(runningTotal..<upper)
-					pageDatesResult[pageDate] = sectionsIdxs
-					sectionsIdxs.enumerated().forEach { idx, element in
-						result[element] = (pageDate, section.id, subsectionsForSection[idx].id)
+				if let subsectionsForSection = subsections[section.id],
+				   subsectionsForSection.count > 0 {
+					let upper = subsectionsForSection.count + runningTotal
+					let subsectionsIdxs = Array(runningTotal..<upper)
+					pageDatesResult[pageDate]!.append(contentsOf: subsectionsIdxs)
+					subsectionsIdxs.enumerated().forEach { idx, element in
+						result[element] = (pageDate, section.id, subsectionsForSection[idx])
 					}
 					runningTotal = upper
-//				}
+				}
 			}
 		}
 		return (pageDatesResult, result)
