@@ -8,7 +8,7 @@ public class SectionWeekViewDataSource<Event: JZBaseEvent, Section: Identifiable
 	
 	private var pageDates: [Date] = []
 	public var sections: [Section] = []
-	public var subsections: [Section.ID: [Subsection.ID]] = [:]
+	public var subsections: [Section.ID: [Subsection]] = [:]
 	public var allEventsBySection: [Date: [Section.ID: [Subsection.ID: [Event]]]] = [:]
 	private var dateToSectionsMap: [Date: [Int]] = [:]
 	private var sectionToIdsMap: [Int: (Date, Section.ID, Subsection.ID)] = [:]
@@ -22,7 +22,7 @@ public class SectionWeekViewDataSource<Event: JZBaseEvent, Section: Identifiable
 	
 	public func update(_ selectedDate: Date,
 					   _ sections: [Section],
-					   _ subsections: [Section.ID: [Subsection.ID]],
+					   _ subsections: [Section.ID: [Subsection]],
 					   _ byDateAndSection: [Date: [Section.ID: [Subsection.ID: [Event]]]]) {
 		self.sections = sections
 		self.subsections = subsections
@@ -73,7 +73,7 @@ extension SectionWeekViewDataSource {
 		return calcSectionXs(dateToSectionsMap, pageWidth: pageWidth, offset: offset)
 	}
 
-	func getDateSectionIdAndSubsectionId(for section: Int) -> (Date?, Section.ID?, Subsection.ID?) {
+	public func getDateSectionIdAndSubsectionId(for section: Int) -> (Date?, Section.ID?, Subsection.ID?) {
 		return sectionToIdsMap[section] ?? (nil, nil, nil)
 //		guard let sectionDate = sectionToDateMap[section] else {
 //			return (nil, nil, nil)
@@ -96,14 +96,18 @@ extension SectionWeekViewDataSource {
 		return getEvents(at: indexPath.section)[safe: indexPath.item]
 	}
 	
-	public func section(for section: Int) -> Section {
-		sections[section % 3]
+	public func sectionAndSubsection(for section: Int) -> (Section?, Subsection?) {
+		let (_, sectionIdOpt, subsectionId) = self.getDateSectionIdAndSubsectionId(for: section)
+		guard let sectionId = sectionIdOpt else { return (nil, nil) }
+		let section = sections.first(where: { $0.id == sectionId })
+		let subsection = subsections[sectionId]?.first(where: { $0.id == subsectionId })
+		return (section, subsection)
 	}
 }
 
 extension SectionWeekViewDataSource {
 	public func calcSectionToIdsMap(sections: [Section],
-									subsections: [Section.ID: [Subsection.ID]],
+									subsections: [Section.ID: [Subsection]],
 									pageDates: [Date]) -> ([Date: [Int]], [Int: (Date, Section.ID, Subsection.ID)]) {
 		var runningTotal = 0
 		var result: [Int: (Date, Section.ID, Subsection.ID)] = [:]
@@ -119,7 +123,7 @@ extension SectionWeekViewDataSource {
 					let subsectionsIdxs = Array(runningTotal..<upper)
 					pageDatesResult[pageDate]!.append(contentsOf: subsectionsIdxs)
 					subsectionsIdxs.enumerated().forEach { idx, element in
-						result[element] = (pageDate, section.id, subsectionsForSection[idx])
+						result[element] = (pageDate, section.id, subsectionsForSection[idx].id)
 					}
 					runningTotal = upper
 				}
