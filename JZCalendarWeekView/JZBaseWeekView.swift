@@ -711,13 +711,9 @@ extension JZBaseWeekView {
 
 // MARK: - WeekViewFlowLayoutDelegate
 extension JZBaseWeekView: WeekViewFlowLayoutDelegate {
-
-	@objc public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, endTimeForBackgroundAtSection section: Int) -> Date {
-		return Date().add(component: .minute, value: Array(30...50).randomElement()!)
-	}
 	
-	@objc public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, startTimeForBackgroundAtSection section: Int) -> Date {
-		return Date().add(component: .minute, value: Array(30...50).randomElement()!)
+	@objc open func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, backgroundTimesAtSection section: Int) -> [JZBackgroundTime] {
+		fatalError("override me")
 	}
 	
     @objc public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, dayForSection section: Int) -> Date {

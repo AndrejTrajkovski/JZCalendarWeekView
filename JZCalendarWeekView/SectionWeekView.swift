@@ -14,8 +14,8 @@ public protocol SectionLongPressDelegate: class {
 
 ///Divides the calendar into 3 pages (previous, current, next). One page shows events for one date. Each page can then be sliced into subsections. Works in conjuction with SectionsFlowLayout, SectionsWeekViewDataSource and SectionLongPressDelegate.
 @available(iOS 13, *)
-open class SectionWeekView<Event: JZBaseEvent, Section: Identifiable & Equatable, Subsection: Identifiable & Equatable>: JZLongPressWeekView {
-	public var sectionsDataSource: SectionWeekViewDataSource<Event, Section, Subsection>?
+open class SectionWeekView<Event: JZBaseEvent, Section: Identifiable & Equatable, Subsection: Identifiable & Equatable, BGTime: JZBackgroundTime>: JZLongPressWeekView {
+	public var sectionsDataSource: SectionWeekViewDataSource<Event, Section, Subsection, BGTime>?
 	public var sectionsFlowLayout: SectionsFlowLayout!
 	public override var flowLayout: JZWeekViewFlowLayout! {
 		get {

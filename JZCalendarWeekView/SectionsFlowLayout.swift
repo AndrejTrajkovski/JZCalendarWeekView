@@ -2,8 +2,7 @@ import UIKit
 
 open class SectionsFlowLayout: JZWeekViewFlowLayout {
 
-	var cachedBackgroundStartTime = [Int: DateComponents]()
-	var cachedBackgroundEndTime = [Int: DateComponents]()
+	var cachedBackgroundTimes = [Int: [JZBackgroundTime]]()
 	var columnBackgroundAttributes = AttDic()
 	var sectionsXPoints: [Int: SectionXs] = [:]
 	public override var collectionViewContentSize: CGSize {
@@ -24,8 +23,7 @@ open class SectionsFlowLayout: JZWeekViewFlowLayout {
 
 	override func invalidateLayoutCache() {
 		super.invalidateLayoutCache()
-		cachedBackgroundStartTime.removeAll()
-		cachedBackgroundEndTime.removeAll()
+		cachedBackgroundTimes.removeAll()
 		columnBackgroundAttributes.removeAll()
 	}
 
@@ -111,24 +109,27 @@ open class SectionsFlowLayout: JZWeekViewFlowLayout {
 			(attributes, columnBackgroundAttributes) = layoutAttributesForSupplemantaryView(at: IndexPath(item: 0, section: section),
 																						   ofKind: JZSupplementaryViewKinds.columnBackground,
 																						   withItemCache: columnBackgroundAttributes)
-			let backgroundStartTime = startTimeForBgSection(section)
-			let backgroundEndTime = endTimeForBgSection(section)
-			let startHourY = CGFloat(backgroundStartTime.hour!) * hourHeight
-			let startMinuteY = CGFloat(backgroundStartTime.minute!) * minuteHeight
-			let endHourY: CGFloat
-			let endMinuteY = CGFloat(backgroundEndTime.minute!) * minuteHeight
-			if backgroundStartTime.day! != backgroundStartTime.day! {
-				endHourY = CGFloat(Calendar.current.maximumRange(of: .hour)!.count) * hourHeight + CGFloat(backgroundStartTime.hour!) * hourHeight
-			} else {
-				endHourY = CGFloat(backgroundEndTime.hour!) * hourHeight
-			}
-			let itemMinX = (sectionMinX + itemMargin.left).toDecimal1Value()
-			let itemMaxX = (itemMinX + (sectionWidth - (itemMargin.left + itemMargin.right))).toDecimal1Value()
-			let itemMaxY = (endHourY + endMinuteY + calendarGridMinY - itemMargin.bottom).toDecimal1Value()
-			let itemMinY = (startHourY + startMinuteY + calendarGridMinY + itemMargin.top).toDecimal1Value()
-			
-			attributes.frame = CGRect(x: itemMinX, y: itemMinY, width: itemMaxX - itemMinX, height: itemMaxY - itemMinY)
-			attributes.zIndex = zIndexForElementKind(JZSupplementaryViewKinds.columnBackground)
+			let bgTimes = timesForBgSection(section)
+			bgTimes.forEach({
+				let backgroundStartTime = $0.start
+				let backgroundEndTime = $0.end
+				let startHourY = CGFloat(backgroundStartTime.hour!) * hourHeight
+				let startMinuteY = CGFloat(backgroundStartTime.minute!) * minuteHeight
+				let endHourY: CGFloat
+				let endMinuteY = CGFloat(backgroundEndTime.minute!) * minuteHeight
+				if backgroundStartTime.day != backgroundStartTime.day {
+					endHourY = CGFloat(Calendar.current.maximumRange(of: .hour)!.count) * hourHeight + CGFloat(backgroundStartTime.hour!) * hourHeight!
+				} else {
+					endHourY = CGFloat(backgroundEndTime.hour!) * hourHeight
+				}
+				let itemMinX = (sectionMinX + itemMargin.left).toDecimal1Value()
+				let itemMaxX = (itemMinX + (sectionWidth - (itemMargin.left + itemMargin.right))).toDecimal1Value()
+				let itemMaxY = (endHourY + endMinuteY + calendarGridMinY - itemMargin.bottom).toDecimal1Value()
+				let itemMinY = (startHourY + startMinuteY + calendarGridMinY + itemMargin.top).toDecimal1Value()
+
+				attributes.frame = CGRect(x: itemMinX, y: itemMinY, width: itemMaxX - itemMinX, height: itemMaxY - itemMinY)
+				attributes.zIndex = zIndexForElementKind(JZSupplementaryViewKinds.columnBackground)
+			})
 		}
 		layoutHorizontalGridLinesAttributes(calendarStartX: calendarContentMinX, calendarStartY: calendarContentMinY)
 	}
@@ -175,26 +176,13 @@ open class SectionsFlowLayout: JZWeekViewFlowLayout {
 					  width: sectionX.width, height: collectionViewContentSize.height)
     }
 	
-	func startTimeForBgSection(_ section: Int) -> DateComponents {
-		if cachedBackgroundStartTime[section] != nil {
-			return cachedBackgroundStartTime[section]!
+	func timesForBgSection(_ section: Int) -> [JZBackgroundTime] {
+		if cachedBackgroundTimes[section] != nil {
+			return cachedBackgroundTimes[section]!
 		} else {
-			if let date = delegate?.collectionView(collectionView!, layout: self, startTimeForBackgroundAtSection: section) {
-				cachedBackgroundStartTime[section] = Calendar.current.dateComponents([.day, .hour, .minute], from: date)
-				return cachedBackgroundStartTime[section]!
-			} else {
-				fatalError()
-			}
-		}
-	}
-
-	func endTimeForBgSection(_ section: Int) -> DateComponents {
-		if cachedBackgroundEndTime[section] != nil {
-			return cachedBackgroundEndTime[section]!
-		} else {
-			if let date = delegate?.collectionView(collectionView!, layout: self, endTimeForBackgroundAtSection: section) {
-				cachedBackgroundEndTime[section] = Calendar.current.dateComponents([.day, .hour, .minute], from: date)
-				return cachedBackgroundEndTime[section]!
+			if let dates = delegate?.collectionView(collectionView!, layout: self, backgroundTimesAtSection: section) {
+				cachedBackgroundTimes[section] = dates
+				return cachedBackgroundTimes[section]!
 			} else {
 				fatalError()
 			}

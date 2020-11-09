@@ -2,13 +2,14 @@ import Foundation
 import CoreGraphics
 
 @available(iOS 13, *)
-public class SectionWeekViewDataSource<Event: JZBaseEvent, Section: Identifiable & Equatable,Subsection: Identifiable & Equatable> {
+public class SectionWeekViewDataSource<Event: JZBaseEvent, Section: Identifiable & Equatable, Subsection: Identifiable & Equatable, BGTime: JZBackgroundTime> {
 	
 	public init() {}
 	
 	private var pageDates: [Date] = []
 	public var sections: [Section] = []
 	public var subsections: [Section.ID: [Subsection]] = [:]
+	public var backgroundTimes: [Date: [Section.ID: [Subsection.ID: [BGTime]]]] = [:]
 	public var allEventsBySection: [Date: [Section.ID: [Subsection.ID: [Event]]]] = [:]
 	private var dateToSectionsMap: [Date: [Int]] = [:]
 	private var sectionToIdsMap: [Int: (Date, Section.ID, Subsection.ID)] = [:]
@@ -17,16 +18,19 @@ public class SectionWeekViewDataSource<Event: JZBaseEvent, Section: Identifiable
 		update(initDate,
 			   sections,
 			   subsections,
-			   allEventsBySection)
+			   allEventsBySection,
+			   backgroundTimes)
 	}
 	
 	public func update(_ selectedDate: Date,
 					   _ sections: [Section],
 					   _ subsections: [Section.ID: [Subsection]],
-					   _ byDateAndSection: [Date: [Section.ID: [Subsection.ID: [Event]]]]) {
+					   _ byDateAndSection: [Date: [Section.ID: [Subsection.ID: [Event]]]],
+					   _ bgTimes: [Date: [Section.ID: [Subsection.ID: [BGTime]]]]) {
 		self.sections = sections
 		self.subsections = subsections
 		self.allEventsBySection = byDateAndSection
+		self.backgroundTimes = bgTimes
 		self.pageDates = [
 			selectedDate,
 			selectedDate.add(component: .day, value: 1),
@@ -57,6 +61,16 @@ public class SectionWeekViewDataSource<Event: JZBaseEvent, Section: Identifiable
 @available(iOS 13, *)
 extension SectionWeekViewDataSource {
 
+	public func backgroundTimes(section: Int) -> [JZBackgroundTime] {
+		let (dateOpt, sectionIdOpt, subsectionIdOpt) = self.getDateSectionIdAndSubsectionId(for: section)
+		guard let date = dateOpt,
+			  let sectionId = sectionIdOpt,
+			  let subsectionId = subsectionIdOpt else {
+			return []
+		}
+		return backgroundTimes[date]?[sectionId]?[subsectionId] ?? []
+	}
+	
 	func numberOfSections() -> Int {
 		sections.count * 3
 	}
