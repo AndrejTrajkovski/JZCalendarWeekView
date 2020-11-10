@@ -164,10 +164,8 @@ open class SectionWeekView<Event: JZBaseEvent, Section: Identifiable & Equatable
 
             self.longPressView.removeFromSuperview()
             if currentLongPressType == .addNew {
-//                longPressDelegate?.weekView(self, didEndAddNewLongPressAt: longPressViewStartDate)
 				sectionLongPressDelegate?.weekView(self, didEndAddNewLongPressAt: longPressViewStartDate, pageAndSectionIdx: longPressPageAndSubsection)
             } else if currentLongPressType == .move {
-//                longPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndMoveLongPressAt: longPressViewStartDate)
 				let startIds = sectionsDataSource?.getDateSectionIdAndSubsectionId(for: currentEditingInfo.indexPath.section) ?? (nil, nil, nil)
 				sectionLongPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndMoveLongPressAt: longPressViewStartDate, endPageAndSectionIdx: longPressPageAndSubsection, startPageAndSectionIdx: startIds)
             }
