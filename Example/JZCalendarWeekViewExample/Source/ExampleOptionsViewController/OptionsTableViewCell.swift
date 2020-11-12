@@ -32,7 +32,7 @@ class OptionsTableViewCell: UITableViewCell {
 
     func setupDatePicker() {
         datePicker.datePickerMode = .date
-        datePicker.locale = Calendar.current.locale
+        datePicker.locale = Calendar.gregorian.locale
         datePicker.addTarget(self, action: #selector(datePickerValueChanged), for: .valueChanged)
     }
 

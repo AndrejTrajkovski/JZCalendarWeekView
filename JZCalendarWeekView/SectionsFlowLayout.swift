@@ -1,4 +1,5 @@
 import UIKit
+import Util
 
 open class SectionsFlowLayout: JZWeekViewFlowLayout {
 
@@ -118,7 +119,7 @@ open class SectionsFlowLayout: JZWeekViewFlowLayout {
 				let endHourY: CGFloat
 				let endMinuteY = CGFloat(backgroundEndTime.minute!) * minuteHeight
 				if backgroundStartTime.day != backgroundStartTime.day {
-					endHourY = CGFloat(Calendar.current.maximumRange(of: .hour)!.count) * hourHeight + CGFloat(backgroundStartTime.hour!) * hourHeight!
+					endHourY = CGFloat(Calendar.gregorian.maximumRange(of: .hour)!.count) * hourHeight + CGFloat(backgroundStartTime.hour!) * hourHeight!
 				} else {
 					endHourY = CGFloat(backgroundEndTime.hour!) * hourHeight
 				}
@@ -151,7 +152,7 @@ open class SectionsFlowLayout: JZWeekViewFlowLayout {
 			let endMinuteY = CGFloat(itemEndTime.minute!) * minuteHeight
 			
 			if itemEndTime.day! != itemStartTime.day! {
-				endHourY = CGFloat(Calendar.current.maximumRange(of: .hour)!.count) * hourHeight + CGFloat(itemEndTime.hour!) * hourHeight
+				endHourY = CGFloat(Calendar.gregorian.maximumRange(of: .hour)!.count) * hourHeight + CGFloat(itemEndTime.hour!) * hourHeight
 			} else {
 				endHourY = CGFloat(itemEndTime.hour!) * hourHeight
 			}

@@ -169,7 +169,7 @@ extension LongPressViewController: OptionsViewDelegate {
 extension LongPressViewController {
 	public func weekView(_ weekView: JZLongPressWeekView, editingEvent: JZBaseEvent, didEndMoveLongPressAt startDate: Date, pageAndSectionIdx: (Int, Int)) {
 		guard let event = editingEvent as? AppointmentEvent else { return }
-        let duration = Calendar.current.dateComponents([.minute], from: event.startDate, to: event.endDate).minute!
+        let duration = Calendar.gregorian.dateComponents([.minute], from: event.startDate, to: event.endDate).minute!
         let selectedIndex = viewModel.events.firstIndex(where: { $0.id == event.id })!
         viewModel.events[selectedIndex].startDate = startDate
         viewModel.events[selectedIndex].endDate = startDate.add(component: .minute, value: duration)

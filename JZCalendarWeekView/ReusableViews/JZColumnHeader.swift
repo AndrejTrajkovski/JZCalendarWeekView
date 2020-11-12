@@ -13,7 +13,6 @@ open class JZColumnHeader: UICollectionReusableView {
 
     public var lblDay = UILabel()
     public var lblWeekday = UILabel()
-    let calendarCurrent = Calendar.current
     public var dateFormatter = DateFormatter()
 
     public override init(frame: CGRect) {
@@ -41,9 +40,9 @@ open class JZColumnHeader: UICollectionReusableView {
     }
 
     public func updateView(date: Date) {
-        let weekday = calendarCurrent.component(.weekday, from: date) - 1
+		let weekday = Calendar.gregorian.component(.weekday, from: date) - 1
 
-        lblDay.text = String(calendarCurrent.component(.day, from: date))
+        lblDay.text = String(Calendar.gregorian.component(.day, from: date))
         lblWeekday.text = dateFormatter.shortWeekdaySymbols[weekday].uppercased()
 
         if date.isToday {

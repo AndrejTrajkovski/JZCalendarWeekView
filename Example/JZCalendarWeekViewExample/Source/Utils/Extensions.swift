@@ -12,11 +12,11 @@ import JZCalendarWeekView
 extension Date {
 
     func add(component: Calendar.Component, value: Int) -> Date {
-        return Calendar.current.date(byAdding: component, value: value, to: self)!
+        return Calendar.gregorian.date(byAdding: component, value: value, to: self)!
     }
 
     public var startOfDay: Date {
-        return Calendar.current.startOfDay(for: self)
+        return Calendar.gregorian.startOfDay(for: self)
     }
 }
 

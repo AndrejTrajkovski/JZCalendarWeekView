@@ -37,7 +37,7 @@ class CustomViewController: UIViewController {
             setupCalendarViewWithSelectedData()
         } else {
             // Normal setup with different visible time
-            let time8AM = DateComponents(calendar: Calendar.current, timeZone: Calendar.current.timeZone, year: 2018, month: 9, day: 24, hour: 8, minute: 0, second: 0).date!
+            let time8AM = DateComponents(calendar: Calendar.gregorian, timeZone: Calendar.gregorian.timeZone, year: 2018, month: 9, day: 24, hour: 8, minute: 0, second: 0).date!
             calendarWeekView.setupCalendar(numOfDays: 3,
                                            setDate: Date(),
                                            allEvents: viewModel.eventsByDate,
@@ -50,7 +50,7 @@ class CustomViewController: UIViewController {
     private func setupCalendarViewWithSelectedData() {
         guard let selectedData = viewModel.currentSelectedData else { return }
 
-        let time8AM = DateComponents(calendar: Calendar.current, timeZone: Calendar.current.timeZone, year: 2018, month: 9, day: 24, hour: 8, minute: 0, second: 0).date!
+        let time8AM = DateComponents(calendar: Calendar.gregorian, timeZone: Calendar.gregorian.timeZone, year: 2018, month: 9, day: 24, hour: 8, minute: 0, second: 0).date!
         calendarWeekView.setupCalendar(numOfDays: selectedData.numOfDays,
                                        setDate: selectedData.date,
                                        allEvents: viewModel.eventsByDate,

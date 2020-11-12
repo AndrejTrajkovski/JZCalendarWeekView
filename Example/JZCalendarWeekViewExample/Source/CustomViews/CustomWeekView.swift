@@ -43,7 +43,7 @@ class CustomWeekView: JZBaseWeekView {
             guard let currentTimeline = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: CurrentTimelineAll.className, for: indexPath) as? CurrentTimelineAll else {
                 preconditionFailure("CurrentTimelineAll should be casted")
             }
-            let isToday = Calendar.current.isDateInToday(flowLayout.dateForColumnHeader(at: indexPath))
+            let isToday = Calendar.gregorian.isDateInToday(flowLayout.dateForColumnHeader(at: indexPath))
             currentTimeline.updateView(needShowBallView: isToday)
             return currentTimeline
         }
