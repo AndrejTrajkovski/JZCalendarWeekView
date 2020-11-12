@@ -11,7 +11,7 @@ import UIKit
 open class JZBaseEvent: NSObject, NSCopying {
 
     /// Unique id for each event to identify an event, especially for cross-day events
-    public var id: String
+    public var id: Int
 
     public var startDate: Date
     public var endDate: Date
@@ -21,7 +21,7 @@ open class JZBaseEvent: NSObject, NSCopying {
     public var intraStartDate: Date
     public var intraEndDate: Date
 
-    public init(id: String, startDate: Date, endDate: Date) {
+    public init(id: Int, startDate: Date, endDate: Date) {
         self.id = id
         self.startDate = startDate
         self.endDate = endDate

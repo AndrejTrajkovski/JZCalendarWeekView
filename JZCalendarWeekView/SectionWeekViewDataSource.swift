@@ -89,15 +89,6 @@ extension SectionWeekViewDataSource {
 
 	public func getDateSectionIdAndSubsectionId(for section: Int) -> (Date?, Section.ID?, Subsection.ID?) {
 		return sectionToIdsMap[section] ?? (nil, nil, nil)
-//		guard let sectionDate = sectionToDateMap[section] else {
-//			return (nil, nil, nil)
-//		}
-//		guard let dateSections = dateToSectionsMap[sectionDate],
-//			  let sectionIdx = dateSections.firstIndex(of: section) else {
-//			return (sectionDate, nil, nil)
-//		}
-//		let sectionId = sections[sectionIdx].id
-//		let idx = sections.firstIndex(where: { $0.id == sectionId })
 	}
 
 	func getEvents(at section: Int) -> [Event] {
@@ -144,19 +135,5 @@ extension SectionWeekViewDataSource {
 			}
 		}
 		return (pageDatesResult, result)
-//		var viceVersa: [Int: (Date, Section.ID, Subsection.ID)] = [:]
-//		for pageDate in pageDates {
-//			let resss: [[Subsection]] = sections.compactMap { (section: Section) in
-//				let values = subsections[section.id]
-//				return values
-//			}
-//			let upper = subsections.values.count + runningTotal
-//			let sections = Array(runningTotal..<upper)
-//			result[pageDate] = sections
-//			sections.forEach {
-//				viceVersa[$0] = pageDate
-//			}
-//			runningTotal = upper
-//		}
 	}
 }
