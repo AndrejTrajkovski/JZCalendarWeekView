@@ -498,6 +498,7 @@ extension JZLongPressWeekView: UIGestureRecognizerDelegate {
 
         } else if state == .ended {
             
+			let startOfDay = self.getDateForPointX(pointInCollectionView.x)
             if currentLongPressType == .addNew {
                 longPressDelegate?.weekView(self, didEndAddNewLongPressAt: longPressViewStartDate)
             } else if currentLongPressType == .move {
