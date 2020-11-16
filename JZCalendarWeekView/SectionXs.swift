@@ -10,5 +10,6 @@ public struct SectionXs {
 		self.maxX = maxX
 	}
 	
+	var midX: CGFloat { minX + (width / 2) }
 	var width: CGFloat { maxX - minX}
 }

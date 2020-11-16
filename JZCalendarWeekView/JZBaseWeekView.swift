@@ -286,13 +286,13 @@ open class JZBaseWeekView: UIView {
     ///    - date: this date is the current date in one-day view rather than initDate
     open func updateWeekView(to date: Date) {
 		let potentialInitDate = date.startOfDay.add(component: .day, value: -numOfDays)
-		if potentialInitDate != initDate {
+//		if potentialInitDate != initDate {
 			self.initDate = potentialInitDate
 				DispatchQueue.main.async { [unowned self] in
 					self.layoutSubviews()
 					self.forceReload()
 				}
-		}
+//		}
     }
 
     /// Vertically scroll collectionView to the specific time in a day.

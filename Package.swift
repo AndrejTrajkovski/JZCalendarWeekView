@@ -14,11 +14,13 @@ let package = Package(
             targets: ["JZCalendarWeekView"])
     ],
     dependencies: [
+		.package(url: "../Util",
+						 from: Version.init(stringLiteral: "1.0.0"))
     ],
     targets: [
         .target(
             name: "JZCalendarWeekView",
-            dependencies: [],
+            dependencies: ["Util"],
             path: "JZCalendarWeekView")
     ]
 )

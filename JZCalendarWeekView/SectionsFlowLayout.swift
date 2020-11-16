@@ -6,6 +6,8 @@ open class SectionsFlowLayout: JZWeekViewFlowLayout {
 	var cachedBackgroundTimes = [Int: [JZBackgroundTime]]()
 	var columnBackgroundAttributes = AttDic()
 	var sectionsXPoints: [Int: SectionXs] = [:]
+	var subsectionWidth: CGFloat { sectionsXPoints.first?.value.width ?? 0 }
+	
 	public override var collectionViewContentSize: CGSize {
 		        return CGSize(width: rowHeaderWidth + sectionWidth * 3,
                       height: maxSectionHeight)

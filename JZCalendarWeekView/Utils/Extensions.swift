@@ -194,7 +194,7 @@ extension Date {
         return formatter.string(from: self)
     }
 
-    static func daysBetween(start: Date, end: Date, ignoreHours: Bool) -> Int {
+    public static func daysBetween(start: Date, end: Date, ignoreHours: Bool) -> Int {
         let startDate = ignoreHours ? start.startOfDay : start
         let endDate = ignoreHours ? end.startOfDay : end
         return Calendar.current.dateComponents([.day], from: startDate, to: endDate).day!

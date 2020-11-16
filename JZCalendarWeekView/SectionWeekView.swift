@@ -123,7 +123,7 @@ open class SectionWeekView<Event: JZBaseEvent, Section: Identifiable & Equatable
 
         if state == .began {
 
-            currentEditingInfo.cellSize = currentLongPressType == .move ? currentMovingCell.frame.size : CGSize(width: flowLayout.sectionWidth, height: flowLayout.hourHeight * CGFloat(addNewDurationMins)/60)
+            currentEditingInfo.cellSize = currentLongPressType == .move ? currentMovingCell.frame.size : CGSize(width: sectionsFlowLayout.subsectionWidth, height: flowLayout.hourHeight * CGFloat(addNewDurationMins)/60)
             pressPosition = currentLongPressType == .move ? (pointInCollectionView.x - currentMovingCell.frame.origin.x, pointInCollectionView.y - currentMovingCell.frame.origin.y) :
                                                             (currentEditingInfo.cellSize.width/2, currentEditingInfo.cellSize.height/2)
             longPressViewStartDate = getLongPressViewStartDate(pointInCollectionView: pointInCollectionView, pointInSelfView: pointInSelfView)
@@ -132,8 +132,7 @@ open class SectionWeekView<Event: JZBaseEvent, Section: Identifiable & Equatable
             longPressView.frame.size = currentEditingInfo.cellSize
             longPressView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
             self.addSubview(longPressView)
-
-            longPressView.center = CGPoint(x: pointInSelfView.x - pressPosition!.xToViewLeft + currentEditingInfo.cellSize.width/2,
+			longPressView.center = CGPoint(x: self.getMidSectionXInSelfView(pointInCollectionView.x),
                                            y: pointInSelfView.y - pressPosition!.yToViewTop + currentEditingInfo.cellSize.height/2)
             if currentLongPressType == .move {
                 currentEditingInfo.event = (currentMovingCell as! JZLongPressEventCell).event
@@ -148,7 +147,7 @@ open class SectionWeekView<Event: JZBaseEvent, Section: Identifiable & Equatable
 
         } else if state == .changed {
             let topYPoint = max(pointInSelfView.y - pressPosition!.yToViewTop, longPressTopMarginY)
-            longPressView.center = CGPoint(x: pointInSelfView.x - pressPosition!.xToViewLeft + currentEditingInfo.cellSize.width/2,
+			longPressView.center = CGPoint(x: longPressView.center.x,
                                            y: topYPoint + currentEditingInfo.cellSize.height/2)
 
         } else if state == .cancelled {
@@ -188,6 +187,16 @@ open class SectionWeekView<Event: JZBaseEvent, Section: Identifiable & Equatable
             return
         }
     }
+	
+	override open func getMidSectionXInSelfView(_ xCollectionView: CGFloat) -> CGFloat {
+		self.getMidSectionXInCollectionView(xCollectionView).truncatingRemainder(dividingBy: flowLayout.sectionWidth)
+	}
+	
+	override open func getMidSectionXInCollectionView(_ xCollectionView: CGFloat) -> CGFloat {
+		sectionsFlowLayout.sectionsXPoints.first(where: {
+			$0.value.minX < xCollectionView && xCollectionView <= $0.value.maxX
+		})?.value.midX ?? 0
+	}
 
 	override public func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, dayForSection section: Int) -> Date {
 		sectionsDataSource!.dayFor(section: section)
