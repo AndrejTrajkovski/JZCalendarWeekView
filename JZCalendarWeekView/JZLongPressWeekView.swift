@@ -15,7 +15,7 @@ public protocol JZLongPressViewDelegate: class {
     /// - Parameters:
     ///   - weekView: current long pressed JZLongPressWeekView
     ///   - startDate: the startDate of the event when gesture ends
-    func weekView(_ weekView: JZLongPressWeekView, didEndAddNewLongPressAt startDate: Date)
+    func weekView(_ weekView: JZLongPressWeekView, didEndAddNewLongPressAt startDate: Date, startOfDayDate: Date)
 
     /// When Move long press gesture ends, this function will be called.
     /// You should handle what should be done after editing (moving) a existed event.
@@ -23,7 +23,7 @@ public protocol JZLongPressViewDelegate: class {
     ///   - weekView: current long pressed JZLongPressWeekView
     ///   - editingEvent: the moving (existed, editing) event
     ///   - startDate: the startDate of the event when gesture ends
-    func weekView(_ weekView: JZLongPressWeekView, editingEvent: JZBaseEvent, didEndMoveLongPressAt startDate: Date)
+    func weekView(_ weekView: JZLongPressWeekView, editingEvent: JZBaseEvent, didEndMoveLongPressAt startDate: Date, startOfDayDate: Date)
 
     /// Sometimes the longPress will be cancelled because some curtain reason.
     /// Normally this function no need to be implemented.
@@ -34,7 +34,7 @@ public protocol JZLongPressViewDelegate: class {
     func weekView(_ weekView: JZLongPressWeekView, longPressType: JZLongPressWeekView.LongPressType, didCancelLongPressAt startDate: Date)
 	
 	/// When ChangeDuration long press gesture ends, this function will be called.
-	func weekView(_ weekView: JZLongPressWeekView, editingEvent: JZBaseEvent, didEndChangeDurationLongPressAt endDate: Date)
+	func weekView(_ weekView: JZLongPressWeekView, editingEvent: JZBaseEvent, didEndChangeDurationLongPressAt endDate: Date, startOfDayDate: Date)
 }
 
 public protocol JZLongPressViewDataSource: class {
@@ -500,13 +500,13 @@ extension JZLongPressWeekView: UIGestureRecognizerDelegate {
             
 			let startOfDay = self.getDateForPointX(pointInCollectionView.x)
             if currentLongPressType == .addNew {
-                longPressDelegate?.weekView(self, didEndAddNewLongPressAt: longPressViewStartDate)
+                longPressDelegate?.weekView(self, didEndAddNewLongPressAt: longPressViewStartDate, startOfDayDate: startOfDay)
             } else if currentLongPressType == .move {
-                longPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndMoveLongPressAt: longPressViewStartDate)
+                longPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndMoveLongPressAt: longPressViewStartDate, startOfDayDate: startOfDay)
 			} else if case .changeDuration = currentLongPressType {
 				let endHourMinute = getDateForPointY(pointInCollectionView.y)
 				let endDate = longPressViewStartDate.set(hour: endHourMinute.0, minute :endHourMinute.1)
-				longPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndChangeDurationLongPressAt :endDate)
+				longPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndChangeDurationLongPressAt :endDate, startOfDayDate: startOfDay)
 			}
 			self.longPressView.removeFromSuperview()
         }
