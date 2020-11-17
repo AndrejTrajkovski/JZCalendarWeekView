@@ -405,7 +405,131 @@ extension JZLongPressWeekView: UIGestureRecognizerDelegate {
         return true
     }
 
-    /// The basic longPressView position logic is moving with your finger's original position.
+	public func setupLongPress(_ pointInCollectionView: CGPoint, _ currentMovingCell: inout UICollectionViewCell!, _ gestureRecognizer: UILongPressGestureRecognizer) {
+		if isLongPressing == false {
+			if let indexPath = collectionView.indexPathForItem(at: pointInCollectionView) {
+				// Can add some conditions for allowing only few types of cells can be moved
+				currentMovingCell = collectionView.cellForItem(at: indexPath)
+				let yPointInsideCell = gestureRecognizer.location(in: currentMovingCell).y
+				if yPointInsideCell > currentMovingCell.frame.height - changeDurationEdgeSize {
+					currentLongPressType = .changeDuration
+				} else {
+					currentLongPressType = .move
+				}
+				currentEditingInfo.indexPath = indexPath
+			} else {
+				currentLongPressType = .addNew
+			}
+			isLongPressing = true
+		}
+	}
+	
+	@objc open func newEventWidth() -> CGFloat {
+		flowLayout.sectionWidth
+	}
+	
+	public func getPressPositionAndInfo(_ currentMovingCell: UICollectionViewCell!, _ pointInCollectionView: CGPoint) {
+		switch currentLongPressType {
+		case .move, .changeDuration:
+			currentEditingInfo.cellSize = currentMovingCell.frame.size
+			pressPosition = (pointInCollectionView.x - currentMovingCell.frame.origin.x, pointInCollectionView.y - currentMovingCell.frame.origin.y)
+		case .addNew:
+			currentEditingInfo.cellSize = CGSize(width: newEventWidth(), height: flowLayout.hourHeight * CGFloat(addNewDurationMins)/60)
+			pressPosition =
+				(currentEditingInfo.cellSize.width/2, currentEditingInfo.cellSize.height/2)
+		case .none: break
+		}
+	}
+	
+	public func setupLongPressView(_ currentMovingCell: UICollectionViewCell?, _ longPressViewStartDate: Date, _ pointInCollectionView: CGPoint, _ pointInSelfView: CGPoint) {
+		longPressView = initLongPressView(selectedCell: currentMovingCell, type: currentLongPressType, startDate: longPressViewStartDate)
+		longPressView.frame.size = currentEditingInfo.cellSize
+		longPressView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+		self.addSubview(longPressView)
+		
+		switch currentLongPressType {
+		case .addNew:
+			longPressView.center = CGPoint(x: self.getMidSectionXInSelfView(pointInCollectionView.x),
+										   y: pointInSelfView.y - pressPosition!.yToViewTop + currentEditingInfo.cellSize.height/2)
+		case .move, .changeDuration:
+			let cellFrameInSelf = collectionView.convert(currentMovingCell!.center, to: self)
+			longPressView.center = cellFrameInSelf
+		default: break
+		}
+	}
+	
+	open func setupEditingCell(_ currentMovingCell: UICollectionViewCell?) {
+		switch currentLongPressType {
+		case .move, .changeDuration:
+			currentEditingInfo.event = (currentMovingCell as! JZLongPressEventCell).event
+			getCurrentMovingCells().forEach {
+				$0.contentView.layer.opacity = movingCellOpacity
+				currentEditingInfo.allOpacityContentViews.append($0.contentView)
+			}
+		default:
+			break
+		}
+	}
+	
+	open func animateLongPressView() {
+		UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 5, options: .curveEaseOut,
+					   animations: { self.longPressView.transform = CGAffineTransform.identity }, completion: nil)
+	}
+	
+	fileprivate func handleEndedState(_ pointInCollectionView: CGPoint, longPressViewStartDate: Date) {
+		let startOfDay = self.getDateForPointX(pointInCollectionView.x)
+		if currentLongPressType == .addNew {
+			longPressDelegate?.weekView(self, didEndAddNewLongPressAt: longPressViewStartDate, startOfDayDate: startOfDay)
+		} else if currentLongPressType == .move {
+			longPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndMoveLongPressAt: longPressViewStartDate, startOfDayDate: startOfDay)
+		} else if case .changeDuration = currentLongPressType {
+			let endHourMinute = getDateForPointY(pointInCollectionView.y)
+			let endDate = longPressViewStartDate.set(hour: endHourMinute.0, minute :endHourMinute.1)
+			longPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndChangeDurationLongPressAt :endDate, startOfDayDate: startOfDay)
+		}
+	}
+	
+	open func handleLongPressViewFrameInChangedState(_ pointInSelfView: CGPoint) {
+		let topYPoint = max(pointInSelfView.y - pressPosition!.yToViewTop, longPressTopMarginY)
+		
+		if case .changeDuration = currentLongPressType {
+			let height = topYPoint - longPressView.frame.minY + currentEditingInfo.cellSize.height
+			longPressView.frame = CGRect.init(x: longPressView.frame.minX, y: longPressView.frame.minY, width: longPressView.frame.width, height:height)
+		} else {
+			longPressView.center = CGPoint(x: longPressView.center.x,
+										   y: topYPoint + currentEditingInfo.cellSize.height/2)
+		}
+	}
+	
+	public func cleanUp(_ state: UIGestureRecognizer.State, _ longPressViewStartDate: Date, _ pointInSelfView: CGPoint) {
+		if state == .began || state == .changed {
+			updateTimeLabel(time: longPressViewStartDate, pointInSelfView: pointInSelfView)
+			updateScroll(pointInSelfView: pointInSelfView)
+		}
+		
+		if state == .ended || state == .cancelled {
+			longPressTimeLabel.removeFromSuperview()
+			isLongPressing = false
+			pressPosition = nil
+			
+			switch currentLongPressType {
+			case .move, .changeDuration:
+				currentEditingInfo.allOpacityContentViews.forEach { $0.layer.opacity = 1 }
+				currentEditingInfo.allOpacityContentViews.removeAll()
+			case .addNew, .none: break
+			}
+		}
+	}
+	
+	public func handleCancelledState() {
+		UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseOut, animations: {
+			self.longPressView.alpha = 0
+		}, completion: { _ in
+			self.longPressView.removeFromSuperview()
+		})
+	}
+	
+	/// The basic longPressView position logic is moving with your finger's original position.
     /// - The Move type longPressView will keep the relative position during this longPress, that's how Apple Calendar did.
     /// - The AddNew type longPressView will be created centrally at your finger press position
     @objc func handleLongPressGesture(_ gestureRecognizer: UILongPressGestureRecognizer) {
@@ -417,22 +541,7 @@ extension JZLongPressWeekView: UIGestureRecognizerDelegate {
         let state = gestureRecognizer.state
         var currentMovingCell: UICollectionViewCell!
 		
-        if isLongPressing == false {
-            if let indexPath = collectionView.indexPathForItem(at: pointInCollectionView) {
-                // Can add some conditions for allowing only few types of cells can be moved
-                currentMovingCell = collectionView.cellForItem(at: indexPath)
-				let yPointInsideCell = gestureRecognizer.location(in: currentMovingCell).y
-				if yPointInsideCell > currentMovingCell.frame.height - changeDurationEdgeSize {
-					currentLongPressType = .changeDuration
-				} else {
-					currentLongPressType = .move
-				}
-				
-            } else {
-                currentLongPressType = .addNew
-            }
-            isLongPressing = true
-        }
+		setupLongPress(pointInCollectionView, &currentMovingCell, gestureRecognizer)
 
         // The startDate of the longPressView (the date of top Y in longPressView)
         var longPressViewStartDate: Date!
@@ -444,90 +553,27 @@ extension JZLongPressWeekView: UIGestureRecognizerDelegate {
 
         if state == .began {
 
-			switch currentLongPressType {
-			case .move, .changeDuration:
-				currentEditingInfo.cellSize = currentMovingCell.frame.size
-				pressPosition = (pointInCollectionView.x - currentMovingCell.frame.origin.x, pointInCollectionView.y - currentMovingCell.frame.origin.y)
-			case .addNew:
-				currentEditingInfo.cellSize = CGSize(width: flowLayout.sectionWidth, height: flowLayout.hourHeight * CGFloat(addNewDurationMins)/60)
-				pressPosition =
-					(currentEditingInfo.cellSize.width/2, currentEditingInfo.cellSize.height/2)
-			case .none: break
-			}
-			
+			getPressPositionAndInfo(currentMovingCell, pointInCollectionView)
+
             longPressViewStartDate = getLongPressViewStartDate(pointInCollectionView: pointInCollectionView, pointInSelfView: pointInSelfView)
-            longPressView = initLongPressView(selectedCell: currentMovingCell, type: currentLongPressType, startDate: longPressViewStartDate)
-            longPressView.frame.size = currentEditingInfo.cellSize
-            longPressView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
-            self.addSubview(longPressView)
-
-			longPressView.center = CGPoint(x: self.getMidSectionXInSelfView(pointInCollectionView.x),
-                                           y: pointInSelfView.y - pressPosition!.yToViewTop + currentEditingInfo.cellSize.height/2)
-			switch currentLongPressType {
-			case .move, .changeDuration:
-				currentEditingInfo.event = (currentMovingCell as! JZLongPressEventCell).event
-				getCurrentMovingCells().forEach {
-					$0.contentView.layer.opacity = movingCellOpacity
-					currentEditingInfo.allOpacityContentViews.append($0.contentView)
-				}
-			default:
-				break
-			}
-
-            UIView.animate(withDuration: 0.2, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 5, options: .curveEaseOut,
-                           animations: { self.longPressView.transform = CGAffineTransform.identity }, completion: nil)
-
-        } else if state == .changed {
-            let topYPoint = max(pointInSelfView.y - pressPosition!.yToViewTop, longPressTopMarginY)
+			setupLongPressView(currentMovingCell, longPressViewStartDate, pointInCollectionView, pointInSelfView)
+			setupEditingCell(currentMovingCell)
+			animateLongPressView()
 			
-			if case .changeDuration = currentLongPressType {
-				let height = topYPoint - longPressView.frame.minY + currentEditingInfo.cellSize.height
-				longPressView.frame = CGRect.init(x: longPressView.frame.minX, y: longPressView.frame.minY, width: longPressView.frame.width, height:height)
-			} else {
-				longPressView.center = CGPoint(x: longPressView.center.x,
-											   y: topYPoint + currentEditingInfo.cellSize.height/2)
-			}
+        } else if state == .changed {
+			
+			handleLongPressViewFrameInChangedState(pointInSelfView)
         } else if state == .cancelled {
-
-            UIView.animate(withDuration: 0.3, delay: 0.0, options: .curveEaseOut, animations: {
-                self.longPressView.alpha = 0
-            }, completion: { _ in
-                self.longPressView.removeFromSuperview()
-            })
-            longPressDelegate?.weekView(self, longPressType: currentLongPressType, didCancelLongPressAt: longPressViewStartDate)
-
+			
+            handleCancelledState()
+			longPressDelegate?.weekView(self, longPressType: currentLongPressType, didCancelLongPressAt: longPressViewStartDate)
         } else if state == .ended {
             
-			let startOfDay = self.getDateForPointX(pointInCollectionView.x)
-            if currentLongPressType == .addNew {
-                longPressDelegate?.weekView(self, didEndAddNewLongPressAt: longPressViewStartDate, startOfDayDate: startOfDay)
-            } else if currentLongPressType == .move {
-                longPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndMoveLongPressAt: longPressViewStartDate, startOfDayDate: startOfDay)
-			} else if case .changeDuration = currentLongPressType {
-				let endHourMinute = getDateForPointY(pointInCollectionView.y)
-				let endDate = longPressViewStartDate.set(hour: endHourMinute.0, minute :endHourMinute.1)
-				longPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndChangeDurationLongPressAt :endDate, startOfDayDate: startOfDay)
-			}
+			handleEndedState(pointInCollectionView, longPressViewStartDate: longPressViewStartDate)
 			self.longPressView.removeFromSuperview()
         }
 
-        if state == .began || state == .changed {
-            updateTimeLabel(time: longPressViewStartDate, pointInSelfView: pointInSelfView)
-            updateScroll(pointInSelfView: pointInSelfView)
-        }
-
-        if state == .ended || state == .cancelled {
-            longPressTimeLabel.removeFromSuperview()
-            isLongPressing = false
-            pressPosition = nil
-			
-			switch currentLongPressType {
-			case .move, .changeDuration:
-				currentEditingInfo.allOpacityContentViews.forEach { $0.layer.opacity = 1 }
-				currentEditingInfo.allOpacityContentViews.removeAll()
-			case .addNew, .none: break
-			}
-        }
+		cleanUp(state, longPressViewStartDate, pointInSelfView)
     }
 
 	@objc open func getMidSectionXInSelfView(_ xCollectionView: CGFloat) -> CGFloat {
