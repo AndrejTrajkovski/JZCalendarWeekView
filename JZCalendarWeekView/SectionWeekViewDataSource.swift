@@ -41,17 +41,13 @@ public class SectionWeekViewDataSource<Event: JZBaseEvent, Section: Identifiable
 																   pageDates: self.pageDates)
 	}
 
-	func calcSectionXs(_ dateToSectionsMap: [Date: [Int]],
-					   pageWidth: CGFloat,
-					   offset: CGFloat,
-//					   minRowWidth: CGFloat
-	) -> [Int: SectionXs]{
+	func calcSectionXs(_ dateToSectionsMap: [Date: [Int]], pageWidth: CGFloat, offset: CGFloat) -> [Int: SectionXs] {
 		var pageSectionXx: [Int: SectionXs] = [:]
 		var minX: CGFloat = offset
 		let sections = dateToSectionsMap.sorted(by: { $0.key < $1.key}).flatMap({ $0.value })
 		for section in sections {
 			let pageDict = dateToSectionsMap.first(where: { $0.value.contains(section)})!
-			var width = (pageWidth / CGFloat(pageDict.value.count))
+			let width = (pageWidth / CGFloat(pageDict.value.count))
 //			if width < minRowWidth { width = minRowWidth }
 			let maxX = minX + width
 			pageSectionXx[section] = SectionXs(minX: minX, maxX: maxX)
