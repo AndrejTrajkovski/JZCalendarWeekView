@@ -23,7 +23,7 @@ public protocol JZLongPressViewDelegate: class {
     ///   - weekView: current long pressed JZLongPressWeekView
     ///   - editingEvent: the moving (existed, editing) event
     ///   - startDate: the startDate of the event when gesture ends
-    func weekView(_ weekView: JZLongPressWeekView, editingEvent: JZBaseEvent, didEndMoveLongPressAt startDate: Date, startOfDayDate: Date)
+	func weekView(_ weekView: JZLongPressWeekView, editingEvent: JZBaseEvent, didEndMoveLongPressAt startDate: Date, startOfDayDate: Date, startingPointStartOfDay: Date)
 
     /// Sometimes the longPress will be cancelled because some curtain reason.
     /// Normally this function no need to be implemented.
@@ -342,7 +342,7 @@ open class JZLongPressWeekView: JZBaseWeekView {
     /// when the previous cell is reused, have to find current one
     open func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
 		//FIXME: think about adding changeDuration here
-        guard isLongPressing == true && currentLongPressType == .move else { return }
+        guard isLongPressing == true && (currentLongPressType == .move || currentLongPressType == .changeDuration) else { return }
 
         let cellContentView = cell.contentView
 
@@ -488,7 +488,7 @@ extension JZLongPressWeekView: UIGestureRecognizerDelegate {
 		if currentLongPressType == .addNew {
 			longPressDelegate?.weekView(self, didEndAddNewLongPressAt: longPressViewStartDate, startOfDayDate: startOfDay)
 		} else if currentLongPressType == .move {
-			longPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndMoveLongPressAt: longPressViewStartDate, startOfDayDate: startOfDay)
+			longPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndMoveLongPressAt: longPressViewStartDate, startOfDayDate: startOfDay, startingPointStartOfDay: self.getDateForSection(currentEditingInfo.indexPath.section))
 		} else if case .changeDuration = currentLongPressType {
 			let endHourMinute = getDateForPointY(pointInCollectionView.y)
 			let endDate = longPressViewStartDate.set(hour: endHourMinute.0, minute :endHourMinute.1)
@@ -616,9 +616,7 @@ extension JZLongPressWeekView: UIGestureRecognizerDelegate {
     /// used by handleLongPressGesture only
     func getLongPressViewStartDate(pointInCollectionView: CGPoint, pointInSelfView: CGPoint) -> Date {
         let longPressViewTopDate = getDateForPoint(pointCollectionView: CGPoint(x: pointInCollectionView.x, y: pointInCollectionView.y - pressPosition!.yToViewTop), pointSelfView: pointInSelfView)
-		print(longPressViewTopDate)
         let longPressViewStartDate = getLongPressStartDate(date: longPressViewTopDate, dateInSection: getDateForPointX(xCollectionView: pointInCollectionView.x, xSelfView: pointInSelfView.x), timeMinInterval: moveTimeMinInterval)
-		print(longPressViewStartDate)
         return longPressViewStartDate
     }
 
