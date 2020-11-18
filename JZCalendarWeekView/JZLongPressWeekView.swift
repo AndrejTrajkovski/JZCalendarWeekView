@@ -456,7 +456,7 @@ extension JZLongPressWeekView: UIGestureRecognizerDelegate {
 		
 		switch currentLongPressType {
 		case .addNew:
-			longPressView.center = CGPoint(x: self.getMidSectionXInSelfView(pointInCollectionView.x),
+			longPressView.center = CGPoint(x: self.getMidSectionXInSelfView(pointInSelfView.x - pressPosition!.xToViewLeft + currentEditingInfo.cellSize.width/2),
 										   y: pointInSelfView.y - pressPosition!.yToViewTop + currentEditingInfo.cellSize.height/2)
 		case .move, .changeDuration:
 			let cellFrameInSelf = collectionView.convert(currentMovingCell!.center, to: self)
@@ -503,7 +503,7 @@ extension JZLongPressWeekView: UIGestureRecognizerDelegate {
 			let height = topYPoint - longPressView.frame.minY + currentEditingInfo.cellSize.height
 			longPressView.frame = CGRect.init(x: longPressView.frame.minX, y: longPressView.frame.minY, width: longPressView.frame.width, height:height)
 		} else {
-			longPressView.center = CGPoint(x: longPressView.center.x,
+			longPressView.center = CGPoint(x: pointInSelfView.x - pressPosition!.xToViewLeft + currentEditingInfo.cellSize.width/2,
 										   y: topYPoint + currentEditingInfo.cellSize.height/2)
 		}
 	}
