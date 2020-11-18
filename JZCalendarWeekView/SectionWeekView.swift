@@ -93,15 +93,18 @@ open class SectionWeekView<Event: JZBaseEvent, Section: Identifiable & Equatable
 	}
 	
 	fileprivate func handleEndedState(_ pointInCollectionView: CGPoint, _ longPressViewStartDate: Date, longPressPageAndSubsection: (Date?, Section.ID?, Subsection.ID?)) {
-		let startIds = sectionsDataSource?.getDateSectionIdAndSubsectionId(for: currentEditingInfo.indexPath.section) ?? (nil, nil, nil)
 		if currentLongPressType == .addNew {
 			sectionLongPressDelegate?.weekView(self, didEndAddNewLongPressAt: longPressViewStartDate, pageAndSectionIdx: longPressPageAndSubsection)
-		} else if currentLongPressType == .move {
-			sectionLongPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndMoveLongPressAt: longPressViewStartDate, endPageAndSectionIdx: longPressPageAndSubsection, startPageAndSectionIdx: startIds)
-		} else if case .changeDuration = currentLongPressType {
-			let endHourMinute = getDateForPointY(pointInCollectionView.y)
-			let endDate = longPressViewStartDate.set(hour: endHourMinute.0, minute :endHourMinute.1)
-			sectionLongPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndChangeDurationAt: endDate, startPageAndSectionIdx: startIds)
+		} else if currentLongPressType == .move ||
+					currentLongPressType == .changeDuration	{
+			let startIds = sectionsDataSource?.getDateSectionIdAndSubsectionId(for: currentEditingInfo.indexPath.section) ?? (nil, nil, nil)
+			if currentLongPressType == .move {
+				sectionLongPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndMoveLongPressAt: longPressViewStartDate, endPageAndSectionIdx: longPressPageAndSubsection, startPageAndSectionIdx: startIds)
+			} else if case .changeDuration = currentLongPressType {
+				let endHourMinute = getDateForPointY(pointInCollectionView.y)
+				let endDate = longPressViewStartDate.set(hour: endHourMinute.0, minute :endHourMinute.1)
+				sectionLongPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndChangeDurationAt: endDate, startPageAndSectionIdx: startIds)
+			}
 		}
 	}
 	

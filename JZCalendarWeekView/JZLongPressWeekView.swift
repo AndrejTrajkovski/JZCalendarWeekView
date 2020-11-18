@@ -98,6 +98,8 @@ open class JZLongPressWeekView: JZBaseWeekView {
 		///Save the touch point inside the cell to determine whther to change duration or move
 		var yPointInsideCell: CGFloat!
     }
+	
+	var tapView: UIView!
     /// When moving the longPress view, if it causes the collectionView scrolling
     var isScrolling: Bool = false
     var isLongPressing: Bool = false
@@ -152,11 +154,15 @@ open class JZLongPressWeekView: JZBaseWeekView {
         super.init(coder: aDecoder)
         setupGestures()
     }
-
-    private func setupGestures() {
-        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(self.handleLongPressGesture(_:)))
-        longPressGesture.delegate = self
-        collectionView.addGestureRecognizer(longPressGesture)
+	
+	private func setupGestures() {
+		let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(self.handleLongPressGesture(_:)))
+		longPressGesture.delegate = self
+		collectionView.addGestureRecognizer(longPressGesture)
+		
+		let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTapGesture(_:)))
+		tap.numberOfTapsRequired = 1
+		self.collectionView.addGestureRecognizer(tap)
     }
 
     /// Updating time label in longPressView during dragging
@@ -335,6 +341,7 @@ open class JZLongPressWeekView: JZBaseWeekView {
 
     /// when the previous cell is reused, have to find current one
     open func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+		//FIXME: think about adding changeDuration here
         guard isLongPressing == true && currentLongPressType == .move else { return }
 
         let cellContentView = cell.contentView
@@ -529,6 +536,25 @@ extension JZLongPressWeekView: UIGestureRecognizerDelegate {
 		})
 	}
 	
+	@objc func handleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
+		print("tap")
+		let pointInSelfView = gestureRecognizer.location(in: self)
+		let pointInCollectionView = gestureRecognizer.location(in: collectionView)
+		
+		let longPressViewTopDate = getDateForPoint(pointCollectionView: pointInCollectionView, pointSelfView: pointInSelfView)
+		let longPressViewStartDate = getLongPressStartDate(date: longPressViewTopDate, dateInSection: getDateForPointX(xCollectionView: pointInCollectionView.x, xSelfView: pointInSelfView.x), timeMinInterval: moveTimeMinInterval)
+		print(longPressViewStartDate)
+		
+		let midSectionX = self.getMidSectionXInSelfView(pointInCollectionView.x)
+		tapView = UIView()
+		let numberOfDivisions = 60 / flowLayout.hourGridDivision.rawValue
+		let divisionHeight = flowLayout.hourHeight / CGFloat(numberOfDivisions)
+		tapView.frame.size = CGSize.init(width: newEventWidth(), height: divisionHeight)
+		tapView.backgroundColor = UIColor.red
+		tapView.center = CGPoint(x: midSectionX, y: pointInSelfView.y)
+		self.addSubview(tapView)
+	}
+	
 	/// The basic longPressView position logic is moving with your finger's original position.
     /// - The Move type longPressView will keep the relative position during this longPress, that's how Apple Calendar did.
     /// - The AddNew type longPressView will be created centrally at your finger press position
@@ -590,7 +616,9 @@ extension JZLongPressWeekView: UIGestureRecognizerDelegate {
     /// used by handleLongPressGesture only
     func getLongPressViewStartDate(pointInCollectionView: CGPoint, pointInSelfView: CGPoint) -> Date {
         let longPressViewTopDate = getDateForPoint(pointCollectionView: CGPoint(x: pointInCollectionView.x, y: pointInCollectionView.y - pressPosition!.yToViewTop), pointSelfView: pointInSelfView)
+		print(longPressViewTopDate)
         let longPressViewStartDate = getLongPressStartDate(date: longPressViewTopDate, dateInSection: getDateForPointX(xCollectionView: pointInCollectionView.x, xSelfView: pointInSelfView.x), timeMinInterval: moveTimeMinInterval)
+		print(longPressViewStartDate)
         return longPressViewStartDate
     }
 
