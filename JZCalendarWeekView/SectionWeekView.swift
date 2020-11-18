@@ -61,7 +61,7 @@ open class SectionWeekView<Event: JZBaseEvent, Section: Identifiable & Equatable
 
 	open override func layoutSubviews() {
 		super.layoutSubviews()
-		let sectionXs = sectionsDataSource?.makeSectionXs(pageWidth: flowLayout.sectionWidth, offset: flowLayout.rowHeaderWidth, minRowWidth: minimumRowWidth)
+		let sectionXs = sectionsDataSource?.makeSectionXs(pageWidth: flowLayout.sectionWidth, offset: flowLayout.rowHeaderWidth)
 		sectionXs.map(sectionsFlowLayout.updateSectionsXs)
 	}
 

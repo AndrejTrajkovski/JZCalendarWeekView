@@ -29,7 +29,7 @@ open class JZBaseWeekView: UIView {
 
     public var collectionView: JZCollectionView!
     public var flowLayout: JZWeekViewFlowLayout!
-	public var minimumRowWidth: CGFloat = 300
+//	public var minimumRowWidth: CGFloat = 1
     /**
      - The initial date of current collectionView. When page is not scrolling, the inital date is always
      (numOfDays) days before current page first date, which means the start of the collectionView, not the current page first date

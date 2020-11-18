@@ -44,14 +44,15 @@ public class SectionWeekViewDataSource<Event: JZBaseEvent, Section: Identifiable
 	func calcSectionXs(_ dateToSectionsMap: [Date: [Int]],
 					   pageWidth: CGFloat,
 					   offset: CGFloat,
-					   minRowWidth: CGFloat) -> [Int: SectionXs]{
+//					   minRowWidth: CGFloat
+	) -> [Int: SectionXs]{
 		var pageSectionXx: [Int: SectionXs] = [:]
 		var minX: CGFloat = offset
 		let sections = dateToSectionsMap.sorted(by: { $0.key < $1.key}).flatMap({ $0.value })
 		for section in sections {
 			let pageDict = dateToSectionsMap.first(where: { $0.value.contains(section)})!
 			var width = (pageWidth / CGFloat(pageDict.value.count))
-			if width < minRowWidth { width = minRowWidth }
+//			if width < minRowWidth { width = minRowWidth }
 			let maxX = minX + width
 			pageSectionXx[section] = SectionXs(minX: minX, maxX: maxX)
 			minX = maxX
@@ -85,8 +86,10 @@ extension SectionWeekViewDataSource {
 		sectionToIdsMap[section]!.0
 	}
 
-	func makeSectionXs(pageWidth: CGFloat, offset: CGFloat, minRowWidth: CGFloat) -> [Int: SectionXs] {
-		return calcSectionXs(dateToSectionsMap, pageWidth: pageWidth, offset: offset, minRowWidth: minRowWidth)
+	func makeSectionXs(pageWidth: CGFloat, offset: CGFloat
+//					   ,minRowWidth: CGFloat
+	) -> [Int: SectionXs] {
+		return calcSectionXs(dateToSectionsMap, pageWidth: pageWidth, offset: offset)
 	}
 
 	public func getDateSectionIdAndSubsectionId(for section: Int) -> (Date?, Section.ID?, Subsection.ID?) {
