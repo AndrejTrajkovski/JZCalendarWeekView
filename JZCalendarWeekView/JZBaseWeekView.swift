@@ -29,7 +29,7 @@ open class JZBaseWeekView: UIView {
 
     public var collectionView: JZCollectionView!
     public var flowLayout: JZWeekViewFlowLayout!
-
+	public var minimumRowWidth: CGFloat = 300
     /**
      - The initial date of current collectionView. When page is not scrolling, the inital date is always
      (numOfDays) days before current page first date, which means the start of the collectionView, not the current page first date
@@ -576,11 +576,22 @@ extension JZBaseWeekView: UICollectionViewDelegate, UICollectionViewDelegateFlow
             shouldScrollToPage = currentPage + Int(round(scrollDistanceX / pageWidth))
         }
         let shouldScrollToContentOffsetX = CGFloat(shouldScrollToPage) * pageWidth
-        // if shouldScrollToContentOffsetX equals currentContentOffsetX which means scrollViewDidEndDecelerating won't be called
-        // This case is now handled in scrollViewDidEndDragging
-        targetContentOffset.pointee = CGPoint(x: shouldScrollToContentOffsetX, y: currentContentOffset.y)
+		// if shouldScrollToContentOffsetX equals currentContentOffsetX which means scrollViewDidEndDecelerating won't be called
+		// This case is now handled in scrollViewDidEndDragging
+		targetContentOffset.pointee = CGPoint(x: shouldScrollToContentOffsetX, y: currentContentOffset.y)
     }
 
+	var sectionsFitOnScreen: Bool {
+		guard let sectionFlowLayout = self.flowLayout as? SectionsFlowLayout else {
+			//in case of week view
+			return true }
+		print("collectionView.contentSize: \(collectionView.contentSize)")
+		print("contentViewWidth: \(contentViewWidth)")
+		print("sectionFlowLayout.sectionWidth: \(sectionFlowLayout.sectionWidth)")
+		let pageWidth = sectionFlowLayout.sectionsXPoints.map(\.value.width).reduce(CGFloat(0), { $0 + $1 } ) / 3
+		return pageWidth <= contentViewWidth
+	}
+	
     /// Load the page after horizontal scroll action.
     ///
     /// Can be overridden to do some operations before reload.
