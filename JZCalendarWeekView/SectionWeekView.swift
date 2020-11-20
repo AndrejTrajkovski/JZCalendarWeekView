@@ -16,6 +16,11 @@ public protocol SectionLongPressDelegate: class {
 	 editingEvent: Event,
 	 didEndChangeDurationAt endDate: Date,
 	 startPageAndSectionIdx: (Date?, SectionId?, SubsectionId?))
+	
+	func weekView<Event: JZBaseEvent, SectionId: Hashable, SubsectionId: Hashable>
+	(_ weekView: JZLongPressWeekView,
+	 didSelect editingEvent: Event,
+	 startPageAndSectionIdx: (Date?, SectionId?, SubsectionId?))
 }
 
 ///Divides the calendar into 3 pages (previous, current, next). One page shows events for one date. Each page can then be sliced into subsections. Works in conjuction with SectionsFlowLayout, SectionsWeekViewDataSource and SectionLongPressDelegate.
@@ -184,13 +189,10 @@ open class SectionWeekView<Event: JZBaseEvent, Section: Identifiable & Equatable
 		sectionsDataSource?.numberOfItemsIn(section: section) ?? 0
 	}
 	
-//	public override func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, startTimeForBackgroundAtSection section: Int) -> Date {
-//		
-//	}
-//	
-//	public override func collectionView(_ collectionView: UICollectionView, layout: JZWeekViewFlowLayout, endTimeForBackgroundAtSection section: Int) -> Date {
-//		
-//	}
+	public override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+		let sectionIds = sectionsDataSource?.getDateSectionIdAndSubsectionId(for: indexPath.section) ?? (nil, nil, nil)
+		sectionLongPressDelegate?.weekView(self, didSelect: getCurrentEvent(with: indexPath)!, startPageAndSectionIdx: sectionIds)
+	}
 	
 	@objc open override func getCurrentEvent(with indexPath: IndexPath) -> JZBaseEvent? {
 		return sectionsDataSource?.getCurrentEvent(at: indexPath)
