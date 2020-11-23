@@ -35,6 +35,8 @@ public protocol JZLongPressViewDelegate: class {
 	
 	/// When ChangeDuration long press gesture ends, this function will be called.
 	func weekView(_ weekView: JZLongPressWeekView, editingEvent: JZBaseEvent, didEndChangeDurationLongPressAt endDate: Date, startOfDayDate: Date)
+	
+	func weekView(_ weekView: JZLongPressWeekView, didTapOn date: Date, startOfDayDate: Date, anchorView: UIView)
 }
 
 public protocol JZLongPressViewDataSource: class {
@@ -99,7 +101,6 @@ open class JZLongPressWeekView: JZBaseWeekView {
 		var yPointInsideCell: CGFloat!
     }
 	
-	var tapView: UIView!
     /// When moving the longPress view, if it causes the collectionView scrolling
     var isScrolling: Bool = false
     var isLongPressing: Bool = false
@@ -160,9 +161,9 @@ open class JZLongPressWeekView: JZBaseWeekView {
 		longPressGesture.delegate = self
 		collectionView.addGestureRecognizer(longPressGesture)
 		
-//		let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTapGesture(_:)))
-//		tap.numberOfTapsRequired = 1
-//		self.collectionView.addGestureRecognizer(tap)
+		let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTapGesture(_:)))
+		tap.numberOfTapsRequired = 1
+		self.collectionView.addGestureRecognizer(tap)
     }
 
     /// Updating time label in longPressView during dragging
@@ -326,7 +327,7 @@ open class JZLongPressWeekView: JZBaseWeekView {
     open func getDateForPoint(pointCollectionView: CGPoint, pointSelfView: CGPoint) -> Date {
         let yearMonthDay = getDateForPointX(xCollectionView: pointCollectionView.x, xSelfView: pointSelfView.x)
         let hourMinute = getDateForPointY(pointCollectionView.y)
-        return yearMonthDay.set(hour: hourMinute.0, minute: hourMinute.1, second: 0)
+        return yearMonthDay.set(hour: hourMinute.hour, minute: hourMinute.minute, second: 0)
     }
 
     // Only being called when setContentOffset ends animition by scrollingTo method
@@ -536,23 +537,29 @@ extension JZLongPressWeekView: UIGestureRecognizerDelegate {
 		})
 	}
 	
+	public func addAnchorView(_ pointInCollectionView: CGPoint, _ pointInSelfView: CGPoint) -> UIView {
+		let midSectionX = self.getMidSectionXInSelfView(pointInCollectionView.x)
+		let anchorView = UIView()
+		let numberOfDivisions = 60 / flowLayout.hourGridDivision.rawValue
+		let divisionHeight = flowLayout.hourHeight / CGFloat(numberOfDivisions)
+		anchorView.frame.size = CGSize.init(width: newEventWidth(), height: divisionHeight)
+		anchorView.backgroundColor = UIColor.gray
+		//FIXME: Round to minute interval frame
+		anchorView.center = CGPoint(x: midSectionX, y: pointInSelfView.y)
+		addSubview(anchorView)
+		return anchorView
+	}
+	
 	@objc func handleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
 		print("tap")
 		let pointInSelfView = gestureRecognizer.location(in: self)
 		let pointInCollectionView = gestureRecognizer.location(in: collectionView)
 		
-		let longPressViewTopDate = getDateForPoint(pointCollectionView: pointInCollectionView, pointSelfView: pointInSelfView)
-		let longPressViewStartDate = getLongPressStartDate(date: longPressViewTopDate, dateInSection: getDateForPointX(xCollectionView: pointInCollectionView.x, xSelfView: pointInSelfView.x), timeMinInterval: moveTimeMinInterval)
-		print(longPressViewStartDate)
+		let tapDate = getDateForPoint(pointCollectionView: pointInCollectionView, pointSelfView: pointInSelfView)
+		let roundDate = getLongPressStartDate(date: tapDate, dateInSection: getDateForPointX(xCollectionView: pointInCollectionView.x, xSelfView: pointInSelfView.x), timeMinInterval: moveTimeMinInterval)
 		
-		let midSectionX = self.getMidSectionXInSelfView(pointInCollectionView.x)
-		tapView = UIView()
-		let numberOfDivisions = 60 / flowLayout.hourGridDivision.rawValue
-		let divisionHeight = flowLayout.hourHeight / CGFloat(numberOfDivisions)
-		tapView.frame.size = CGSize.init(width: newEventWidth(), height: divisionHeight)
-		tapView.backgroundColor = UIColor.red
-		tapView.center = CGPoint(x: midSectionX, y: pointInSelfView.y)
-		self.addSubview(tapView)
+		let anchorView = addAnchorView(pointInCollectionView, pointInSelfView)
+		longPressDelegate?.weekView(self, didTapOn: roundDate, startOfDayDate: roundDate.startOfDay, anchorView: anchorView)
 	}
 	
 	/// The basic longPressView position logic is moving with your finger's original position.

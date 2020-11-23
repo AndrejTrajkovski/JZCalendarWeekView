@@ -21,6 +21,12 @@ public protocol SectionLongPressDelegate: class {
 	(_ weekView: JZLongPressWeekView,
 	 didSelect editingEvent: Event,
 	 startPageAndSectionIdx: (Date?, SectionId?, SubsectionId?))
+	
+	func weekView<SectionId: Hashable, SubsectionId: Hashable>
+	(_ weekView: JZLongPressWeekView,
+	 didTap onDate: Date,
+	 startPageAndSectionIdx: (Date?, SectionId?, SubsectionId?),
+	 anchorView: UIView)
 }
 
 ///Divides the calendar into 3 pages (previous, current, next). One page shows events for one date. Each page can then be sliced into subsections. Works in conjuction with SectionsFlowLayout, SectionsWeekViewDataSource and SectionLongPressDelegate.
@@ -111,6 +117,16 @@ open class SectionWeekView<Event: JZBaseEvent, Section: Identifiable & Equatable
 				sectionLongPressDelegate?.weekView(self, editingEvent: currentEditingInfo.event, didEndChangeDurationAt: endDate, startPageAndSectionIdx: startIds)
 			}
 		}
+	}
+	
+	override func handleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
+		let pointInSelfView = gestureRecognizer.location(in: self)
+		let pointInCollectionView = gestureRecognizer.location(in: collectionView)
+		let tapDate = getDateForPoint(pointCollectionView: pointInCollectionView, pointSelfView: pointInSelfView)
+		let roundDate = getLongPressStartDate(date: tapDate, dateInSection: getDateForPointX(xCollectionView: pointInCollectionView.x, xSelfView: pointInSelfView.x), timeMinInterval: moveTimeMinInterval)
+		let keys = getPageAndSubsectionIdx(pointInCollectionView.x)
+		let anchorView = addAnchorView(pointInCollectionView, pointInSelfView)
+		sectionLongPressDelegate?.weekView(self, didTap: roundDate, startPageAndSectionIdx: keys, anchorView: anchorView)
 	}
 	
 	override func handleLongPressGesture(_ gestureRecognizer: UILongPressGestureRecognizer) {
