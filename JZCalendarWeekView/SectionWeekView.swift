@@ -119,9 +119,8 @@ open class SectionWeekView<Event: JZBaseEvent, Section: Identifiable & Equatable
 		}
 	}
 	
-	override func handleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
-		let pointInSelfView = gestureRecognizer.location(in: self)
-		let pointInCollectionView = gestureRecognizer.location(in: collectionView)
+	override open func handleOnBackgroundTap(pointInCollectionView: CGPoint,
+											 pointInSelfView: CGPoint) {
 		let tapDate = getDateForPoint(pointCollectionView: pointInCollectionView, pointSelfView: pointInSelfView)
 		let roundDate = getLongPressStartDate(date: tapDate, dateInSection: getDateForPointX(xCollectionView: pointInCollectionView.x, xSelfView: pointInSelfView.x), timeMinInterval: moveTimeMinInterval)
 		let keys = getPageAndSubsectionIdx(pointInCollectionView.x)
@@ -206,6 +205,7 @@ open class SectionWeekView<Event: JZBaseEvent, Section: Identifiable & Equatable
 	}
 	
 	public override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+		print("did select item")
 		let sectionIds = sectionsDataSource?.getDateSectionIdAndSubsectionId(for: indexPath.section) ?? (nil, nil, nil)
 		sectionLongPressDelegate?.weekView(self, didSelect: getCurrentEvent(with: indexPath)!, startPageAndSectionIdx: sectionIds)
 	}

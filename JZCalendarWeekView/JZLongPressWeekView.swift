@@ -36,6 +36,10 @@ public protocol JZLongPressViewDelegate: class {
 	/// When ChangeDuration long press gesture ends, this function will be called.
 	func weekView(_ weekView: JZLongPressWeekView, editingEvent: JZBaseEvent, didEndChangeDurationLongPressAt endDate: Date, startOfDayDate: Date)
 	
+	func weekView(_ weekView: JZLongPressWeekView,
+				  didSelect editingEvent: JZBaseEvent,
+				  startOfDay: Date)
+	
 	func weekView(_ weekView: JZLongPressWeekView, didTapOn date: Date, startOfDayDate: Date, anchorView: UIView)
 }
 
@@ -163,9 +167,11 @@ open class JZLongPressWeekView: JZBaseWeekView {
 		
 		let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTapGesture(_:)))
 		tap.numberOfTapsRequired = 1
+		tap.delegate = self
+		tap.cancelsTouchesInView = false;
 		self.collectionView.addGestureRecognizer(tap)
     }
-
+	
     /// Updating time label in longPressView during dragging
     func updateTimeLabel(time: Date, pointInSelfView: CGPoint) {
         updateTimeLabelText(time: time)
@@ -552,12 +558,28 @@ extension JZLongPressWeekView: UIGestureRecognizerDelegate {
 	
 	@objc func handleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
 		print("tap")
+		print("handling tap gesture")
+		if let indexPath = self.collectionView?.indexPathForItem(at: gestureRecognizer.location(in: self.collectionView)) {
+			let cell = self.collectionView?.cellForItem(at: indexPath)
+			print("you can do something with the cell or index path here")
+//			collectionView.delegate?.collectionView?(collectionView, didSelectItemAt: indexPath)
+		} else {
+			handleOnBackgroundTap(gestureRecognizer: gestureRecognizer)
+		}
+	}
+	
+	@objc public func handleOnBackgroundTap(gestureRecognizer: UITapGestureRecognizer) {
+		print("collection view was tapped")
 		let pointInSelfView = gestureRecognizer.location(in: self)
 		let pointInCollectionView = gestureRecognizer.location(in: collectionView)
-		
+		handleOnBackgroundTap(pointInCollectionView: pointInCollectionView,
+							  pointInSelfView: pointInSelfView)
+	}
+	
+	@objc open func handleOnBackgroundTap(pointInCollectionView: CGPoint,
+										  pointInSelfView: CGPoint) {
 		let tapDate = getDateForPoint(pointCollectionView: pointInCollectionView, pointSelfView: pointInSelfView)
 		let roundDate = getLongPressStartDate(date: tapDate, dateInSection: getDateForPointX(xCollectionView: pointInCollectionView.x, xSelfView: pointInSelfView.x), timeMinInterval: moveTimeMinInterval)
-		
 		let anchorView = addAnchorView(pointInCollectionView, pointInSelfView)
 		longPressDelegate?.weekView(self, didTapOn: roundDate, startOfDayDate: roundDate.startOfDay, anchorView: anchorView)
 	}
@@ -628,7 +650,8 @@ extension JZLongPressWeekView: UIGestureRecognizerDelegate {
     }
 	
 	public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-		
+		let event = (collectionView.cellForItem(at: indexPath) as! JZLongPressEventCell).event!
+		longPressDelegate?.weekView(self, didSelect: event, startOfDay: event.startDate.startOfDay)
 	}
 }
 
